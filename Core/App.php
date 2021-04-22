@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.6
+ * @version 4.7
  */
 
 namespace BMVC\Core;
@@ -19,6 +19,7 @@ use Whoops\Handler\PrettyPageHandler as WPrettyPageHandler;
 use Monolog\Logger as MlLogger;
 use Monolog\Handler\StreamHandler as MlStreamHandler;
 use Monolog\Formatter\LineFormatter as MlLineFormatter;
+use Dotenv\Dotenv;
 
 final class App
 {
@@ -51,6 +52,7 @@ final class App
 		self::initWhoops();
 		self::initMonolog();
 		self::initError();
+		self::initDotenv();
 		self::initSession();
 		self::initHeader();
 		self::init($array);
@@ -87,6 +89,12 @@ final class App
 				self::$log->error($exception);
 			});
 		}
+	}
+
+	private static function initDotenv(): void
+	{
+		$dotenv = Dotenv::createImmutable(Dir::app());
+		$dotenv->load();
 	}
 	
 	private static function initSession(): void

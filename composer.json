@@ -16,7 +16,8 @@
 		"ext-mbstring": "*",
 		"filp/whoops": "^2.12",
 		"jenssegers/blade": "^1.4",
-		"monolog/monolog": "^2.2"
+		"monolog/monolog": "^2.2",
+		"vlucas/phpdotenv": "^5.3"
 	},
 	"autoload": {
 		"psr-4": {
