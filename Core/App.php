@@ -46,7 +46,7 @@ final class App
 		self::Run($data);
 	}
 
-	public static function Run($data=[]): void
+	public static function Run($data)
 	{
 		if (self::$init == true) return;
 
@@ -97,9 +97,7 @@ final class App
 				}
 			}
 		}
-		if ($get === false) {
-			return new self;
-		}
+		# if ($get === false) return new self;
 	}
 
 	/**
@@ -172,24 +170,24 @@ final class App
 	{
 		# URL
 		if (isset($_ENV['URL']) && $_ENV['URL'] != null) {
-			define('URL', $_ENV['URL']);
+			@define('URL', $_ENV['URL']);
 		} else {
-			define('URL', base_url());
+			@define('URL', base_url());
 		}
 
 		# TIMEZONE
 		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
-			define('TIMEZONE', $_ENV['TIMEZONE']);
+			@define('TIMEZONE', $_ENV['TIMEZONE']);
 		} else {
-			define('TIMEZONE', 'Europe/Istanbul');
+			@define('TIMEZONE', 'Europe/Istanbul');
 		}
 		@date_default_timezone_set(TIMEZONE);
 
 		# ENVIRONMENT
 		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) {
-			define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
+			@define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
 		} else {
-			define('ENVIRONMENT', 'development');
+			@define('ENVIRONMENT', 'development');
 		}
 		switch (ENVIRONMENT) {
 			case 'development':
@@ -233,9 +231,7 @@ final class App
 			@mb_internal_encoding("UTF-8");
 		}
 
-		if (is_cli()) {
-			die("Cli Not Available, Browser Only.");
-		}
+		if (is_cli()) die("Cli Not Available, Browser Only.");
 	}
 
 	private static function initRoute()
