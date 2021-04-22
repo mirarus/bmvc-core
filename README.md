@@ -24,24 +24,25 @@ Install using composer:
 ```bash
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+	require_once __DIR__ . '/vendor/autoload.php';
 
-use BMVC\Core\{App, Route, Controller};
-use BMVC\Libs\{MError, Benchmark};
+	use BMVC\Core\{App, Route, Controller};
+	use BMVC\Libs\{MError, Benchmark};
 
-class Main {
-	function index() {
-		echo "[Main::index]";
+	class Main
+	{
+		function index() {
+			echo "[Main::index]";
+		}
 	}
-}
 
-Route::any('/', function () {
-Controller::call('main@index');
+	Route::any('/', function () {
+		Controller::call('main@index');
+		MError::color("info")::print("Benchmark", "Memory Usage: " . Benchmark::memory());
+	});
 
-	MError::color("info")::print("Benchmark", "Memory Usage: " . Benchmark::memory());
-});
-
-App::Run();
+	App::Run();
+?>
 ```
 
 ## License
