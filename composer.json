@@ -1,0 +1,32 @@
+{
+	"name": "mirarus/bmvc-core",
+	"description": "Mirarus BMVC Core (Basic MVC Core)",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Ali Güçlü",
+			"email": "aliguclutr@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=7.3",
+		"ext-json": "*",
+		"ext-pdo": "*",
+		"ext-mbstring": "*",
+		"filp/whoops": "^2.12",
+		"jenssegers/blade": "^1.4",
+		"monolog/monolog": "^2.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"BMVC\\": ".",
+			"BMVC\\Core\\": "Core",
+			"BMVC\\Libs\\": "Libraries"
+		},
+		"files": [
+			"helper.php",
+			"variables.php"
+		]
+	}
+}
