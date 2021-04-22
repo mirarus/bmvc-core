@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.0
+ * @version 1.1
  */
 
 namespace BMVC\Libs;
@@ -92,6 +92,14 @@ class Benchmark
 	/**
 	 * @return string
 	 */
+	public static function memory(): string
+	{
+		return round(memory_get_usage() / 1024, 2) . " KB";
+	}
+
+	/**
+	 * @return string
+	 */
 	public static function Run(): string
 	{
 		$total = 0;
@@ -107,7 +115,7 @@ class Benchmark
 			}
 		}
 
-		$return .= $line . "\n| " . str_pad("Total time", 12) . " : " . str_pad($total ." sec.", 19) . " |\n| " . str_pad("Memory Usage", 12) . " : " . str_pad(round(memory_get_usage() / 1024, 2) . " KB", 19) . " |\n$line </pre>";
+		$return .= $line . "\n| " . str_pad("Total time", 12) . " : " . str_pad($total ." sec.", 19) . " |\n| " . str_pad("Memory Usage", 12) . " : " . str_pad(self::memory(), 19) . " |\n$line </pre>";
 		return $return;
 	}
 }
