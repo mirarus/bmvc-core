@@ -13,8 +13,6 @@
 
 namespace BMVC\Libs;
 
-use BMVC\Libs\Request;
-
 class Session
 {
 
