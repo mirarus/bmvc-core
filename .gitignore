@@ -1,3 +1,6 @@
 composer.phar
 /vendor/
-.github
+
+# composer.lock
+
+/.github/
