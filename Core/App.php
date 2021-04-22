@@ -52,8 +52,8 @@ final class App
 
 		self::initWhoops();
 		self::initMonolog();
-		self::initError();
 		self::initDotenv();
+		self::initError();
 		self::initSession();
 		self::initHeader();
 		self::init($array);
@@ -81,6 +81,13 @@ final class App
 		self::$log = $log;
 	}
 
+	private static function initDotenv(): void
+	{
+		$dotenv = Dotenv::createImmutable(Dir::app());
+		$dotenv->load();
+		self::$dotenv = $dotenv;
+	}
+
 	private static function initError(): void
 	{
 		if ($_ENV['LOG'] == true) {
@@ -88,13 +95,6 @@ final class App
 				self::$log->error($exception);
 			});
 		}
-	}
-
-	private static function initDotenv(): void
-	{
-		$dotenv = Dotenv::createImmutable(Dir::app());
-		$dotenv->load();
-		self::$dotenv = $dotenv;
 	}
 	
 	private static function initSession(): void
