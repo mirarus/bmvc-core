@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.0
+ * @version 5.1
  */
 
 namespace BMVC\Core;
@@ -37,8 +37,8 @@ final class App
 	 * @var array
 	 */
 	public static $namespaces = [
-		'controller' => 'App\Controller\\',
-		'model'      => 'App\Model\\'
+		'controller' => null,
+		'model'      => null
 	];
 
 	public function __construct($data=[])
@@ -61,6 +61,55 @@ final class App
 		self::initRoute();
 
 		self::$init = true;
+	}
+
+	/**
+	 * @param mixed        $par
+	 * @param string|null  $value
+	 * @param bool|boolean $get
+	 */
+	public static function namespace($par, string $value=null, bool $get=false)
+	{
+		if (is_string($par)) {
+			if (array_key_exists($par, self::$namespaces)) {
+				self::$namespaces[$par] = $value;
+				if ($get === true) {
+					return self::$namespaces[$par];
+				}
+			}
+		} elseif (is_array($par)) {
+
+			foreach (@$par as $key) {
+				if (array_key_exists($key, self::$namespaces)) {
+					self::$namespaces[$key] = $value;
+					if ($get === true) {
+						return self::$namespaces[$key];
+					}
+				}
+			}
+
+			foreach (@$par as $key => $val) {
+				if (array_key_exists($key, self::$namespaces)) {
+					self::$namespaces[$key] = $val;
+					if ($get === true) {
+						return self::$namespaces[$key];
+					}
+				}
+			}
+		}
+		if ($get === false) {
+			return new self;
+		}
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public static function get(string $key)
+	{
+		if (in_array($key, get_class_vars(__CLASS__))) {
+			return self::${$key};
+		}
 	}
 
 	private static function initWhoops(): void
