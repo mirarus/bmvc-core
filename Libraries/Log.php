@@ -8,13 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.8
+ * @version 1.9
  */
 
 namespace BMVC\Libs;
 
 use Exception;
-use BMVC\Libs\Request;
+use BMVC\Libs\{Request, Dir};
 
 class Log
 {
@@ -100,12 +100,12 @@ class Log
 	 */
 	private static function save(string $text): void
 	{
-		if (!_dir(SYSTEMDIR . '/Logs')) {
-			mkdir(SYSTEMDIR . '/Logs');
+		if (!_is_dir(Dir::app('/App/Logs/'))) {
+			@mkdir(Dir::app('/App/Logs/'));
 		}
 
 		$file = 'bmvc.log';
-		$file = fopen(SYSTEMDIR . '/Logs/' . $file, 'a');
+		$file = fopen(Dir::app('/App/Logs/' . $file), 'a');
 		if (fwrite($file, $text . "\r\n") === false) {
 			throw new Exception('Log Error! | Failed to create log file. - Check the write permissions.');
 		}

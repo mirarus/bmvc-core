@@ -8,20 +8,16 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.7
+ * @version 3.9
  */
 
 namespace BMVC\Core;
 
 use Exception;
+use BMVC\Libs\Dir;
 
 final class View
 {
-
-	/**
-	 * @var string
-	 */
-	private static $dir = APPDIR . '/Http/View/';
 
 	/**
 	 * @param mixed       $action
@@ -58,15 +54,15 @@ final class View
 		if (($namespace === null || $namespace !== null) && $view != null) {
 
 			$_nsv     = ($namespace != null) ? implode('/', [$namespace, $view]) : $view;
-			$cacheDir = self::$dir . $namespace . '/Cache';
+			$cacheDir = Dir::app('/App/Http/View/' . $namespace . '/Cache');
 
-			if (!_dir($cacheDir)) {
-				mkdir($cacheDir);
+			if (!_is_dir($cacheDir)) {
+				@mkdir($cacheDir);
 			}
 
 			if ($engine == 'php') {
 
-				if (file_exists($file = self::$dir . $_nsv . '.php')) {
+				if (file_exists($file = Dir::app('/App/Http/View/' . $_nsv . '.php'))) {
 
 					if (config('general/view/cache') == true) {
 						$file = self::cache($_nsv, $file, $cacheDir);
@@ -82,8 +78,8 @@ final class View
 				}
 			} elseif ($engine == 'blade') {
 
-				if (file_exists($file = self::$dir . $_nsv . '.blade.php')) {
-					$blade = new \Jenssegers\Blade\Blade(self::$dir . $namespace, $cacheDir);
+				if (file_exists($file = Dir::app('/App/Http/View/' . $_nsv . '.blade.php'))) {
+					$blade = new \Jenssegers\Blade\Blade(Dir::app('/App/Http/View/' . $namespace, $cacheDir));
 					return $blade->make($view, $data)->render();
 				} else {
 					throw new Exception('Blade View File Found! | File: ' . $_nsv . '.blade.php');
@@ -125,7 +121,7 @@ final class View
 
 			if ($layout == true) {
 
-				if (file_exists($file = self::$dir . $namespace . '/Layout/Main.php')) {
+				if (file_exists($file = Dir::app('/App/Http/View/' . $namespace . '/Layout/Main.php'))) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
 					require_once $file;
 				} else {

@@ -3,17 +3,17 @@
 /**
  * App
  *
- * Mirarus BMVC
+ * Mirarus BMVC Core
  * @package BMVC\Core
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
- * @link https://github.com/mirarus/bmvc
+ * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.5
+ * @version 4.6
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\MError;
+use BMVC\Libs\Dir;
 use Whoops\Run as WRun;
 use Whoops\Handler\PrettyPageHandler as WPrettyPageHandler;
 use Monolog\Logger as MlLogger;
@@ -30,7 +30,7 @@ final class App
 	
 	public static $whoops;
 	public static $log;
-	
+
 	/**
 	 * @var array
 	 */
@@ -46,10 +46,8 @@ final class App
 
 	public static function Run(array $array = []): void
 	{
-		if (self::$init == true) {
-			return;
-		}
-		
+		if (self::$init == true) return;
+
 		self::initWhoops();
 		self::initMonolog();
 		self::initError();
@@ -74,7 +72,7 @@ final class App
 	private static function initMonolog(): void
 	{
 		$log = new MlLogger('BMVC');
-		$stream = new MlStreamHandler(SYSTEMDIR . '/Logs/app.log');
+		$stream = new MlStreamHandler(Dir::app('/App/Logs/app.log'));
 		$formatter = new MlLineFormatter(MlLineFormatter::SIMPLE_FORMAT, MlLineFormatter::SIMPLE_DATE);
 		$formatter->includeStacktraces(true);
 		$stream->setFormatter($formatter);
@@ -132,6 +130,14 @@ final class App
 			define("URL", base_url());
 		}
 
+		if (is_string(config('general/timezone'))) {
+			define("TIMEZONE", config('general/timezone'));
+		}
+
+		if (is_string(config('general/environment'))) {
+			define("ENVIRONMENT", config('general/environment'));
+		}
+
 		if (!defined('TIMEZONE')) {
 			define("TIMEZONE", "Europe/Istanbul");
 		}
@@ -162,7 +168,7 @@ final class App
 		spl_autoload_register(function ($class) {
 			if ($class == 'index') return false;
 
-			$file = APPDIR . '/Libraries/' . $class . '.php';
+			$file = Dir::app('/App/Libraries/' . $class . '.php');
 			$file = @strtr($file, ['\\' => '/', '//' => '/']);
 
 			if (file_exists($file)) {
@@ -171,14 +177,9 @@ final class App
 		});
 
 		array_map(function ($file) {
-			if ($file == APPDIR . '/Helpers/index.php') return false;
+			if ($file == Dir::app('/App/Helpers/index.php')) return false;
 			require_once $file;
-		}, glob(APPDIR . "/Helpers/*.php"));
-
-		array_map(function ($file) {
-			if ($file == SYSTEMDIR . '/Helpers/index.php') return false;
-			require_once $file;
-		}, glob(SYSTEMDIR . "/Helpers/*.php"));
+		}, glob(Dir::app("/App/Helpers/*.php")));
 	}
 
 	private static function initialize(): void

@@ -8,17 +8,18 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.2
+ * @version 5.3
  */
 
 namespace BMVC\Libs;
 
 use Exception;
 use BMVC\Core\Route;
-use BMVC\Libs\Request;
+use BMVC\Libs\{Dir, Request};
 
 class Lang
 {
+
 	/**
 	 * @var array
 	 */
@@ -34,13 +35,12 @@ class Lang
 	 */
 	private static $current_lang = 'en';
 
-	/**
-	 * @var [type]
-	 */
-	private static $lang_dir = (APPDIR . '/Languages/');
-
 	public function __construct()
 	{
+		if (!_is_dir(Dir::app('/App/Languages/'))) {
+			@mkdir(Dir::app('/App/Languages/'));
+		}
+
 		$_lang = config('general/lang');
 
 		if ($_lang != null) {
@@ -94,7 +94,7 @@ class Lang
 	 * @param  array|string|null $replace
 	 * @return string
 	 */
-	private static function _init(string $text, bool $return=true, $replace=null): string
+	private static function _init(string $text, bool $return=true, $replace=null)
 	{
 		if ($return == true) {
 			if ($replace != null) {
@@ -125,39 +125,21 @@ class Lang
 	 */
 	private static function _get_text(string $text)
 	{
-		if (_dir(self::$lang_dir)) {
+		if (self::$current_lang == 'index') return;
 
-			if (self::$current_lang == 'index') return false;
+		$_config = false;
 
-			$_config = false;
+		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
 
-			if (file_exists($file = self::$lang_dir . 'config.php')) {
+			$inc_file = include ($file);
 
-				$inc_file = include ($file);
+			if (is_array($inc_file) && !empty($inc_file)) {
 
-				if (is_array($inc_file) && !empty($inc_file)) {
+				$_config = true;
+				$_lang = $inc_file[self::$current_lang];
 
-					$_config = true;
-					$_lang = $inc_file[self::$current_lang];
-
-					if (isset($_lang)) {
-						$_lang = $_lang['langs'];
-						if (isset($_lang[$text])) {
-							return $_lang[$text];
-						} else {
-							return $text;
-						}
-					} else {
-						throw new Exception('Language Not Found! | Language: ' . self::$current_lang);
-					}
-				}
-			}
-
-			if ($_config == false) {
-				if (file_exists($file = self::$lang_dir . self::$current_lang . '.php')) {
-
-					$_lang = [];
-					include $file;
+				if (isset($_lang)) {
+					$_lang = $_lang['langs'];
 					if (isset($_lang[$text])) {
 						return $_lang[$text];
 					} else {
@@ -167,8 +149,21 @@ class Lang
 					throw new Exception('Language Not Found! | Language: ' . self::$current_lang);
 				}
 			}
-		} else {
-			throw new Exception('Language Dir Not Found!');
+		}
+
+		if ($_config == false) {
+			if (file_exists($file = Dir::app('/App/Languages/' . self::$current_lang . '.php'))) {
+
+				$_lang = [];
+				include $file;
+				if (isset($_lang[$text])) {
+					return $_lang[$text];
+				} else {
+					return $text;
+				}
+			} else {
+				throw new Exception('Language Not Found! | Language: ' . self::$current_lang);
+			}
 		}
 	}
 
@@ -177,40 +172,34 @@ class Lang
 	 */
 	private static function _get_langs()
 	{
-		if (_dir(self::$lang_dir)) {
+		$_config = false;
 
-			$_config = false;
+		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
 
-			if (file_exists($file = self::$lang_dir . 'config.php')) {
+			$inc_file = include ($file);
 
-				$inc_file = include ($file);
-				
-				if (is_array($inc_file) && !empty($inc_file)) {
-					
-					$_config = true;
+			if (is_array($inc_file) && !empty($inc_file)) {
 
-					if (array_keys($inc_file) == 'index') return false;
-					return array_keys($inc_file);
+				$_config = true;
+
+				if (array_keys($inc_file) == 'index') return false;
+				return array_keys($inc_file);
+			}
+		}
+
+		if ($_config == false) {
+
+			$files = [];
+			foreach (glob(Dir::app('/App/Languages/*.php')) as $file) {
+				if ($file == Dir::app('/App/Languages/index.php')) return false;
+
+				$_lang = [];
+				include $file;
+				if ($_lang != null) {
+					$files[] = str_replace([Dir::app('/App/Languages/'), '.php'], '', $file);
 				}
 			}
-
-			if ($_config == false) {
-
-				$files = [];
-				foreach (glob(self::$lang_dir . '*.php') as $file) {
-
-					if ($file == self::$lang_dir . 'index.php') return false;
-
-					$_lang = [];
-					include $file;
-					if ($_lang != null) {
-						$files[] = str_replace([self::$lang_dir, '.php'], '', $file);
-					}
-				}
-				return $files;
-			}
-		} else {
-			throw new Exception('Language Dir Not Found!');
+			return $files;
 		}
 	}
 
@@ -221,63 +210,58 @@ class Lang
 	 */
 	private static function _get_lang_info(string $_xlang, string $par=null)
 	{
-		if (_dir(self::$lang_dir)) {
+		if ($_xlang == 'index') return;
 
-			if ($_xlang == 'index') return false;
-			
-			$_config = false;
-			$_data = [];
-			$_lang = [];
+		$_config = false;
+		$_data = [];
+		$_lang = [];
 
-			if (file_exists($file = self::$lang_dir . 'config.php')) {
+		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
 
-				$inc_file = include ($file);
+			$inc_file = include ($file);
 
-				if (is_array($inc_file) && !empty($inc_file)) {
+			if (is_array($inc_file) && !empty($inc_file)) {
 
-					$_lang_ = $inc_file[$_xlang];
+				$_lang_ = $inc_file[$_xlang];
 
-					if (isset($_lang_) && isset($_lang_['info'])) {
+				if (isset($_lang_) && isset($_lang_['info'])) {
 
-						$_config = true;
+					$_config = true;
 
-						$_lang = $_lang_['langs'];
-
-						$_data = [
-							'code' => @$_xlang,
-							'name-global' => @$_lang_['info']['name-global'],
-							'name-local' => @$_lang_['info']['name-local']
-						];
-					} else {
-						throw new Exception('Language Not Found! | Language: ' . $_xlang);
-					}
-				}
-			}
-
-			if ($_config == false) {
-				if (file_exists($file = self::$lang_dir . $_xlang . '.php')) {
-
-					include $file;
+					$_lang = $_lang_['langs'];
 
 					$_data = [
 						'code' => @$_xlang,
-						'name-global' => @$_lang_name[0],
-						'name-local' => @$_lang_name[1]
+						'name-global' => @$_lang_['info']['name-global'],
+						'name-local' => @$_lang_['info']['name-local']
 					];
 				} else {
 					throw new Exception('Language Not Found! | Language: ' . $_xlang);
 				}
 			}
+		}
 
-			if (@$_lang != null && @$_data['code'] != null && @$_data['name-global'] != null && @$_data['name-local'] != null) {
-				if ($par != null) {
-					return $_data[$par];
-				} else {
-					return $_data;
-				}
+		if ($_config == false) {
+			if (file_exists($file = Dir::app('/App/Languages/' . $_xlang . '.php'))) {
+
+				include $file;
+
+				$_data = [
+					'code' => @$_xlang,
+					'name-global' => @$_lang_name[0],
+					'name-local' => @$_lang_name[1]
+				];
+			} else {
+				throw new Exception('Language Not Found! | Language: ' . $_xlang);
 			}
-		} else {
-			throw new Exception('Language Dir Not Found!');
+		}
+
+		if (@$_lang != null && @$_data['code'] != null && @$_data['name-global'] != null && @$_data['name-local'] != null) {
+			if ($par != null) {
+				return $_data[$par];
+			} else {
+				return $_data;
+			}
 		}
 	}
 
@@ -343,7 +327,7 @@ class Lang
 	 * @param  mixed $replace
 	 * @return string
 	 */
-	public static function __(string $text, $replace=null): string
+	public static function __(string $text, $replace=null)
 	{
 		self::_init($text, false, $replace);
 	}
@@ -353,7 +337,7 @@ class Lang
 	 * @param  mixed $replace
 	 * @return string
 	 */
-	public static function ___(string $text, $replace=null): string
+	public static function ___(string $text, $replace=null)
 	{
 		return self::_init($text, true, $replace);
 	}

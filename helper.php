@@ -12,12 +12,22 @@
  */
 
 /**
+ * @param  string|null $type
+ * @param  string|null $dir
+ * @return mixed
+ */
+function _dir_(string $type=null, string $dir=null)
+{
+	return BMVC\Libs\Dir::get($type, $dir);
+}
+
+/**
  * @param  mixed $par
  */
 function config($par=null)
 {
 	if ($par != null) {
-		require APPDIR . '/config.php'; 
+		require BMVC\Libs\Dir::app('/App/config.php'); 
 
 		if (is_array($par)) {
 			$keys = $par;
@@ -133,7 +143,7 @@ function ep($text, $message, bool $html=false, $title=null, string $color=null, 
  * @param  string $dir
  * @return bool
  */
-function _dir(string $dir): bool
+function _is_dir(string $dir): bool
 {
 	if (is_dir($dir) && opendir($dir)) {
 		return true;
@@ -174,3 +184,8 @@ function _lang(string $text, $replace=null, bool $return=true)
 		BMVC\Libs\Lang::__($text, $replace);
 	}
 }
+
+array_map(function ($file) {
+	if ($file == _dir_('base') . '/Helpers/index.php') return false;
+	require_once $file;
+}, glob(_dir_('base') . "/Helpers/*.php"));

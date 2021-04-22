@@ -8,21 +8,16 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.5
+ * @version 3.6
  */
 
 namespace BMVC\Core;
 
 use Exception;
-use BMVC\Libs\BasicDB;
+use BMVC\Libs\{BasicDB, Dir};
 
 final class Model
 {
-
-	/**
-	 * @var string
-	 */
-	private static $dir = APPDIR . '/Http/Model/';
 
 	/**
 	 * @var array
@@ -80,7 +75,7 @@ final class Model
 
 			$_nsm_ = ($namespace != null) ? implode('/', [$namespace, '_model_']) : '_model_';
 			
-			if (file_exists(self::$dir . $_nsm_ . '.php')) {
+			if (file_exists(Dir::app('/App/Http/Model/' . $_nsm_ . '.php'))) {
 				$_model_ = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm_));
 				new $_model_();
 			}
