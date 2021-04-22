@@ -46,7 +46,7 @@ final class App
 		self::Run($data);
 	}
 
-	public static function Run($data)
+	public static function Run($data=[]): void
 	{
 		if (self::$init == true) return;
 
