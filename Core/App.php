@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.8
+ * @version 4.9
  */
 
 namespace BMVC\Core;
@@ -143,14 +143,14 @@ final class App
 		}
 
 		# URL
-		if ($_ENV['URL'] != null) {
+		if (isset($_ENV['URL']) && $_ENV['URL'] != null) {
 			define('URL', $_ENV['URL']);
 		} else {
 			define('URL', base_url());
 		}
 
 		# TIMEZONE
-		if ($_ENV['TIMEZONE'] != null) {
+		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
 			define('TIMEZONE', $_ENV['TIMEZONE']);
 		} else {
 			define('TIMEZONE', 'Europe/Istanbul');
@@ -158,7 +158,7 @@ final class App
 		@date_default_timezone_set(TIMEZONE);
 
 		# ENVIRONMENT
-		if ($_ENV['ENVIRONMENT'] != null) {
+		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) {
 			define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
 		} else {
 			define('ENVIRONMENT', 'development');
