@@ -8,12 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.8
+ * @version 3.9
  */
 
 namespace BMVC\Core;
 
 use Exception;
+use BMVC\Libs\BasicDB;
 
 final class Model
 {
@@ -36,6 +37,9 @@ final class Model
 	 */
 	public static function DB()
 	{
+		App::$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS']);
+		App::$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
+
 		$host = $_ENV['DB_HOST'];
 		$name = $_ENV['DB_NAME'];
 		$user = $_ENV['DB_USER'];
