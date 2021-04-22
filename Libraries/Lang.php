@@ -8,14 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.3
+ * @version 5.4
  */
 
 namespace BMVC\Libs;
 
 use Exception;
 use BMVC\Core\Route;
-use BMVC\Libs\{Dir, Request};
 
 class Lang
 {
@@ -41,8 +40,8 @@ class Lang
 			@mkdir(Dir::app('/App/Languages/'));
 		}
 
-		$_lang = config('general/lang');
-
+		$_lang = $_ENV['LANG'];
+		
 		if ($_lang != null) {
 
 			if (is_array($_lang)) {

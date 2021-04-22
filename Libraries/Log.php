@@ -14,7 +14,6 @@
 namespace BMVC\Libs;
 
 use Exception;
-use BMVC\Libs\{Request, Dir};
 
 class Log
 {

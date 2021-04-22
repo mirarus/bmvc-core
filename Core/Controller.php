@@ -8,13 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.2
+ * @version 4.3
  */
 
 namespace BMVC\Core;
 
 use Exception;
-use BMVC\Libs\Dir;
 
 final class Controller
 {	
@@ -54,13 +53,13 @@ final class Controller
 
 			$_nsc_ = ($namespace != null) ? implode('/', [$namespace, '_controller_']) : '_controller_';
 			
-			if (file_exists(Dir::app('/App/Http/Controller/' . $_nsc_ . '.php'))) {
-				$_controller_ = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc_));
+			$_controller_ = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc_));
+			if (class_exists($_controller_)) {
 				new $_controller_();
 			}
 
-			$controller  = ucfirst($controller);
-			$_nsc				 = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
+			$controller = ucfirst($controller);
+			$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
 			$_controller = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc));
 
 			if (is_array(self::$params) && !empty(self::$params)) {

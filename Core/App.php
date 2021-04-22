@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.7
+ * @version 4.8
  */
 
 namespace BMVC\Core;
@@ -31,6 +31,7 @@ final class App
 	
 	public static $whoops;
 	public static $log;
+	public static $dotenv;
 
 	/**
 	 * @var array
@@ -56,8 +57,6 @@ final class App
 		self::initSession();
 		self::initHeader();
 		self::init($array);
-		self::initAutoLoader();
-		self::initialize();
 		self::initRoute();
 
 		self::$init = true;
@@ -74,7 +73,7 @@ final class App
 	private static function initMonolog(): void
 	{
 		$log = new MlLogger('BMVC');
-		$stream = new MlStreamHandler(Dir::app('/App/Logs/app.log'));
+		$stream = new MlStreamHandler(Dir::app('/Logs/app.log'));
 		$formatter = new MlLineFormatter(MlLineFormatter::SIMPLE_FORMAT, MlLineFormatter::SIMPLE_DATE);
 		$formatter->includeStacktraces(true);
 		$stream->setFormatter($formatter);
@@ -84,7 +83,7 @@ final class App
 
 	private static function initError(): void
 	{
-		if (config('general/log') == true) {		
+		if ($_ENV['LOG'] == true) {
 			self::$whoops->pushHandler(function ($exception, $inspector, $run) {
 				self::$log->error($exception);
 			});
@@ -95,6 +94,7 @@ final class App
 	{
 		$dotenv = Dotenv::createImmutable(Dir::app());
 		$dotenv->load();
+		self::$dotenv = $dotenv;
 	}
 	
 	private static function initSession(): void
@@ -118,11 +118,19 @@ final class App
 		@header("X-Powered-By: PHP/BMVC");
 	}
 
-	private static function init(array $array = []): void
+	private static function init(array $array = [])
 	{
+		# File Import
 		if (isset($array['files'])) {
 			foreach ($array['files'] as $file) {
 				require_once $file;
+			}
+		}
+
+		# Class Load
+		if (isset($array['init'])) {
+			foreach ($array['init'] as $init) {
+				new $init;
 			}
 		}
 
@@ -134,25 +142,26 @@ final class App
 			die("Cli Not Available, Browser Only.");
 		}
 
-		if (!defined('URL')) {
-			define("URL", base_url());
+		# URL
+		if ($_ENV['URL'] != null) {
+			define('URL', $_ENV['URL']);
+		} else {
+			define('URL', base_url());
 		}
 
-		if (is_string(config('general/timezone'))) {
-			define("TIMEZONE", config('general/timezone'));
-		}
-
-		if (is_string(config('general/environment'))) {
-			define("ENVIRONMENT", config('general/environment'));
-		}
-
-		if (!defined('TIMEZONE')) {
-			define("TIMEZONE", "Europe/Istanbul");
+		# TIMEZONE
+		if ($_ENV['TIMEZONE'] != null) {
+			define('TIMEZONE', $_ENV['TIMEZONE']);
+		} else {
+			define('TIMEZONE', 'Europe/Istanbul');
 		}
 		@date_default_timezone_set(TIMEZONE);
 
-		if (!defined('ENVIRONMENT')) {
-			define("ENVIRONMENT", "development");
+		# ENVIRONMENT
+		if ($_ENV['ENVIRONMENT'] != null) {
+			define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
+		} else {
+			define('ENVIRONMENT', 'development');
 		}
 		switch (ENVIRONMENT) {
 			case 'development':
@@ -168,34 +177,6 @@ final class App
 			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
 			echo 'The application environment is not set correctly.';
 			exit(1);
-		}
-	}
-
-	private static function initAutoLoader(): void
-	{
-		spl_autoload_register(function ($class) {
-			if ($class == 'index') return false;
-
-			$file = Dir::app('/App/Libraries/' . $class . '.php');
-			$file = @strtr($file, ['\\' => '/', '//' => '/']);
-
-			if (file_exists($file)) {
-				require_once $file;
-			}
-		});
-
-		array_map(function ($file) {
-			if ($file == Dir::app('/App/Helpers/index.php')) return false;
-			require_once $file;
-		}, glob(Dir::app("/App/Helpers/*.php")));
-	}
-
-	private static function initialize(): void
-	{
-		if (is_array(config('init')) && config('init') !== null) {
-			foreach (config('init') as $init) {
-				new $init;
-			}
 		}
 	}
 

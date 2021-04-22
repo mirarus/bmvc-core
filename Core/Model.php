@@ -8,13 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.6
+ * @version 3.8
  */
 
 namespace BMVC\Core;
 
 use Exception;
-use BMVC\Libs\{BasicDB, Dir};
 
 final class Model
 {
@@ -35,12 +34,12 @@ final class Model
 	/**
 	 * @return BasicDB
 	 */
-	public static function DB(): BasicDB
+	public static function DB()
 	{
-		$host = config('db/host');
-		$name = config('db/name');
-		$user = config('db/user');
-		$pass = config('db/pass');
+		$host = $_ENV['DB_HOST'];
+		$name = $_ENV['DB_NAME'];
+		$user = $_ENV['DB_USER'];
+		$pass = $_ENV['DB_PASS'];
 
 		return new BasicDB($host, $name, $user, $pass);
 	}
@@ -75,13 +74,13 @@ final class Model
 
 			$_nsm_ = ($namespace != null) ? implode('/', [$namespace, '_model_']) : '_model_';
 			
-			if (file_exists(Dir::app('/App/Http/Model/' . $_nsm_ . '.php'))) {
-				$_model_ = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm_));
+			$_model_ = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm_));
+			if (class_exists($_model_)) {
 				new $_model_();
 			}
 
-			$model  = ucfirst($model);
-			$_nsm   = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
+			$model = ucfirst($model);
+			$_nsm = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
 			$_model = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm));
 
 			if (is_array(self::$params) && !empty(self::$params)) {

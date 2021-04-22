@@ -1,17 +1,6 @@
 <?php
 
 /**
- * ROOT HELPERS
- *
- * Mirarus BMVC
- * @package BMVC
- * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
- * @link https://github.com/mirarus/bmvc
- * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.5
- */
-
-/**
  * @param  string|null $type
  * @param  string|null $dir
  * @return mixed
@@ -19,35 +8,6 @@
 function _dir_(string $type=null, string $dir=null)
 {
 	return BMVC\Libs\Dir::get($type, $dir);
-}
-
-/**
- * @param  mixed $par
- */
-function config($par=null)
-{
-	if ($par != null) {
-		require BMVC\Libs\Dir::app('/App/config.php'); 
-
-		if (is_array($par)) {
-			$keys = $par;
-		} elseif (strstr($par, '@')) {
-			$keys = explode('@', $par);
-		} elseif (strstr($par, '/')) {
-			$keys = explode('/', $par);
-		} else {
-			$keys = [$par];
-		}
-
-		if ($keys != null) {
-			foreach ($keys as $key) {
-				if (isset($_config[$key])) {
-					$_config = $_config[$key];
-				}
-			}
-			return $_config;
-		}
-	}
 }
 
 function get_404()

@@ -14,8 +14,6 @@
 namespace BMVC\Libs;
 
 use stdClass;
-use BMVC\Libs\Header;
-use BMVC\Libs\Filter;
 
 class Request
 {
