@@ -49,9 +49,8 @@ final class App
 		if (self::$init == true) {
 			return;
 		}
-		pr(__DIR__);
-
-	/*	self::initWhoops();
+		
+		self::initWhoops();
 		self::initMonolog();
 		self::initError();
 		self::initSession();
@@ -60,7 +59,7 @@ final class App
 		self::initAutoLoader();
 		self::initialize();
 		self::initRoute();
-*/
+
 		self::$init = true;
 	}
 
