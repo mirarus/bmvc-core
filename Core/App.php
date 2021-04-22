@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.9
+ * @version 5.0
  */
 
 namespace BMVC\Core;
@@ -41,14 +41,16 @@ final class App
 		'model'      => 'App\Model\\'
 	];
 
-	public function __construct(array $array = [])
+	public function __construct($data=[])
 	{
-		self::Run($array);
+		self::Run($data);
 	}
 
-	public static function Run(array $array = []): void
+	public static function Run($data=[]): void
 	{
 		if (self::$init == true) return;
+
+		@define('BMVC_START', microtime(true));
 
 		self::initWhoops();
 		self::initMonolog();
@@ -56,7 +58,8 @@ final class App
 		self::initError();
 		self::initSession();
 		self::initHeader();
-		self::init($array);
+		self::initDefine();
+		self::init($data);
 		self::initRoute();
 
 		self::$init = true;
@@ -84,7 +87,7 @@ final class App
 	private static function initDotenv(): void
 	{
 		$dotenv = Dotenv::createImmutable(Dir::app());
-		$dotenv->load();
+		$dotenv->safeLoad();
 		self::$dotenv = $dotenv;
 	}
 
@@ -118,30 +121,8 @@ final class App
 		@header("X-Powered-By: PHP/BMVC");
 	}
 
-	private static function init(array $array = [])
+	private static function initDefine(): void
 	{
-		# File Import
-		if (isset($array['files'])) {
-			foreach ($array['files'] as $file) {
-				require_once $file;
-			}
-		}
-
-		# Class Load
-		if (isset($array['init'])) {
-			foreach ($array['init'] as $init) {
-				new $init;
-			}
-		}
-
-		if (function_exists('mb_internal_encoding')) {
-			@mb_internal_encoding("UTF-8");
-		}
-
-		if (is_cli()) {
-			die("Cli Not Available, Browser Only.");
-		}
-
 		# URL
 		if (isset($_ENV['URL']) && $_ENV['URL'] != null) {
 			define('URL', $_ENV['URL']);
@@ -178,6 +159,42 @@ final class App
 			echo 'The application environment is not set correctly.';
 			exit(1);
 		}
+
+		# Load
+		if (defined('BMVC_START')) {
+			@define('BMVC_END', microtime(true));
+			@define('BMVC_LOAD', @number_format((BMVC_END - BMVC_START), 5));	
+		}
+	}
+
+	private static function init($data=[])
+	{
+		if (is_callable($data)) {
+			call_user_func($data);
+		} elseif (is_array($data)) {
+
+			# File Import
+			if (isset($data['files'])) {
+				foreach ($data['files'] as $file) {
+					require_once $file;
+				}
+			}
+
+			# Class Load
+			if (isset($data['init'])) {
+				foreach ($data['init'] as $init) {
+					new $init;
+				}
+			}
+		}
+
+		if (function_exists('mb_internal_encoding')) {
+			@mb_internal_encoding("UTF-8");
+		}
+
+		if (is_cli()) {
+			die("Cli Not Available, Browser Only.");
+		}
 	}
 
 	private static function initRoute()
@@ -195,6 +212,3 @@ final class App
 		}
 	}
 }
-
-define("BMVC_END", microtime(true));
-define("BMVC_LOAD", number_format((BMVC_END - BMVC_START), 5));
