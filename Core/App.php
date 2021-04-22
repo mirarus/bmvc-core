@@ -50,8 +50,6 @@ final class App
 	{
 		if (self::$init == true) return;
 
-		@define('BMVC_START', microtime(true));
-
 		self::initWhoops();
 		self::initMonolog();
 		self::initDotenv();
@@ -158,12 +156,6 @@ final class App
 			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
 			echo 'The application environment is not set correctly.';
 			exit(1);
-		}
-
-		# Load
-		if (defined('BMVC_START')) {
-			@define('BMVC_END', microtime(true));
-			@define('BMVC_LOAD', @number_format((BMVC_END - BMVC_START), 5));	
 		}
 	}
 

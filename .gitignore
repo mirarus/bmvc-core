@@ -1,6 +1,5 @@
 composer.phar
+composer.lock
+
 /vendor/
-
-# composer.lock
-
 /.github/
