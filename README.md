@@ -36,7 +36,7 @@ class Main {
 }
 
 Route::any('/', function () {
-	Controller::call('main@index');
+Controller::call('main@index');
 
 	MError::color("info")::print("Benchmark", "Memory Usage: " . Benchmark::memory());
 });
