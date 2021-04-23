@@ -54,11 +54,11 @@ function is_cli(): bool
 function base_url(): string
 {
 	$host = ((((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
-	$host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
-	$uri = $host . $_SERVER['REQUEST_URI'];
+	return $host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
+	/*$uri = $host . $_SERVER['REQUEST_URI'];
 	$segments = explode('?', $uri, 2);
 	$url = $segments[0];
-	return $url;
+	return $url;*/
 }
 
 /**
@@ -67,7 +67,7 @@ function base_url(): string
 function page_url()
 {
 	if (isset($_ENV['PATH'])) {
-		return trim(str_replace($_ENV['PATH'], null, $_SERVER['REQUEST_URI']), '/');
+		return trim(str_replace($_ENV['PATH'], null, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), '/');
 	} else {
 		if (isset($_GET['url'])) {
 			return trim($_GET['url'], '/');
