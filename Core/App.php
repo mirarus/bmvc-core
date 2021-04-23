@@ -184,7 +184,7 @@ final class App
 		@date_default_timezone_set(TIMEZONE);
 
 		# ENVIRONMENT
-		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) {
+		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null && in_array($_ENV['ENVIRONMENT'], ['development', 'testing', 'production'])) {
 			@define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
 		} else {
 			@define('ENVIRONMENT', 'development');

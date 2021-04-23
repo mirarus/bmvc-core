@@ -66,12 +66,16 @@ function base_url(): string
  */
 function page_url()
 {
-	if (isset($_GET['url'])) {
-		return trim($_GET['url'], '/');
-	} elseif (isset($_SERVER['PATH_INFO'])) {
-		return trim($_SERVER['PATH_INFO'], '/');
+	if (isset($_ENV['PATH'])) {
+		return trim(str_replace($_ENV['PATH'], null, $_SERVER['REQUEST_URI']), '/');
 	} else {
-		return null;
+		if (isset($_GET['url'])) {
+			return trim($_GET['url'], '/');
+		} elseif (isset($_SERVER['PATH_INFO'])) {
+			return trim($_SERVER['PATH_INFO'], '/');
+		} else {
+			return null;
+		}
 	}
 }
 
