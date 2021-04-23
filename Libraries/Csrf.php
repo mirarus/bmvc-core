@@ -141,7 +141,7 @@ class Csrf
 		$token->sessiontoken = base64_encode(random_bytes(32));
 		$token->cookietoken  = md5(base64_encode(random_bytes(32)));
 
-		setcookie(self::makeCookieName($page), $token->cookietoken, $token->expiry);
+		@setcookie(self::makeCookieName($page), $token->cookietoken, $token->expiry);
 
 		return $_SESSION['csrf_tokens'][$page] = $token;
 	}

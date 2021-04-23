@@ -240,7 +240,6 @@ final class App
 
 		$action = $route['action'];
 		$params = $route['params'];
-		$_url   = $route['_url'];
 
 		if (is_callable($action)) {
 			return call_user_func_array($action, array_values($params));

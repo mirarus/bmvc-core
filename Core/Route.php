@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.1
+ * @version 2.2
  */
 
 namespace BMVC\Core;
@@ -16,6 +16,7 @@ namespace BMVC\Core;
 use Exception;
 use Closure;
 use BMVC\Libs\{Request, MError};
+use function page_url;
 
 final class Route
 {
@@ -88,15 +89,14 @@ final class Route
 
 				$method = $route['method'];
 				$action = $route['callback'];
-				$url 	= $route['pattern'];
-				$ip 	= (isset($route['ip']) ? $route['ip'] : null);
-				$_url = isset($_GET['url']) ? $_GET['url'] : null;
+				$url 	  = $route['pattern'];
+				$ip 	  = (isset($route['ip']) ? $route['ip'] : null);
 
-				if (preg_match("#^{$url}$#", '/' . rtrim(@$_url, '/'), $params)) {
+				if (preg_match("#^{$url}$#", ('/' . page_url()), $params)) {
 
 					if ($method === @Request::getRequestMethod() && @Request::checkIp($ip)) {
 
-						if (strstr(@$_SERVER['REQUEST_URI'], '/Public/')) {
+						if (strstr(@Request::_server('REQUEST_URI'), '/Public/')) {
 							self::get_404();
 						}
 
@@ -108,7 +108,7 @@ final class Route
 							'action' => $action,
 							'params' => $params,
 							'url' => $url,
-							'_url' => $_url
+							'_url' => page_url()
 						];
 					}
 				}
@@ -382,7 +382,6 @@ final class Route
 	 */
 	public static function get_404()
 	{
-		http_response_code(404);
 		if (self::$notFound) {
 			if (is_callable(self::$notFound)) {
 				call_user_func(self::$notFound);
@@ -390,9 +389,8 @@ final class Route
 				Controller::call(self::$notFound);
 			}
 		} else {
-			MError::title('Page Error!')::print('404 Page Not Found!', (@Request::get('url') ? 'Page: ' . Request::get('url') : null) , false);
+			MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
 		}
-		exit();
 	}
 
 	/**

@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.5
+ * @version 2.6
  */
 
 namespace BMVC\Libs;
@@ -71,7 +71,7 @@ class MError
 	private static function reset(): void
 	{
 		self::$html = false;
-		self::$title = "System Error";
+		self::$title = "System Error!";
 		self::$color = self::$colors['primary'];
 	}
 
@@ -85,11 +85,8 @@ class MError
 	 * @param  int|integer  $response_code
 	 */
 	private static function template($text, $message, bool $html=false, $title=null, string $color=null, bool $stop=false, int $response_code=200): void
-	{		
+	{
 		http_response_code($response_code);
-		if (function_exists('mb_internal_encoding')) {
-			mb_internal_encoding("UTF-8");
-		}
 		echo $html == true ? '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>' . $title . '</title></head><body>' : null;
 		echo '<div style="padding: 15px; border-left: 5px solid rgb(' . $color . ' / 80%); border-top: 5px solid rgb(' . $color . ' / 60%); background: #f8f8f8; margin-bottom: 10px; border-radius: 5px 5px 0 3px;">';
 		echo isset($text) && !empty($text) ? '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Helvetica Neue\', Arial, sans-serif; font-size: 16px; font-weight: 500; color: black;">' . $text . "</div>" : null;
@@ -121,7 +118,7 @@ class MError
 		}
 
 		if ((self::$html == true ? self::$html : $html) == true) {
-			$title = isset(self::$title) ? self::$title : $title;
+			$title = isset($title) ? $title : self::$title;
 		}
 
 		$stop = isset(self::$stop) ? self::$stop : $stop;

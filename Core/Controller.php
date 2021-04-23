@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.3
+ * @version 4.4
  */
 
 namespace BMVC\Core;
@@ -82,10 +82,10 @@ final class Controller
 
 	/**
 	 * @param mixed       $action
-	 * @param array       $params
+	 * @param array|null  $params
 	 * @param object|null &$return
 	 */
-	public static function call($action, array $params=[], object &$return=null)
+	public static function call($action, array $params=null, object &$return=null)
 	{
 		$method     = null;
 		$controller = null;
