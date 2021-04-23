@@ -54,11 +54,8 @@ function is_cli(): bool
 function base_url(): string
 {
 	$host = ((((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
-	return $host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
-	/*$uri = $host . $_SERVER['REQUEST_URI'];
-	$segments = explode('?', $uri, 2);
-	$url = $segments[0];
-	return $url;*/
+	$host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
+	return $host;
 }
 
 /**
@@ -67,15 +64,13 @@ function base_url(): string
 function page_url()
 {
 	if (isset($_ENV['PATH'])) {
-		return trim(str_replace($_ENV['PATH'], null, parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)), '/');
+		return trim(str_replace($_ENV['PATH'], null, trim($_SERVER['REQUEST_URI'])), '/');
+	} elseif (isset($_GET['url'])) {
+		return trim($_GET['url'], '/');
+	} elseif (isset($_SERVER['PATH_INFO'])) {
+		return trim($_SERVER['PATH_INFO'], '/');
 	} else {
-		if (isset($_GET['url'])) {
-			return trim($_GET['url'], '/');
-		} elseif (isset($_SERVER['PATH_INFO'])) {
-			return trim($_SERVER['PATH_INFO'], '/');
-		} else {
-			return null;
-		}
+		return null;
 	}
 }
 
