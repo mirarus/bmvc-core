@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.1
+ * @version 1.2
  */
 
 namespace BMVC\Libs;
@@ -92,9 +92,13 @@ class Benchmark
 	/**
 	 * @return string
 	 */
-	public static function memory(): string
+	public static function memory($text=false): string
 	{
-		return round(memory_get_usage() / 1024, 2) . " KB";
+		if ($text) {
+			return "Memory Usage: " . round(memory_get_usage() / 1024, 2) . " KB";
+		} else {
+			return round(memory_get_usage() / 1024, 2) . " KB";
+		}
 	}
 
 	/**
