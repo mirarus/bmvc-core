@@ -41,7 +41,11 @@ Install using composer:
 		MError::color("info")::print("Benchmark", "Memory Usage: " . Benchmark::memory());
 	});
 
-	App::Run();
+	App::Run([
+	'init' => [
+	//BMVC\Core\Model::class
+	]
+]);
 ?>
 ```
 
