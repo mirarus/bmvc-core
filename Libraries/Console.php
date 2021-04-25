@@ -22,13 +22,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Console extends SymfonyApplication
 {
 
-	public function __construct()
+	public function __construct($dir=null)
 	{
 		parent::__construct('BMVC', '@Beta');
 		$this->setAutoExit(false);
 
-		$this->add(new CommandServerStart());
-		$this->add(new CommandServerStop());
+		$this->add(new CommandServerStart($dir));
+	//	$this->add(new CommandServerStop());
 		$this->add(new CommandMakeController());
 		$this->add(new CommandMakeModel());
 		$this->add(new CommandClearLog());
@@ -39,6 +39,14 @@ class Console extends SymfonyApplication
 
 class CommandServerStart extends SymfonyCommand
 {
+
+	private $dir;
+
+	public function __construct($dir=null)
+	{
+		parent::__construct();
+		$this->dir = $dir;
+	}
 
 	protected function configure()
 	{
@@ -53,9 +61,9 @@ class CommandServerStart extends SymfonyCommand
 		$host = "127.0.0.1:8686";
 		$url = "http://$host";
 
-		$this->_kill("php");
+		//$this->_kill("php");
 
-		$this->_exec("php -S $host ../test.php");
+		$this->_exec("php -S $host " . ($this->dir ? $this->dir : "../Run.php"));
 		$this->_exec("start $url");
 
 		$output->writeln([
