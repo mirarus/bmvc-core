@@ -29,6 +29,7 @@ final class App
 	 */
 	private static $init = false;
 	
+	public static $run_file;
 	public static $whoops;
 	public static $log;
 	public static $dotenv;
@@ -49,6 +50,10 @@ final class App
 	public static function Run($data=[]): void
 	{
 		if (self::$init == true) return;
+
+		if (isset($_SERVER['SCRIPT_FILENAME'])) {
+			self::$run_file = $_SERVER['SCRIPT_FILENAME'];
+		}
 
 		self::initWhoops();
 		self::initMonolog();
