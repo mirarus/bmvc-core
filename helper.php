@@ -159,6 +159,6 @@ function _lang(string $text, $replace=null, bool $return=true)
 }
 
 array_map(function ($file) {
-	if ($file == _dir_('base') . '/Helpers/index.php') return false;
+	if ($file == BMVC\Libs\Dir::base('/Helpers/index.php')) return false;
 	require_once $file;
-}, glob(_dir_('base') . "/Helpers/*.php"));
+}, glob(BMVC\Libs\Dir::base("/Helpers/*.php")));

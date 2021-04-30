@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.5
+ * @version 1.6
  */
 
 namespace BMVC\Libs;
@@ -17,8 +17,8 @@ class Session
 {
 
 	/**
-	 * @param mixed $storage
-	 * @param mixed $content
+	 * @param  mixed $storage
+	 * @param  mixed $content
 	 * @return array
 	 */
 	public static function set($storage, $content=null): array
@@ -86,16 +86,8 @@ class Session
 		}
 	}
 
-	public static function destroy()
+	public static function destroy(): void
 	{
 		session_destroy();
-	}
-
-	private static function generateHash()
-	{
-		if (Request::getIp() && Request::getUserAgent()) {
-			return md5(sha1(md5(Request::getIp() . 'u2LMq1h4oUV0ohL9svqedoB5LebiIE4z' . Request::getUserAgent())));
-		}
-		return md5(sha1(md5('u2LMq1h4oUV0ohL9svqedoB5LebiIE4z')));
 	}
 }
