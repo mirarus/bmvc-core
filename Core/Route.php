@@ -69,6 +69,7 @@ final class Route
 
 		'{all}'       => '(.*)',
 		'{num}'       => '([0-9]+)',
+		'{id}'        => '([0-9]+)',
 		'{alpha}'	    => '([a-zA-Z]+)',
 		'{alpnum}'    => '([a-zA-Z0-9_-]+)',
 		'{lowercase}' => '([a-z]+)',
