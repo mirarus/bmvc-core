@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.5
+ * @version 4.6
  */
 
 namespace BMVC\Core;
 
-use Exception;
+use BadMethodCallException;
 
 final class Controller
 {	
@@ -122,7 +122,7 @@ final class Controller
 			} else {
 				$controller = ucfirst($controller);
 				$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
-				throw new Exception('Controller Method Not Found! | Controller: ' . $_nsc . ' - Method: ' . $method);
+				throw new BadMethodCallException('Controller Method Not Found! | Controller: ' . $_nsc . ' - Method: ' . $method);
 			}
 		}
 	}

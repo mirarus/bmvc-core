@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.0
+ * @version 4.1
  */
 
 namespace BMVC\Core;
 
-use Exception;
+use BadMethodCallException;
 use BMVC\Libs\BasicDB;
 
 final class Model
@@ -147,7 +147,7 @@ final class Model
 			} else {
 				$model = ucfirst($model);
 				$_nsm  = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
-				throw new Exception('Model Method Not Found! | Model: ' . $_nsm . ' - Method: ' . $method);
+				throw new BadMethodCallException('Model Method Not Found! | Model: ' . $_nsm . ' - Method: ' . $method);
 			}
 		}
 	}
