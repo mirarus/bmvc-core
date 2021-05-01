@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.3
+ * @version 2.4
  */
 
 namespace BMVC\Core;
@@ -332,7 +332,7 @@ final class Route
 	 * @param  array  $params
 	 * @return string
 	 */
-	public static function getUrl(string $name, array $params=[]): string
+	public static function url(string $name, array $params=[]): string
 	{
 		foreach (self::$routes as $route) {
 			if (array_key_exists('name', $route) && $route['name'] == $name) {
@@ -348,7 +348,7 @@ final class Route
 	/**
 	 * @return array
 	 */
-	public static function getRoutes(): array
+	public static function routes(): array
 	{
 		return self::$routes;
 	}
