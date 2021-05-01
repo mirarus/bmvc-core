@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.5
+ * @version 2.6
  */
 
 namespace BMVC\Core;
@@ -154,15 +154,19 @@ final class Route
 		} elseif (stripos($callback, ':') !== false) {
 			$closure = $callback;
 		}
-		$route_ = [
-			'method'   => $method,
-			'pattern'  => $pattern,
-			'callback' => @$closure
-		];
-		if (self::$ip) {
-			$route_['ip'] = self::$ip;
+
+		if ($closure) {
+			$route_ = [
+				'method'   => $method,
+				'pattern'  => $pattern,
+				'callback' => @$closure
+			];
+
+			if (self::$ip) {
+				$route_['ip'] = self::$ip;
+			}
+			self::$routes[] = $route_;
 		}
-		self::$routes[] = $route_;
 	}
 
 	/**
