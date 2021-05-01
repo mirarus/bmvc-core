@@ -80,7 +80,7 @@ final class Route
 	 */
 	public static function Run(&$return=null)
 	{
-		$routes = Route::getRoutes();
+		$routes = self::routes();
 
 		if (isset($routes) && !empty($routes) && is_array($routes)) {
 			$match = 0;
