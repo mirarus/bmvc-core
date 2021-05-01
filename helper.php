@@ -55,7 +55,10 @@ function base_url(): string
 {
 	$host = ((((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
 	$host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
-	return $host;
+
+	$url = $host . dirname($_SERVER['PHP_SELF']);
+	$url = @str_replace(['Public', 'public'], null, $url);
+	return $url;
 }
 
 /**
@@ -72,15 +75,6 @@ function page_url()
 	} else {
 		return null;
 	}
-}
-
-/**
- * @return string
- */
-function _url() {
-	$url = base_url() . dirname($_SERVER['PHP_SELF']);
-	$url = @str_replace(['Public', 'public'], null, $url);
-	return $url;
 }
 
 /**
