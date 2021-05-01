@@ -56,8 +56,8 @@ final class View
 
 		if (($namespace === null || $namespace !== null) && $view != null) {
 
-			$_nsv     = ($namespace != null) ? implode('/', [$namespace, $view]) : $view;
-			$cacheDir = Dir::app($viewDir . $namespace . '/Cache');
+			$_nsv     = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : $view;
+			$cacheDir = Dir::app($viewDir . $namespace . DIRECTORY_SEPARATOR . 'Cache');
 
 			if ($engine == 'php') {
 
@@ -128,11 +128,13 @@ final class View
 
 			if ($layout == true) {
 
-				if (file_exists($file = Dir::app($viewDir . $namespace . '/Layout/Main.php'))) {
+				$_file = ($namespace . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+
+				if (file_exists($file = Dir::app($viewDir . $_file))) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
 					require_once $file;
 				} else {
-					throw new Exception('Layout File Found! | File: ' . $namespace . '/Layout/Main.php');
+					throw new Exception('Layout File Found! | File: ' . $_file);
 				}
 			} else {
 				echo self::import([$namespace, $view], $data, $engine, $return);
