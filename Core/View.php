@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.1
+ * @version 4.2
  */
 
 namespace BMVC\Core;
@@ -59,15 +59,14 @@ final class View
 			$_nsv     = ($namespace != null) ? implode('/', [$namespace, $view]) : $view;
 			$cacheDir = Dir::app($viewDir . $namespace . '/Cache');
 
-			if (!_is_dir($cacheDir)) {
-				@mkdir($cacheDir);
-			}
-
 			if ($engine == 'php') {
 
 				if (file_exists($file = Dir::app($viewDir . $_nsv . '.php'))) {
 
 					if ($_ENV['VIEW_CACHE'] == true) {
+						if (!_is_dir($cacheDir)) {
+							@mkdir($cacheDir);
+						}
 						$file = self::cache($_nsv, $file, $cacheDir);
 					}
 
@@ -80,7 +79,9 @@ final class View
 					throw new Exception('View File Found! | File: ' . $_nsv . '.php');
 				}
 			} elseif ($engine == 'blade') {
-
+				if (!_is_dir($cacheDir)) {
+					@mkdir($cacheDir);
+				}
 				if (file_exists($file = Dir::app($viewDir . $_nsv . '.blade.php'))) {
 					$blade = new \Jenssegers\Blade\Blade(Dir::app($viewDir . $namespace, $cacheDir));
 					return $blade->make($view, $data)->render();
