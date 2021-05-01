@@ -75,13 +75,22 @@ function page_url()
 }
 
 /**
- * @param  mixed        $text
- * @param  mixed        $message
- * @param  bool|boolean $html
- * @param  mixed       $title
- * @param  string|null  $color
- * @param  bool|boolean $stop
- * @param  int|integer  $response_code
+ * @return string
+ */
+function _url() {
+	$url = base_url() . dirname($_SERVER['PHP_SELF']);
+	$url = @str_replace(['Public', 'public'], null, $url);
+	return $url;
+}
+
+/**
+ * @param mixed        $text
+ * @param mixed        $message
+ * @param bool|boolean $html
+ * @param mixed        $title
+ * @param string|null  $color
+ * @param bool|boolean $stop
+ * @param int|integer  $response_code
  */
 function ep($text, $message, bool $html=false, $title=null, string $color=null, bool $stop=false, int $response_code=200)
 {
