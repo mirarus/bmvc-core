@@ -23,7 +23,6 @@
 	"autoload": {
 		"psr-4": {
 			"BMVC\\": ".",
-			"BMVC\\Core\\": "Core",
 			"BMVC\\Libs\\": "Libraries"
 		},
 		"files": [
