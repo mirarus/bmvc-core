@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.4
+ * @version 1.5
  */
 
 namespace BMVC\Libs;
@@ -34,12 +34,7 @@ use Exception;
 class BasicDB extends PDO
 {
 
-	protected $dbc,
-	$dbhost,
-	$dbname,
-	$dbuser,
-	$dbpass;
-	private $dbName,
+	private
 	$type,
 	$sql,
 	$unionSql,
@@ -62,13 +57,14 @@ class BasicDB extends PDO
 	public $paginationItem = '<li class="[active]"><a href="[url]">[text]</a></li>';
 	public $reference = ['NOW()'];
 
-	public function __construct($host, $dbname, $user, $pass=null, $charset='utf8')
+	public function __construct(...$args)
 	{
+		$charset = 'utf8';
+		$arg = $args;
 		try {
-			parent::__construct('mysql:host=' . $host . ';dbname=' . $dbname . ';charset=utf8', $user, $pass);
-			$this->dbName = $dbname;
-			$this->query('SET CHARACTER SET '.$charset);
-			$this->query('SET NAMES '.$charset);
+			call_user_func_array(array('parent', __FUNCTION__), $args);
+			$this->query('SET CHARACTER SET ' . $charset);
+			$this->query('SET NAMES ' . $charset);
 			$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			$this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		} catch (PDOException $e) {
@@ -593,15 +589,14 @@ class BasicDB extends PDO
 	 */
 	public function truncate(string $tableName)
 	{
-		return $this->query('TRUNCATE TABLE ' . $this->dbName . '.' . $tableName);
+		return $this->query('TRUNCATE TABLE ' . $tableName);
 	}
 
 	/**
-	 * @param  array  $dbs
+	 * @param array $dbs
 	 */
 	public function truncateAll(array $dbs=[])
 	{
-		if (count($dbs) == 0) $dbs[] = $this->dbName;
 		$query = $this->from('INFORMATION_SCHEMA.TABLES')
 		->select('CONCAT("TRUNCATE TABLE `", table_schema, "`.`", TABLE_NAME, "`;") as query, TABLE_NAME as tableName')
 		->in('table_schema', implode(',', $dbs))
