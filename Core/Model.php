@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.2
+ * @version 4.3
  */
 
 namespace BMVC\Core;
@@ -37,29 +37,22 @@ final class Model
 	 */
 	public static function DB()
 	{
-		App::$dotenv->required(['DB_ENGINE'])->notEmpty();
+		App::$dotenv->required('DB_DSN')->notEmpty();
 
-		$engine = $_ENV['DB_ENGINE'];
+		$dsn = $_ENV['DB_DSN'];
 
-		if ($engine == 'mysql') {
+		if (@strstr($dsn, 'mysql:')) {
 
-			App::$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS']);
-			App::$dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER'])->notEmpty();
+			App::$dotenv->required(['DB_MYSQL_USER', 'DB_MYSQL_PASS']);
+			App::$dotenv->required('DB_MYSQL_USER')->notEmpty();
 
-			$host = $_ENV['DB_HOST'];
-			$name = $_ENV['DB_NAME'];
-			$user = $_ENV['DB_USER'];
-			$pass = $_ENV['DB_PASS'];
+			$user = $_ENV['DB_MYSQL_USER'];
+			$pass = $_ENV['DB_MYSQL_PASS'];
 
-			return new BasicDB('mysql:host=' . $host . ';dbname=' . $name . ';charset=utf8', $user, $pass);
+			return new BasicDB($dsn, $user, $pass);
+		} elseif (@strstr($dsn, 'sqlite:')) {
 
-		} elseif ($engine == 'sqlite') {
-
-			App::$dotenv->required(['DB_SQLITE'])->notEmpty();
-
-			$sqlite = $_ENV['DB_SQLITE'];
-
-			return new BasicDB('sqlite:' . $sqlite);
+			return new BasicDB($dsn);
 		}
 	}
 
