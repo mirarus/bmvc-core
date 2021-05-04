@@ -51,7 +51,7 @@ function is_cli(): bool
 /**
  * @return string
  */
-function base_url(): string
+function xbase_urlx(): string
 {
 	$host = ((((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
 	$host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
@@ -59,6 +59,40 @@ function base_url(): string
 	$url = $host . dirname($_SERVER['PHP_SELF']);
 	$url = @str_replace(['Public', 'public'], null, $url);
 	return $url;
+}
+
+/**
+ * @param  string|null  $url
+ * @param  bool|boolean $atRoot
+ * @param  bool|boolean $atCore
+ * @param  bool|boolean $parse
+ * @return string
+ */
+function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool $parse=false): string
+{
+	if (isset($_SERVER['HTTP_HOST'])) {
+		$http = (((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http');
+		$hostname = $_SERVER['HTTP_HOST'];
+		$dir  = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
+		$core = preg_split('@/@', str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath(dirname(__FILE__))), NULL, PREG_SPLIT_NO_EMPTY);
+		$core = $core[0];
+		$tmplt = $atRoot ? ($atCore ? "%s://%s/%s/" : "%s://%s/") : ($atCore ? "%s://%s/%s/" : "%s://%s%s");
+		$end = $atRoot ? ($atCore ? $core : $hostname) : ($atCore ? $core : $dir);
+		$base_url = sprintf($tmplt, $http, $hostname, $end);
+	} else {
+		$base_url = 'http://localhost/';
+	}
+
+	if ($parse) {
+		$base_url = parse_url($base_url);
+		if (isset($base_url['path'])) if ($base_url['path'] == '/') $base_url['path'] = '';
+	}
+
+	$base_url = rtrim($base_url, '/');
+	if (!empty($url)) {
+		$base_url .= $url;
+	}
+	return $base_url;
 }
 
 /**

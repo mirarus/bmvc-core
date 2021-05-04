@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.1
+ * @version 5.2
  */
 
 namespace BMVC\Core;
@@ -173,12 +173,7 @@ final class App
 
 	private static function initDefine(): void
 	{
-		# URL
-		if (isset($_ENV['URL']) && $_ENV['URL'] != null) {
-			@define('URL', $_ENV['URL']);
-		} else {
-			@define('URL', base_url());
-		}
+		@define('URL', base_url());
 
 		# TIMEZONE
 		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
