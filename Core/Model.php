@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.3
+ * @version 4.4
  */
 
 namespace BMVC\Core;
@@ -43,11 +43,11 @@ final class Model
 
 		if (@strstr($dsn, 'mysql:')) {
 
-			App::$dotenv->required(['DB_MYSQL_USER', 'DB_MYSQL_PASS']);
-			App::$dotenv->required('DB_MYSQL_USER')->notEmpty();
+			App::$dotenv->required(['DB_USER', 'DB_PASS']);
+			App::$dotenv->required('DB_USER')->notEmpty();
 
-			$user = $_ENV['DB_MYSQL_USER'];
-			$pass = $_ENV['DB_MYSQL_PASS'];
+			$user = $_ENV['DB_USER'];
+			$pass = $_ENV['DB_PASS'];
 
 			return new BasicDB($dsn, $user, $pass);
 		} elseif (@strstr($dsn, 'sqlite:')) {
