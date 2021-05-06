@@ -75,8 +75,8 @@ final class View
 					$ob_content = ob_get_contents();
 					ob_end_clean();
 
-					if (isset($data['title'])) {
-						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['title']) ? '$2' : $data['title'] . ' | $2') . '$3', $ob_content);
+					if (isset($data['page_title'])) {
+						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
 					}
 
 					return $return = $ob_content;
@@ -144,8 +144,8 @@ final class View
 					$ob_content = ob_get_contents();
 					ob_end_clean();
 
-					if (isset($data['title'])) {
-						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['title']) ? '$2' : $data['title'] . ' | $2') . '$3', $ob_content);
+					if (isset($data['page_title'])) {
+						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
 					}
 
 					echo $return = $ob_content;
