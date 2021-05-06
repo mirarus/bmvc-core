@@ -92,6 +92,7 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 	if (!empty($url)) {
 		$base_url .= $url;
 	}
+	$base_url = @str_replace(['/Public', '/public'], null, $base_url);
 	return $base_url;
 }
 
