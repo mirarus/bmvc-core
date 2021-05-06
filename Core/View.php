@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.2
+ * @version 4.3
  */
 
 namespace BMVC\Core;
@@ -74,6 +74,11 @@ final class View
 					require_once $file;
 					$ob_content = ob_get_contents();
 					ob_end_clean();
+
+					if (isset($data['title'])) {
+						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['title']) ? '$2' : $data['title'] . ' | $2') . '$3', $ob_content);
+					}
+
 					return $return = $ob_content;
 				} else {
 					throw new Exception('View File Found! | File: ' . $_nsv . '.php');
@@ -132,7 +137,18 @@ final class View
 
 				if (file_exists($file = Dir::app($viewDir . $_file))) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
+					# require_once $file;
+
+					ob_start();
 					require_once $file;
+					$ob_content = ob_get_contents();
+					ob_end_clean();
+
+					if (isset($data['title'])) {
+						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['title']) ? '$2' : $data['title'] . ' | $2') . '$3', $ob_content);
+					}
+
+					echo $return = $ob_content;
 				} else {
 					throw new Exception('Layout File Found! | File: ' . $_file);
 				}
