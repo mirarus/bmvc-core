@@ -119,19 +119,19 @@ function em($data)
 }
 
 /**
- * @param  string|null  $url
- * @param  bool|boolean $return
+ * @param string|null  $url
+ * @param bool|boolean $return
  */
-function url(string $url=null, bool $return=true)
+function url(string $url=null, bool $return=false)
 {
 	if ($url) {
-		if ($return == true) {
+		if ($return == false) {
 			return URL . $url;
 		} else {
 			echo URL . $url;
 		}
 	} else {
-		if ($return == true) {
+		if ($return == false) {
 			return URL;
 		} else {
 			echo URL;
@@ -140,9 +140,9 @@ function url(string $url=null, bool $return=true)
 }
 
 /**
- * @param  string       $par
- * @param  int|integer  $time
- * @param  bool|boolean $stop
+ * @param string       $par
+ * @param int|integer  $time
+ * @param bool|boolean $stop
  */
 function redirect(string $par, int $time=0, bool $stop=true)
 {
@@ -157,9 +157,9 @@ function redirect(string $par, int $time=0, bool $stop=true)
 }
 
 /**
- * @param  string       $par
- * @param  int|integer  $time
- * @param  bool|boolean $stop
+ * @param string       $par
+ * @param int|integer  $time
+ * @param bool|boolean $stop
  */
 function refresh(string $par, int $time=0, bool $stop=true)
 {
@@ -174,7 +174,7 @@ function refresh(string $par, int $time=0, bool $stop=true)
 }
 
 /**
- * @param string|null $url
+ * @param  string|null $url
  * @return bool
  */
 function PageCheck(string $url=null): bool
@@ -202,8 +202,8 @@ function vd(string $data=null)
 }
 
 /**
- * @param  string       $url
- * @param  bool|boolean $return
+ * @param string       $url
+ * @param bool|boolean $return
  */
 function ct(string $url, bool $return=true)
 {
