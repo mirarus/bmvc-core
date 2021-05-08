@@ -479,10 +479,7 @@ class Request
 		return true;
 	}
 
-	/**
-	 * @return array
-	 */
-	public static function inputToPost(): array
+	public static function inputToPost()
 	{
 		$_POST = objectToArray(json_decode(file_get_contents('php://input')));
 	}
