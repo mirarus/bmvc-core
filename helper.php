@@ -201,3 +201,36 @@ array_map(function ($file) {
 	if ($file == BMVC\Libs\Dir::base('/Helpers/index.php')) return false;
 	require_once $file;
 }, glob(BMVC\Libs\Dir::base("/Helpers/*.php")));
+
+
+/**
+ * @param  array  $array
+ * @return object
+ */
+function arrayToObject(array $array): object
+{
+	$object = new stdClass();
+	foreach ($array as $key => $value) {
+		if (is_array($value)) {
+			$value = arrayToObject($value);
+		}
+		$object->$key = $value;
+	}
+	return $object;
+}
+
+/**
+ * @param  object $object
+ * @return array
+ */
+function objectToArray(object $object): array
+{
+	$array = [];
+	foreach ($object as $key => $value) {
+		if (is_object($value)) {
+			$value = objectToArray($value);
+		}
+		$array[$key] = $value;
+	}
+	return $array;
+}

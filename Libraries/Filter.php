@@ -8,10 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.3
+ * @version 1.4
  */
 
 namespace BMVC\Libs;
+
+use stdClass;
 
 class Filter
 {
@@ -47,7 +49,7 @@ class Filter
 	{
 		if (isset($string) && $string != '') {
 
-			$object = new \stdClass();
+			$object = new stdClass();
 			$object->string = $string;
 			$object->filters = [
 				'strip_tags' => [], 
