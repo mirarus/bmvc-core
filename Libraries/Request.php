@@ -480,6 +480,14 @@ class Request
 	}
 
 	/**
+	 * @return array
+	 */
+	public static function inputToPost(): array
+	{
+		$_POST = objectToArray(json_decode(file_get_contents('php://input')));
+	}
+
+	/**
 	 * @param  string|null  $data
 	 * @param  bool|boolean $db_filter
 	 * @param  bool|boolean $xss_filter
