@@ -207,34 +207,34 @@ array_map(function ($file) {
  * @param  array  $array
  * @return object
  */
-function arrayToObject(array $array): object
+function arrayToObject($array): object
 {
-	if (is_object($array)) {
-		$object = new stdClass();
+	$object = new stdClass();
+	if (is_array($array)) {
 		foreach ($array as $key => $value) {
 			if (is_array($value)) {
 				$value = arrayToObject($value);
 			}
 			$object->$key = $value;
 		}
-		return $object;
 	}
+	return $object;
 }
 
 /**
  * @param  object $object
  * @return array
  */
-function objectToArray(object $object): array
+function objectToArray($object): array
 {
+	$array = [];
 	if (is_object($object)) {
-		$array = [];
 		foreach ($object as $key => $value) {
 			if (is_object($value)) {
 				$value = objectToArray($value);
 			}
 			$array[$key] = $value;
 		}
-		return $array;
 	}
+	return $array;
 }
