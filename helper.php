@@ -209,14 +209,16 @@ array_map(function ($file) {
  */
 function arrayToObject(array $array): object
 {
-	$object = new stdClass();
-	foreach ($array as $key => $value) {
-		if (is_array($value)) {
-			$value = arrayToObject($value);
+	if (is_object($array)) {
+		$object = new stdClass();
+		foreach ($array as $key => $value) {
+			if (is_array($value)) {
+				$value = arrayToObject($value);
+			}
+			$object->$key = $value;
 		}
-		$object->$key = $value;
+		return $object;
 	}
-	return $object;
 }
 
 /**
@@ -225,12 +227,14 @@ function arrayToObject(array $array): object
  */
 function objectToArray(object $object): array
 {
-	$array = [];
-	foreach ($object as $key => $value) {
-		if (is_object($value)) {
-			$value = objectToArray($value);
+	if (is_object($object)) {
+		$array = [];
+		foreach ($object as $key => $value) {
+			if (is_object($value)) {
+				$value = objectToArray($value);
+			}
+			$array[$key] = $value;
 		}
-		$array[$key] = $value;
+		return $array;
 	}
-	return $array;
 }

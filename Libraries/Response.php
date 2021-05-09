@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.3
+ * @version 1.4
  */
 
 namespace BMVC\Libs;
@@ -101,16 +101,16 @@ class Response
 	}
 
 	/**
-	 * @param  mixed       $data
-	 * @param  int|integer $code
-	 * @return mixed
+	 * @param  mixed        $data
+	 * @param  bool|boolean $status
+	 * @param  int|integer  $code
 	 */
-	public static function json($data=null, int $code=200)
+	public static function json($data=null, bool $status=true, int $code=200)
 	{
 		self::setStatusCode($code);
 		header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
 		header('Content-type: application/json');
 		header('Status: ' . self::$statusCodes[$code]);
-		return json_encode(['status' => $code < 300, 'message' => $data]);
+		return json_encode(['status' => $status, 'message' => $data]);
 	}
 }
