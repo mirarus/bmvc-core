@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.6
+ * @version 1.7
  */
 
 namespace BMVC\Libs;
@@ -19,9 +19,8 @@ class Session
 	/**
 	 * @param  mixed $storage
 	 * @param  mixed $content
-	 * @return array
 	 */
-	public static function set($storage, $content=null): array
+	public static function set($storage, $content=null)
 	{
 		if (is_array($storage)) {
 			foreach ($storage as $key => $value) {
@@ -42,7 +41,6 @@ class Session
 		if (is_null($storage)) {
 			return $_SESSION;
 		}
-		
 		return self::has($storage, $child);
 	}
 
