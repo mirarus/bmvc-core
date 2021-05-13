@@ -102,8 +102,8 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
  */
 function page_url()
 {
-	if (isset($_ENV['PATH'])) {
-		return trim(str_replace($_ENV['PATH'], null, trim($_SERVER['REQUEST_URI'])), '/');
+	if (isset($_ENV['DIR'])) {
+		return trim(str_replace($_ENV['DIR'], null, trim($_SERVER['REQUEST_URI'])), '/');
 	} elseif (isset($_GET['url'])) {
 		return trim($_GET['url'], '/');
 	} elseif (isset($_SERVER['PATH_INFO'])) {

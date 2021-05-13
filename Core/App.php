@@ -147,8 +147,8 @@ final class App
 	{
 		# Default Black List
 		self::$whoops_blacklist = array_merge(self::$whoops_blacklist, [
-			'_SERVER' => ['PATH', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS'],
-			'_ENV' => ['PATH', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS']
+			'_SERVER' => ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS'],
+			'_ENV' => ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS']
 		]);
 		# Config Black List
 		if (isset($data['whoops_blacklist'])) {
