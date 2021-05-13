@@ -274,6 +274,17 @@ function unique_key(int $int=10)
 }
 
 /**
+ * @param mixed $text
+ */
+function replace_tr($text)
+{
+	$text = trim($text);
+	$search = array('Ç', 'ç', 'Ğ', 'ğ', 'ı', 'İ', 'Ö', 'ö', 'Ş', 'ş', 'Ü', 'ü');
+	$replace = array('C', 'c', 'G', 'g', 'i', 'I', 'O', 'o', 'S', 's', 'U', 'u');
+	return str_replace($search, $replace, $text);
+}
+
+/**
  * @param string $str
  */
 function c_mb_strtoupper(string $str) {
