@@ -158,6 +158,7 @@ class Lang
 				if (isset($_lang[$text])) {
 					return $_lang[$text];
 				} else {
+					$text = ucfirst(str_replace(['-', '_'], ' ', $text));
 					return $text;
 				}
 			} else {
