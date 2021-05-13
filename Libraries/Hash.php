@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.2
+ * @version 1.3
  */
 
 namespace BMVC\Libs;
@@ -21,7 +21,7 @@ class Hash
 	/**
 	 * @var integer
 	 */
-	private static $cost = 10;
+	private static $cost = 12;
 
 	/**
 	 * @param string $value
