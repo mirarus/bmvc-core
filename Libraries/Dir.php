@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.0
+ * @version 1.1
  */
 
 namespace BMVC\Libs;
@@ -63,5 +63,30 @@ class Dir
 				'app' => self::app($dir)
 			];
 		}
+	}
+
+	/**
+	 * @param  string      $dir
+	 * @param  string|null $type
+	 * @return boolean
+	 */
+	public static function check(string $dir, string $type=null): bool
+	{
+		return self::is_dir($dir, $type);
+	}
+
+	/**
+	 * @param  string      $dir
+	 * @param  string|null $type
+	 * @return boolean
+	 */
+	public static function is_dir(string $dir, string $type=null): bool
+	{
+		if ($type == 'app') {
+			$dir = Dir::app($dir);
+		} elseif ($type == 'base') {
+			$dir = Dir::base($dir);
+		}
+		return (is_dir($dir) && opendir($dir));
 	}
 }

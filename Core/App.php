@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.2
+ * @version 5.3
  */
 
 namespace BMVC\Core;
@@ -37,6 +37,19 @@ final class App
 	/**
 	 * @var array
 	 */
+	private static $whoops_blacklist = [
+		'_GET' => [],
+		'_POST' => [],
+		'_FILES' => [],
+		'_COOKIE' => [],
+		'_SESSION' => [],
+		'_SERVER' => [],
+		'_ENV' => []
+	];
+
+	/**
+	 * @var array
+	 */
 	public static $namespaces = [
 		'controller' => null,
 		'model'      => null
@@ -55,7 +68,7 @@ final class App
 			self::$run_file = $_SERVER['SCRIPT_FILENAME'];
 		}
 
-		self::initWhoops();
+		self::initWhoops($data);
 		self::initMonolog();
 		self::initDotenv();
 		self::initError();
@@ -115,14 +128,44 @@ final class App
 		}
 	}
 
-	private static function initWhoops(): void
+	/**
+	 * @param  string $method
+	 * @param  mixed  $keys
+	 */
+	public static function whoops_blacklist(string $name, $keys): void
 	{
+		if (is_array($keys)) {
+			foreach ($keys as $key) {
+				self::$whoops_blacklist[$name][] = $key;
+			}
+		} elseif (is_string($keys)) {
+			self::$whoops_blacklist[$name][] = $keys;
+		}
+	}
+
+	private static function initWhoops($data = []): void
+	{
+		# Config Black List
+		if (isset($data['whoops_blacklist'])) {
+			foreach ($data['whoops_blacklist'] as $key => $val) {
+				self::whoops_blacklist($key, $val);
+			}
+		}
+		# Class
+		$PPH = new WPrettyPageHandler;
+		# BlackList Add
+		foreach (self::$whoops_blacklist as $key => $val) {
+			foreach ($val as $data) {
+				$PPH->blacklist($key, $data);
+			}
+		}
+		# Register
 		$whoops = new WRun;
-		$whoops->pushHandler(new WPrettyPageHandler);
+		$whoops->pushHandler($PPH);
 		$whoops->register();
 		self::$whoops = $whoops;
 	}
-	
+
 	private static function initMonolog(): void
 	{
 		$log = new MlLogger('BMVC');
@@ -149,7 +192,7 @@ final class App
 			});
 		}
 	}
-	
+
 	private static function initSession(): void
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
@@ -157,7 +200,7 @@ final class App
 			@ini_set('session.use_only_cookies', 1);
 			@ini_set('session.gc_maxlifetime', 3600 * 24);
 			@session_set_cookie_params(3600 * 24);
-			
+
 			@session_name("BMVC");
 			@session_start();
 		}
