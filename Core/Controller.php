@@ -54,7 +54,6 @@ final class Controller
 		if (($namespace === null || $namespace !== null) && $controller != null) {
 
 			$_nsc_ = ($namespace != null) ? implode('/', [$namespace, '_controller_']) : '_controller_';
-			
 			$_controller_ = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc_));
 			if (class_exists($_controller_)) {
 				new $_controller_();

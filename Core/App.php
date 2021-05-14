@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.3
+ * @version 5.4
  */
 
 namespace BMVC\Core;
@@ -72,8 +72,8 @@ final class App
 		self::initMonolog();
 		self::initDotenv();
 		self::initError();
-		self::initSession();
 		self::initHeader();
+		self::initSession();
 		self::initDefine();
 		self::init($data);
 		self::initRoute();
@@ -198,6 +198,14 @@ final class App
 		}
 	}
 
+	private static function initHeader(): void
+	{
+		@header_remove();
+		@header("X-Frame-Options: sameorigin");
+		@header("Strict-Transport-Security: max-age=15552000; preload");
+		@header("X-Powered-By: PHP/BMVC");
+	}
+
 	private static function initSession(): void
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
@@ -209,14 +217,6 @@ final class App
 			@session_name("BMVC");
 			@session_start();
 		}
-	}
-
-	private static function initHeader(): void
-	{
-		@header_remove();
-		@header("X-Frame-Options: sameorigin");
-		@header("Strict-Transport-Security: max-age=15552000; preload");
-		@header("X-Powered-By: PHP/BMVC");
 	}
 
 	private static function initDefine(): void
