@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.5
+ * @version 1.6
  */
 
 namespace BMVC\Libs;
@@ -136,18 +136,11 @@ class Filter
 			}
 			return $text;
 		} elseif (is_array($text)) {
-			$t = null;
+			$data = [];
 			foreach ($text as $t) {
-				$y = 1;
-				$x = sizeof($check);
-				while ($y <= $x) {
-					$target = strpos($t, $check[$y]);
-					if ($target !== false)
-						$t += str_replace($check[$y], "", $t);
-					$y++;
-				}
+				$data[] = self::filterDB($t);
 			}
-			return $t;
+			return $data;
 		} else {
 			return $text;
 		}
