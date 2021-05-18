@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.4
+ * @version 1.5
  */
 
 namespace BMVC\Libs;
@@ -89,14 +89,14 @@ class Filter
 	}
 
 	/**
-	 * @param string $text
+	 * @param mixed $text
 	 */
-	public static function filterDB(string $text)
+	public static function filterDB($text)
 	{
-		$check[1] = chr(34); // symbol "
-		$check[2] = chr(39); // symbol '
-		$check[3] = chr(92); // symbol /
-		$check[4] = chr(96); // symbol `
+		$check[1] = chr(34);
+		$check[2] = chr(39);
+		$check[3] = chr(92);
+		$check[4] = chr(96);
 		$check[5] = "drop table";
 		$check[6] = "update";
 		$check[7] = "alter table";
@@ -124,14 +124,32 @@ class Filter
 		$check[29] = '$';
 		$check[30] = '<?php';
 		$check[31] = '?>';
-		$y = 1;
-		$x = sizeof($check);
-		while ($y <= $x) {
-			$target = strpos($text, $check[$y]);
-			if ($target !== false)
-				$text = str_replace($check[$y], "", $text);
-			$y++;
+
+		if (is_string($text)) {
+			$y = 1;
+			$x = sizeof($check);
+			while ($y <= $x) {
+				$target = strpos($text, $check[$y]);
+				if ($target !== false)
+					$text = str_replace($check[$y], "", $text);
+				$y++;
+			}
+			return $text;
+		} elseif (is_array($text)) {
+			$t = null;
+			foreach ($text as $t) {
+				$y = 1;
+				$x = sizeof($check);
+				while ($y <= $x) {
+					$target = strpos($t, $check[$y]);
+					if ($target !== false)
+						$t += str_replace($check[$y], "", $t);
+					$y++;
+				}
+			}
+			return $t;
+		} else {
+			return $text;
 		}
-		return $text;
 	}
 }
