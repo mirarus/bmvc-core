@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.5
+ * @version 1.6
  */
 
 namespace BMVC\Libs;
@@ -290,10 +290,10 @@ class BasicDB extends PDO
 					}
 					switch ($item['mark']) {
 						case 'LIKE':
-						$where = $item['column'] . ' LIKE "%' . $item['value'] . '%"';
+						$where = $item['column'] . ' LIKE "' . $item['value'] . '"';
 						break;
 						case 'NOT LIKE':
-						$where = $item['column'] . ' NOT LIKE "%' . $item['value'] . '%"';
+						$where = $item['column'] . ' NOT LIKE "' . $item['value'] . '"';
 						break;
 						case 'BETWEEN':
 						$where = $item['column'] . ' BETWEEN "' . $item['value'][0] . '" AND "' . $item['value'][1] . '"';
@@ -551,14 +551,28 @@ class BasicDB extends PDO
 		return $this;
 	}
 
-	public function like($column, $value)
+	public function like($column, $value, $inner='all')
 	{
+		if ($inner == 'all') {
+			$value = "%$value%";
+		} elseif ($inner == 'left') {
+			$value = "$value%";
+		} elseif ($inner == 'right') {
+			$value = "%$value";
+		}
 		$this->where($column, $value, 'LIKE');
 		return $this;
 	}
 
-	public function notLike($column, $value)
+	public function notLike($column, $value, $inner='all')
 	{
+		if ($inner == 'all') {
+			$value = "%$value%";
+		} elseif ($inner == 'left') {
+			$value = "$value%";
+		} elseif ($inner == 'right') {
+			$value = "%$value";
+		}
 		$this->where($column, $value, 'NOT LIKE');
 		return $this;
 	}
