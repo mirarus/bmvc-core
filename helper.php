@@ -66,9 +66,9 @@ function xbase_urlx(): string
  * @param  bool|boolean $atRoot
  * @param  bool|boolean $atCore
  * @param  bool|boolean $parse
- * @return string
+ * @return mixed
  */
-function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool $parse=false): string
+function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool $parse=false)
 {
 	if (isset($_SERVER['HTTP_HOST'])) {
 		$http = (((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http');
@@ -83,17 +83,19 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 		$base_url = 'http://localhost/';
 	}
 
+	$base_url = rtrim($base_url, '/');
+	if (!empty($url)) {
+		$base_url .= $url;
+	}
+
+	$base_url = @str_replace(['/Public', '/public'], null, $base_url);
+	$base_url = trim($base_url, '/') . '/';
+
 	if ($parse) {
 		$base_url = parse_url($base_url);
 		if (isset($base_url['path'])) if ($base_url['path'] == '/') $base_url['path'] = '';
 	}
 
-	$base_url = rtrim($base_url, '/');
-	if (!empty($url)) {
-		$base_url .= $url;
-	}
-	$base_url = @str_replace(['/Public', '/public'], null, $base_url);
-	$base_url = trim($base_url, '/') . '/';
 	return $base_url;
 }
 

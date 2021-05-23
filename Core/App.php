@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.4
+ * @version 5.5
  */
 
 namespace BMVC\Core;
@@ -209,11 +209,15 @@ final class App
 	private static function initSession(): void
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
-			@ini_set('session.cookie_httponly', 1);
+	/*	@ini_set('session.cookie_httponly', 1);
 			@ini_set('session.use_only_cookies', 1);
 			@ini_set('session.gc_maxlifetime', 3600 * 24);
-			@session_set_cookie_params(3600 * 24);
-
+			@session_set_cookie_params(3600 * 24);*/
+			@session_set_cookie_params([
+				'lifetime' => 3600 * 24,
+				'httponly' => true,
+				'path' => base_url(null, false, false, true)['path']
+			]);
 			@session_name("BMVC");
 			@session_start();
 		}
