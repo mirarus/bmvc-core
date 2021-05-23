@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.3
+ * @version 4.4
  */
 
 namespace BMVC\Core;
@@ -133,7 +133,9 @@ final class View
 
 			if ($layout == true) {
 
-				$_file = ($namespace . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace . DIRECTORY_SEPARATOR);
+
+				$_file = ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
 
 				if (file_exists($file = Dir::app($viewDir . $_file))) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
