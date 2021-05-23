@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.4
+ * @version 4.5
  */
 
 namespace BMVC\Core;
@@ -35,24 +35,26 @@ final class Model
 	/**
 	 * @return BasicDB
 	 */
-	public static function DB()
+	public static function DB(): BasicDB
 	{
 		App::$dotenv->required('DB_DSN')->notEmpty();
 
 		$dsn = $_ENV['DB_DSN'];
 
-		if (@strstr($dsn, 'mysql:')) {
+		if (is_nem(@$dsn)) {
+			if (@strstr($dsn, 'mysql:')) {
 
-			App::$dotenv->required(['DB_USER', 'DB_PASS']);
-			App::$dotenv->required('DB_USER')->notEmpty();
+				App::$dotenv->required(['DB_USER', 'DB_PASS']);
+				App::$dotenv->required('DB_USER')->notEmpty();
 
-			$user = $_ENV['DB_USER'];
-			$pass = $_ENV['DB_PASS'];
+				$user = $_ENV['DB_USER'];
+				$pass = $_ENV['DB_PASS'];
 
-			return new BasicDB($dsn, $user, $pass);
-		} elseif (@strstr($dsn, 'sqlite:')) {
+				return new BasicDB($dsn, $user, $pass);
+			} elseif (@strstr($dsn, 'sqlite:')) {
 
-			return new BasicDB($dsn);
+				return new BasicDB($dsn);
+			}
 		}
 	}
 
