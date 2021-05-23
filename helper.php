@@ -240,3 +240,18 @@ function objectToArray($object): array
 	}
 	return $array;
 }
+
+function _controller($action, object &$return=null)
+{
+	return BMVC\Core\Controller::import($action, $return);
+}
+
+function _model($action, object &$return=null)
+{
+	return BMVC\Core\Model::import($action, $return);
+}
+
+function _view($action, array $data=[], string $engine='php', object &$return=null)
+{
+	return BMVC\Core\View::import($action, $data, $engine, $return);
+}
