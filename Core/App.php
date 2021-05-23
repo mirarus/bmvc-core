@@ -72,9 +72,9 @@ final class App
 		self::initMonolog();
 		self::initDotenv();
 		self::initError();
+		self::initDefine();
 		self::initHeader();
 		self::initSession();
-		self::initDefine();
 		self::init($data);
 		self::initRoute();
 
@@ -201,9 +201,12 @@ final class App
 	private static function initHeader(): void
 	{
 		@header_remove();
-		@header("X-Frame-Options: sameorigin");
 		@header("Strict-Transport-Security: max-age=15552000; preload");
+		@header("X-Frame-Options: sameorigin");
 		@header("X-Powered-By: PHP/BMVC");
+		@header("X-Date: " . date('D, d M Y H:i:s \G\M\T'));
+		@header("X-Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
+		@header("X-Expires: " . date('D, d M Y H:i:s \G\M\T', time() + 3600 * 24));
 	}
 
 	private static function initSession(): void

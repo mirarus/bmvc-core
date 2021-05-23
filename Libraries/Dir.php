@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.1
+ * @version 1.2
  */
 
 namespace BMVC\Libs;
@@ -22,7 +22,7 @@ class Dir
 	 */
 	public static function base(string $dir=null): string
 	{
-		$baseDir = dirname(__DIR__);
+		$baseDir = dirname(__DIR__) . '\\';
 
 		if ($dir !== null) {
 			return $baseDir . $dir;
@@ -37,7 +37,7 @@ class Dir
 	 */
 	public static function app(string $dir=null): string
 	{
-		$appDir = dirname(dirname(dirname(self::base())));
+		$appDir = dirname(dirname(dirname(self::base()))) . '\\';
 
 		if ($dir !== null) {
 			return $appDir . $dir;
