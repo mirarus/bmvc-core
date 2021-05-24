@@ -147,15 +147,15 @@ class BasicDB extends PDO
 		return $this;
 	}
 
-	public function join($targetTable, $joinSql, $joinType = 'inner', $and)
+	public function join($targetTable, $joinSql, $joinType = 'inner')
 	{
 		$this->join[] = ' ' . strtoupper($joinType) . ' JOIN ' . $targetTable . ' ON ' . sprintf($joinSql, $targetTable, $this->tableName);
 		return $this;
 	}
 
-	public function leftJoin($targetTable, $joinSql, $and)
+	public function leftJoin($targetTable, $joinSql)
 	{
-		$this->join($targetTable, $joinSql, 'left', $and);
+		$this->join($targetTable, $joinSql, 'left');
 		return $this;
 	}
 
