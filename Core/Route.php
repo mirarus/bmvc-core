@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.7
+ * @version 2.8
  */
 
 namespace BMVC\Core;
@@ -223,6 +223,7 @@ final class Route
 	 */
 	public static function get(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('GET', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -234,6 +235,7 @@ final class Route
 	 */
 	public static function post(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('POST', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -245,6 +247,7 @@ final class Route
 	 */
 	public static function patch(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('PATCH', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -256,6 +259,7 @@ final class Route
 	 */
 	public static function delete(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('DELETE', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -267,6 +271,7 @@ final class Route
 	 */
 	public static function put(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('PUT', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -278,6 +283,7 @@ final class Route
 	 */
 	public static function options(string $pattern=null, $callback): Route
 	{
+		$pattern = ($pattern == '/' ? null : $pattern);
 		self::Route('OPTIONS', self::$mainRoute . $pattern, $callback);
 		return new self;
 	}
@@ -291,6 +297,7 @@ final class Route
 	public static function match(array $methods, string $pattern=null, $callback): Route
 	{
 		foreach ($methods as $method) {
+			$pattern = ($pattern == '/' ? null : $pattern);
 			self::Route(strtoupper($method), self::$mainRoute . $pattern, $callback);
 		}
 		return new self;
@@ -305,6 +312,7 @@ final class Route
 	{
 		$methods = ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'];
 		foreach ($methods as $method) {
+			$pattern = ($pattern == '/' ? null : $pattern);
 			self::Route($method, self::$mainRoute . $pattern, $callback);
 		}
 		return new self;
