@@ -8,12 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.4
+ * @version 4.5
  */
 
 namespace BMVC\Core;
 
 use Exception;
+use Closure;
 use BMVC\Libs\Dir;
 
 final class View
@@ -108,7 +109,7 @@ final class View
 	{
 		$view      = null;
 		$namespace = null;
-		$viewDir = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
+		$viewDir 	 = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
 
 		if (@is_string($action)) {
 			if (@strstr($action, '@')) {
@@ -157,6 +158,34 @@ final class View
 			} else {
 				echo self::import([$namespace, $view], $data, $engine, $return);
 			}
+		}
+	}
+
+	/**
+	 * @param Closure $callback
+	 * @param array   $data
+	 */
+	public static function layout(Closure $callback, array $data=[], object &$return=null)
+	{
+		$_vdir = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
+		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : $_vdir);
+		$_file = ($_ns . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+
+		if (file_exists($file = Dir::app($_file))) {
+			$content = call_user_func($callback);
+
+			ob_start();
+			require_once $file;
+			$ob_content = ob_get_contents();
+			ob_end_clean();
+
+			if (isset($data['page_title'])) {
+				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+			}
+
+			echo $return = $ob_content;
+		} else {
+			throw new Exception('Layout File Found! | File: ' . $_file);
 		}
 	}
 
