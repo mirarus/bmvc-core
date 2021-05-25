@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.5
+ * @version 4.6
  */
 
 namespace BMVC\Core;
@@ -62,7 +62,9 @@ final class View
 
 			if ($engine == 'php') {
 
-				if (file_exists($file = Dir::app($viewDir . $_nsv . '.php'))) {
+				$file = Dir::app($viewDir . $_nsv . '.php');
+
+				if (file_exists($file)) {
 
 					if ($_ENV['VIEW_CACHE'] == true) {
 						if (!_is_dir($cacheDir)) {
@@ -88,7 +90,10 @@ final class View
 				if (!_is_dir($cacheDir)) {
 					@mkdir($cacheDir);
 				}
-				if (file_exists($file = Dir::app($viewDir . $_nsv . '.blade.php'))) {
+
+				$file = Dir::app($viewDir . $_nsv . '.blade.php');
+
+				if (file_exists($file)) {
 					$blade = new \Jenssegers\Blade\Blade(Dir::app($viewDir . $namespace, $cacheDir));
 					return $blade->make($view, $data)->render();
 				} else {
@@ -137,10 +142,10 @@ final class View
 				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace . DIRECTORY_SEPARATOR);
 
 				$_file = ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+				$file  = Dir::app($viewDir . $_file);
 
-				if (file_exists($file = Dir::app($viewDir . $_file))) {
+				if (file_exists($file)) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
-					# require_once $file;
 
 					ob_start();
 					require_once $file;
