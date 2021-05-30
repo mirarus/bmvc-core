@@ -52,7 +52,6 @@ class Browser
 	const BROWSER_IPOD = 'iPod'; // http://apple.com
 	const BROWSER_IPAD = 'iPad'; // http://apple.com
 	const BROWSER_CHROME = 'Chrome'; // http://www.google.com/chrome
-	const BROWSER_CHROMIUM = 'Chromium'; // http://chromium.org
 	const BROWSER_ANDROID = 'Android'; // http://www.android.com/
 	const BROWSER_GOOGLEBOT = 'GoogleBot'; // http://en.wikipedia.org/wiki/Googlebot
 
@@ -301,7 +300,6 @@ class Browser
 			$this->checkBrowserYandex() ||
 			$this->checkBrowserFirefox() ||
 			$this->checkBrowserChrome() ||
-			$this->checkBrowserChromium() ||
 			$this->checkBrowserOmniWeb() ||
 
 			// common mobile
@@ -823,28 +821,6 @@ class Browser
 				$this->setVersion($aversion[0]);
 				$this->setBrowser(self::BROWSER_CHROME);
 				//Chrome on Android
-				if (stripos($this->_agent, 'Android') !== false) {
-					if (stripos($this->_agent, 'Mobile') !== false) {
-						$this->setMobile(true);
-					} else {
-						$this->setTablet(true);
-					}
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected function checkBrowserChromium()
-	{
-		if (stripos($this->_agent, 'Chromium') !== false) {
-			$aresult = explode('/', stristr($this->_agent, 'Chromium'));
-			if (isset($aresult[1])) {
-				$aversion = explode(' ', $aresult[1]);
-				$this->setVersion($aversion[0]);
-				$this->setBrowser(self::BROWSER_CHROMIUM);
-				//Chromium on Android
 				if (stripos($this->_agent, 'Android') !== false) {
 					if (stripos($this->_agent, 'Mobile') !== false) {
 						$this->setMobile(true);
