@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.8
+ * @version 2.9
  */
 
 namespace BMVC\Core;
@@ -16,7 +16,6 @@ namespace BMVC\Core;
 use Exception;
 use Closure;
 use BMVC\Libs\{Request, MError};
-use function page_url;
 
 final class Route
 {
@@ -426,5 +425,11 @@ final class Route
 		if (!in_array($url, $urls)) {
 			self::get_404();
 		}
+	}
+
+	public static function namespace(array $namespaces=[])
+	{
+		App::namespace($namespaces);
+		return new self;
 	}
 }

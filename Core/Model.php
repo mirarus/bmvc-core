@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.5
+ * @version 4.6
  */
 
 namespace BMVC\Core;
@@ -20,6 +20,11 @@ final class Model
 {
 
 	/**
+	 * @var string
+	 */
+	public static $namespace = null;
+
+	/**
 	 * @var array
 	 */
 	private static $params = [];
@@ -29,7 +34,16 @@ final class Model
 	 */
 	public function __construct()
 	{
+		self::init();
 		self::DB();
+	}
+
+	/**
+	 * @param string|null $namespace
+	 */
+	public static function init(string $namespace=null): void
+	{
+		self::$namespace = $namespace ? $namespace : App::$namespaces['model'];
 	}
 
 	/**
@@ -90,14 +104,14 @@ final class Model
 
 			$_nsm_ = ($namespace != null) ? implode('/', [$namespace, '_model_']) : '_model_';
 			
-			$_model_ = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm_));
+			$_model_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsm_));
 			if (class_exists($_model_)) {
 				new $_model_();
 			}
 
 			$model = ucfirst($model);
 			$_nsm = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
-			$_model = (App::$namespaces['model'] . str_replace(['/', '//'], '\\', $_nsm));
+			$_model = (self::$namespace . str_replace(['/', '//'], '\\', $_nsm));
 
 			if (is_array(self::$params) && !empty(self::$params)) {
 				return $return = new $_model(self::$params);

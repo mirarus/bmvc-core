@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.6
+ * @version 4.7
  */
 
 namespace BMVC\Core;
@@ -21,6 +21,24 @@ final class View
 {
 
 	/**
+	 * @var string
+	 */
+	public static $namespace = null;
+
+	public function __construct()
+	{
+		self::init();
+	}
+
+	/**
+	 * @param string|null $namespace
+	 */
+	public static function init(string $namespace=null): void
+	{
+		self::$namespace = $namespace ? $namespace : App::$namespaces['view'];
+	}
+
+	/**
 	 * @param mixed       $action
 	 * @param array       $data
 	 * @param string      $engine
@@ -28,9 +46,9 @@ final class View
 	 */
 	private static function import($action, array $data=[], string $engine='php', object &$return=null)
 	{
+		self::init();
 		$data ? extract($data) : null;
 		@$_REQUEST['vd'] = $data;
-		$viewDir = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
 
 		if (!in_array($engine, ['php', 'blade'])) {
 			$engine = 'php';
@@ -57,20 +75,20 @@ final class View
 
 		if (($namespace === null || $namespace !== null) && $view != null) {
 
-			$_nsv     = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : $view;
-			$cacheDir = Dir::app($viewDir . $namespace . DIRECTORY_SEPARATOR . 'Cache');
+			$_nsv = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : $view;
+			$cDir = Dir::app(self::$namespace . $namespace . DIRECTORY_SEPARATOR . 'Cache');
 
 			if ($engine == 'php') {
 
-				$file = Dir::app($viewDir . $_nsv . '.php');
+				$file = Dir::app(self::$namespace . $_nsv . '.php');
 
 				if (file_exists($file)) {
 
 					if ($_ENV['VIEW_CACHE'] == true) {
-						if (!_is_dir($cacheDir)) {
-							@mkdir($cacheDir);
+						if (!_is_dir($cDir)) {
+							@mkdir($cDir);
 						}
-						$file = self::cache($_nsv, $file, $cacheDir);
+						$file = self::cache($_nsv, $file, $cDir);
 					}
 
 					ob_start();
@@ -87,14 +105,14 @@ final class View
 					throw new Exception('View File Found! | File: ' . $_nsv . '.php');
 				}
 			} elseif ($engine == 'blade') {
-				if (!_is_dir($cacheDir)) {
-					@mkdir($cacheDir);
+				if (!_is_dir($cDir)) {
+					@mkdir($cDir);
 				}
 
-				$file = Dir::app($viewDir . $_nsv . '.blade.php');
+				$file = Dir::app(self::$namespace . $_nsv . '.blade.php');
 
 				if (file_exists($file)) {
-					$blade = new \Jenssegers\Blade\Blade(Dir::app($viewDir . $namespace, $cacheDir));
+					$blade = new \Jenssegers\Blade\Blade(Dir::app(self::$namespace . $namespace, $cDir));
 					return $blade->make($view, $data)->render();
 				} else {
 					throw new Exception('Blade View File Found! | File: ' . $_nsv . '.blade.php');
@@ -112,9 +130,9 @@ final class View
 	 */
 	public static function load($action, array $data=[], bool $layout=false, string $engine='php', object &$return=null)
 	{
+		self::init();
 		$view      = null;
 		$namespace = null;
-		$viewDir 	 = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
 
 		if (@is_string($action)) {
 			if (@strstr($action, '@')) {
@@ -142,7 +160,7 @@ final class View
 				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace . DIRECTORY_SEPARATOR);
 
 				$_file = ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
-				$file  = Dir::app($viewDir . $_file);
+				$file  = Dir::app(self::$namespace . $_file);
 
 				if (file_exists($file)) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;

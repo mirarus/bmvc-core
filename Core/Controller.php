@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.6
+ * @version 4.7
  */
 
 namespace BMVC\Core;
@@ -19,9 +19,27 @@ final class Controller
 {	
 
 	/**
+	 * @var string
+	 */
+	public static $namespace = null;
+
+	/**
 	 * @var array
 	 */
 	private static $params = [];
+
+	public function __construct()
+	{
+		self::init();
+	}
+
+	/**
+	 * @param string|null $namespace
+	 */
+	public static function init(string $namespace=null): void
+	{
+		self::$namespace = $namespace ? $namespace : App::$namespaces['controller'];
+	}
 
 	/**
 	 * @param mixed       $action
@@ -29,6 +47,8 @@ final class Controller
 	 */
 	public static function import($action, object &$return=null)
 	{
+		self::init();
+
 		$controller = null;
 		$namespace  = null;
 
@@ -54,14 +74,14 @@ final class Controller
 		if (($namespace === null || $namespace !== null) && $controller != null) {
 
 			$_nsc_ = ($namespace != null) ? implode('/', [$namespace, '_controller_']) : '_controller_';
-			$_controller_ = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc_));
+			$_controller_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc_));
 			if (class_exists($_controller_)) {
 				new $_controller_();
 			}
 
 			$controller = ucfirst($controller);
 			$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
-			$_controller = (App::$namespaces['controller'] . str_replace(['/', '//'], '\\', $_nsc));
+			$_controller = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc));
 
 			if (is_array(self::$params) && !empty(self::$params)) {
 				return $return = new $_controller(self::$params);

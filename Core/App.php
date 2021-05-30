@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.5
+ * @version 5.6
  */
 
 namespace BMVC\Core;
@@ -52,15 +52,16 @@ final class App
 	 */
 	public static $namespaces = [
 		'controller' => null,
-		'model'      => null
+		'model'      => null,
+		'view'       => null
 	];
 
-	public function __construct($data=[])
+	public function __construct(array $data=[])
 	{
 		self::Run($data);
 	}
 
-	public static function Run($data=[]): void
+	public static function Run(array $data=[]): void
 	{
 		if (self::$init == true) return;
 
@@ -77,6 +78,10 @@ final class App
 		self::initSession();
 		self::init($data);
 		self::initRoute();
+
+		Controller::$namespace = self::$namespaces['controller'];
+		Model::$namespace = self::$namespaces['model'];
+		View::$namespace = self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR'];
 
 		self::$init = true;
 	}
