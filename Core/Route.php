@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.9
+ * @version 3.0
  */
 
 namespace BMVC\Core;
@@ -427,9 +427,14 @@ final class Route
 		}
 	}
 
-	public static function namespace(array $namespaces=[])
+	/**
+	 * @param  array       $namespaces
+	 * @param  string|null $sub
+	 * @return Route
+	 */
+	public static function namespace(array $namespaces=[], string $sub=null): Route
 	{
-		App::namespace($namespaces);
+		App::SGnamespace($namespaces, null, false, $sub);
 		return new self;
 	}
 }

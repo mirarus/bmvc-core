@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.6
+ * @version 5.7
  */
 
 namespace BMVC\Core;
@@ -92,20 +92,19 @@ final class App
 	 * @param string|null  $value
 	 * @param bool|boolean $get
 	 */
-	public static function namespace($par, string $value=null, bool $get=false)
+	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null)
 	{
 		if (is_string($par)) {
 			if (array_key_exists($par, self::$namespaces)) {
-				self::$namespaces[$par] = $value;
+				self::$namespaces[$par] = $sub . $value;
 				if ($get === true) {
 					return self::$namespaces[$par];
 				}
 			}
 		} elseif (is_array($par)) {
-
 			foreach (@$par as $key) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = $value;
+					self::$namespaces[$key] = $sub . $value;
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
@@ -114,14 +113,27 @@ final class App
 
 			foreach (@$par as $key => $val) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = $val;
+					self::$namespaces[$key] = $sub . $val;
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
 				}
 			}
+		} else {
+			if ($get === true) {
+				return self::$namespaces;
+			}
 		}
 		# if ($get === false) return new self;
+	}
+
+	/**
+	 * @param array       $namespaces
+	 * @param string|null $sub
+	 */
+	public static function namespace(array $namespaces=[], string $sub=null): void
+	{
+		self::SGnamespace($namespaces, null, false, $sub);
 	}
 
 	/**
@@ -302,7 +314,7 @@ final class App
 		$params = $route['params'];
 
 		if (is_callable($action)) {
-			return call_user_func_array($action, array_values($params));
+			return @call_user_func_array($action, array_values($params));
 		} else {
 			Controller::call(@$action, @$params);
 		}
