@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.6
+ * @version 1.7
  */
 
 namespace BMVC\Libs;
@@ -633,7 +633,16 @@ class Request
 		if (isset($data) && !empty($data)) {
 			if ($db_filter == true) {
 				if (isset($method[$data])) {
-					return Filter::filterDB($method[$data]);
+
+					if (is_array($method[$data])) {
+						$md = [];
+						foreach ($method[$data] as $key => $val) {
+							$md[$key] = Filter::filterDB($val);
+						}
+						return $md;
+					} else {
+						return Filter::filterDB($method[$data]);
+					}
 				}
 			} else {
 				if (isset($method[$data])) {
@@ -642,7 +651,16 @@ class Request
 			}
 		} else {
 			if ($db_filter == true) {
-				return Filter::filterDB($method);
+
+				if (is_array($method)) {
+					$md = [];
+					foreach ($method as $key => $val) {
+						$md[$key] = Filter::filterDB($val);
+					}
+					return $md;
+				} else {
+					return Filter::filterDB($method);
+				}
 			} else {
 				return $method;
 			}
