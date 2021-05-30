@@ -289,3 +289,44 @@ function _view($action, array $data=[], string $engine='php', object &$return=nu
 {
 	return BMVC\Core\View::import($action, $data, $engine, $return);
 }
+
+/**
+ * @param string       $url
+ * @param array        $array
+ * @param bool|boolean $data
+ * @param bool|boolean $option
+ */
+function _curl(string $url, array $array=[], bool $data=false, bool $option=false)
+{
+	if ($option) {
+		$domain = base64_encode(get_host(base_url()));
+		$ch = curl_init($url . "&domain=" . $domain);
+	} else {
+		$ch = curl_init($url);
+	}
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+	curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+	curl_setopt($ch, CURLOPT_HEADER, false);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+	if (is_array($array)) {
+		$_array = [];
+		foreach ($array as $key => $val) {
+			$_array[] = $key . '=' . urlencode($val);
+		}
+
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, join('&', $_array));
+	}
+	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+
+	$result = curl_exec($ch);
+	if (curl_errno($ch) != 0 && empty($result)) {
+		$result = false;
+	}
+	$data = ($data == true ? json_decode($result, true) : $result);
+	curl_close($ch);
+	return $data;
+}
