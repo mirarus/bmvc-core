@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.7
+ * @version 5.8
  */
 
 namespace BMVC\Core;
@@ -29,7 +29,7 @@ final class App
 	 */
 	private static $init = false;
 	
-	public static $run_file;
+	public static $sc_file;
 	public static $whoops;
 	public static $log;
 	public static $dotenv;
@@ -56,17 +56,31 @@ final class App
 		'view'       => null
 	];
 
+	/**
+	 * @param array $data
+	 */
 	public function __construct(array $data=[])
 	{
 		self::Run($data);
 	}
 
+	/**
+	 * @param array $data
+	 */
+	public static function init(array $data=[]): void
+	{
+		self::Run($data);
+	}
+
+	/**
+	 * @param array $data
+	 */
 	public static function Run(array $data=[]): void
 	{
 		if (self::$init == true) return;
 
 		if (isset($_SERVER['SCRIPT_FILENAME'])) {
-			self::$run_file = $_SERVER['SCRIPT_FILENAME'];
+			self::$sc_file = $_SERVER['SCRIPT_FILENAME'];
 		}
 
 		self::initWhoops($data);
@@ -76,7 +90,7 @@ final class App
 		self::initDefine();
 		self::initHeader();
 		self::initSession();
-		self::init($data);
+		self::initData($data);
 		self::initRoute();
 
 		self::$namespaces = @$data['namespaces'];
@@ -91,6 +105,7 @@ final class App
 	 * @param mixed        $par
 	 * @param string|null  $value
 	 * @param bool|boolean $get
+	 * @param string|null  $sub
 	 */
 	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null)
 	{
@@ -147,8 +162,8 @@ final class App
 	}
 
 	/**
-	 * @param  string $method
-	 * @param  mixed  $keys
+	 * @param string $method
+	 * @param mixed  $keys
 	 */
 	public static function whoops_blacklist(string $name, $keys): void
 	{
@@ -161,7 +176,10 @@ final class App
 		}
 	}
 
-	private static function initWhoops($data = []): void
+	/**
+	 * @param array $data
+	 */
+	private static function initWhoops(array $data=[]): void
 	{
 		# Default Black List
 		self::$whoops_blacklist = array_merge(self::$whoops_blacklist, [
@@ -230,7 +248,7 @@ final class App
 	private static function initSession(): void
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
-	/*	@ini_set('session.cookie_httponly', 1);
+		/*@ini_set('session.cookie_httponly', 1);
 			@ini_set('session.use_only_cookies', 1);
 			@ini_set('session.gc_maxlifetime', 3600 * 24);
 			@session_set_cookie_params(3600 * 24);*/
@@ -278,7 +296,10 @@ final class App
 		}
 	}
 
-	private static function init($data=[])
+	/**
+	 * @param array $data
+	 */
+	private static function initData(array $data=[])
 	{
 		if (is_callable($data)) {
 			call_user_func($data);
@@ -308,7 +329,7 @@ final class App
 
 	private static function initRoute()
 	{
-		$route = Route::Run();
+		Route::Run($route);
 
 		$action = $route['action'];
 		$params = $route['params'];

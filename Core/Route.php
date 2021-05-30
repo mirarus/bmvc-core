@@ -58,7 +58,7 @@ final class Route
 	/**
 	 * @var array
 	 */
-	private static $patterns  = [
+	private static $patterns = [
 		':all'        => '(.*)',
 		':num'        => '([0-9]+)',
 		':alpha'	  	=> '([a-zA-Z]+)',
@@ -390,7 +390,7 @@ final class Route
 	}
 
 	/**
-	 * @param mixed $callback
+	 * @param  mixed $callback
 	 * @return Route
 	 */
 	public static function set_404($callback): Route

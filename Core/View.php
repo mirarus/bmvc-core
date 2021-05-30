@@ -185,8 +185,9 @@ final class View
 	}
 
 	/**
-	 * @param Closure $callback
-	 * @param array   $data
+	 * @param Closure     $callback
+	 * @param array       $data
+	 * @param object|null &$return
 	 */
 	public static function layout(Closure $callback, array $data=[], object &$return=null)
 	{
