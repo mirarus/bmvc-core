@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.7
+ * @version 4.8
  */
 
 namespace BMVC\Core;
@@ -19,26 +19,21 @@ final class Controller
 {	
 
 	/**
+	 * @var array
+	 */
+	private static $params = [];
+
+	/**
 	 * @var string
 	 */
 	public static $namespace = null;
 
 	/**
-	 * @var array
-	 */
-	private static $params = [];
-
-	public function __construct()
-	{
-		self::init();
-	}
-
-	/**
 	 * @param string|null $namespace
 	 */
-	public static function init(string $namespace=null): void
+	public static function namespace(string $namespace): void
 	{
-		self::$namespace = $namespace ? $namespace : App::$namespaces['controller'];
+		self::$namespace = $namespace;
 	}
 
 	/**
@@ -47,8 +42,6 @@ final class Controller
 	 */
 	public static function import($action, object &$return=null)
 	{
-		self::init();
-
 		$controller = null;
 		$namespace  = null;
 

@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.6
+ * @version 4.7
  */
 
 namespace BMVC\Core;
@@ -20,30 +20,29 @@ final class Model
 {
 
 	/**
-	 * @var string
-	 */
-	public static $namespace = null;
-
-	/**
 	 * @var array
 	 */
 	private static $params = [];
+
+	/**
+	 * @var string
+	 */
+	public static $namespace = null;
 
 	/**
 	 * @return Model
 	 */
 	public function __construct()
 	{
-		self::init();
 		self::DB();
 	}
 
 	/**
 	 * @param string|null $namespace
 	 */
-	public static function init(string $namespace=null): void
+	public static function namespace(string $namespace): void
 	{
-		self::$namespace = $namespace ? $namespace : App::$namespaces['model'];
+		self::$namespace = $namespace;
 	}
 
 	/**

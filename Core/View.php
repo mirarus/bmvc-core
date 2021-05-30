@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.8
+ * @version 4.9
  */
 
 namespace BMVC\Core;
@@ -23,24 +23,14 @@ final class View
 	/**
 	 * @var string
 	 */
-	public static $namespace;
-
-	public function __construct(string $namespace)
-	{
-		self::setNamespace($namespace);
-	}
+	public static $namespace = null;
 
 	/**
-	 * @param string $namespace
+	 * @param string|null $namespace
 	 */
-	public static function setNamespace(string $namespace): void
+	public static function namespace(string $namespace): void
 	{
 		self::$namespace = $namespace;
-	}
-
-	public static function getNamespace()
-	{
-		return self::$namespace;
 	}
 
 	/**
@@ -194,8 +184,7 @@ final class View
 	 */
 	public static function layout(Closure $callback, array $data=[], object &$return=null)
 	{
-		$_vdir = ($_ENV['VIEW_DIR'] != null) ? $_ENV['VIEW_DIR'] : '/App/Http/View/';
-		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : $_vdir);
+		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace);
 		$_file = ($_ns . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
 
 		if (file_exists($file = Dir::app($_file))) {
