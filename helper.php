@@ -100,11 +100,11 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 }
 
 /**
- * @param  array  $parsed_url
- * @param  string $type
+ * @param  array        $parsed_url
+ * @param  bool|boolean $domain
  * @return string
  */
-function unparse_url(array $parsed_url=[], string $type='domain'): string
+function unparse_url(array $parsed_url=[], bool $domain=false): string
 {
   $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
   $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
@@ -116,9 +116,9 @@ function unparse_url(array $parsed_url=[], string $type='domain'): string
   $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
   $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
-  if ($type == 'domain') {
+  if ($domain == true) {
   	return "$scheme$user$pass$host$port";
-  } elseif ($type == 'path') {
+  } else {
   	return "$scheme$user$pass$host$port$path$query$fragment";
   }
 }
