@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.7
+ * @version 4.8
  */
 
 namespace BMVC\Core;
@@ -23,19 +23,24 @@ final class View
 	/**
 	 * @var string
 	 */
-	public static $namespace = null;
+	public static $namespace;
 
-	public function __construct()
+	public function __construct(string $namespace)
 	{
-		self::init();
+		self::setNamespace($namespace);
 	}
 
 	/**
-	 * @param string|null $namespace
+	 * @param string $namespace
 	 */
-	public static function init(string $namespace=null): void
+	public static function setNamespace(string $namespace): void
 	{
-		self::$namespace = $namespace ? $namespace : App::$namespaces['view'];
+		self::$namespace = $namespace;
+	}
+
+	public static function getNamespace()
+	{
+		return self::$namespace;
 	}
 
 	/**
@@ -46,7 +51,6 @@ final class View
 	 */
 	private static function import($action, array $data=[], string $engine='php', object &$return=null)
 	{
-		self::init();
 		$data ? extract($data) : null;
 		@$_REQUEST['vd'] = $data;
 
@@ -130,7 +134,6 @@ final class View
 	 */
 	public static function load($action, array $data=[], bool $layout=false, string $engine='php', object &$return=null)
 	{
-		self::init();
 		$view      = null;
 		$namespace = null;
 

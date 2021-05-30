@@ -91,12 +91,14 @@ final class App
 		self::initHeader();
 		self::initSession();
 		self::initData($data);
+
+		View::setNamespace(@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']);
+
 		self::initRoute();
 
 		self::$namespaces = @$data['namespaces'];
-		Controller::$namespace = @self::$namespaces['controller'];
-		Model::$namespace = @self::$namespaces['model'];
-		View::$namespace = @self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR'];
+		Controller::$namespace = self::$namespaces['controller'];
+		Model::$namespace = self::$namespaces['model'];
 
 		self::$init = true;
 	}
