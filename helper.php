@@ -106,21 +106,31 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
  */
 function unparse_url(array $parsed_url=[], bool $domain=false): string
 {
-  $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-  $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-  $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-  $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-  $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-  $pass     = ($user || $pass) ? "$pass@" : '';
-  $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-  $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-  $fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
+	$scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+	$host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+	$port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+	$user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+	$pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+	$pass     = ($user || $pass) ? "$pass@" : '';
+	$path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+	$query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+	$fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
 
-  if ($domain == true) {
-  	return "$scheme$user$pass$host$port";
-  } else {
-  	return "$scheme$user$pass$host$port$path$query$fragment";
-  }
+	if ($domain == true) {
+		return "$scheme$user$pass$host$port";
+	} else {
+		return "$scheme$user$pass$host$port$path$query$fragment";
+	}
+}
+
+/**
+ * @param  string $addr
+ * @return string
+ */
+function get_host(string $addr): string
+{
+	$parseUrl = parse_url(trim($addr));
+	return trim($parseUrl[host] ? $parseUrl[host] : array_shift(explode('/', $parseUrl[path], 2)));
 }
 
 /**
