@@ -79,6 +79,7 @@ final class App
 		self::init($data);
 		self::initRoute();
 
+		self::$namespaces = @$data['namespaces'];
 		Controller::$namespace = self::$namespaces['controller'];
 		Model::$namespace = self::$namespaces['model'];
 		View::$namespace = self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR'];
