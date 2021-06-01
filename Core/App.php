@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.0
+ * @version 6.1
  */
 
 namespace BMVC\Core;
@@ -245,20 +245,22 @@ final class App
 		@header("X-Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
 		@header("X-Expires: " . date('D, d M Y H:i:s \G\M\T', time() + 3600 * 24));
 		@header("X-Url: " . page_url());
+		@header("X-XSS-Protection: 1; mode=block");
 	}
 
 	private static function initSession(): void
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
-		/*@ini_set('session.cookie_httponly', 1);
 			@ini_set('session.use_only_cookies', 1);
-			@ini_set('session.gc_maxlifetime', 3600 * 24);
-			@session_set_cookie_params(3600 * 24);*/
-			@session_set_cookie_params([
-				'lifetime' => 3600 * 24,
-				'httponly' => true,
-				'path' => base_url(null, false, false, true)['path']
-			]);
+			if (PHP_VERSION_ID < 70300) {
+				@session_set_cookie_params(3600 * 24, base_url(null, false, false, true)['path'], null, null, true);
+			} else {
+				@session_set_cookie_params([
+					'lifetime' => 3600 * 24,
+					'httponly' => true,
+					'path' => base_url(null, false, false, true)['path']
+				]);
+			}
 			@session_name("BMVC");
 			@session_start();
 		}
@@ -322,9 +324,7 @@ final class App
 			}
 		}
 
-		if (function_exists('mb_internal_encoding')) {
-			@mb_internal_encoding("UTF-8");
-		}
+		if (function_exists('mb_internal_encoding')) @mb_internal_encoding("UTF-8");
 
 		if (is_cli()) die("Cli Not Available, Browser Only.");
 	}

@@ -126,15 +126,15 @@ function url(string $url=null, bool $return=false)
 {
 	if ($url) {
 		if ($return == false) {
-			return URL . $url;
+			return base_url() . $url;
 		} else {
-			echo URL . $url;
+			echo base_url() . $url;
 		}
 	} else {
 		if ($return == false) {
-			return URL;
+			return base_url();
 		} else {
-			echo URL;
+			echo base_url();
 		}
 	}
 }
