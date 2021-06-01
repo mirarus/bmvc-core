@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.9
+ * @version 5.0
  */
 
 namespace BMVC\Core;
@@ -23,96 +23,14 @@ final class View
 	/**
 	 * @var string
 	 */
-	public static $namespace = null;
+	private static $namespace = null;
 
 	/**
 	 * @param string|null $namespace
 	 */
 	public static function namespace(string $namespace): void
 	{
-		self::$namespace = $namespace;
-	}
-
-	/**
-	 * @param mixed       $action
-	 * @param array       $data
-	 * @param string      $engine
-	 * @param object|null &$return
-	 */
-	private static function import($action, array $data=[], string $engine='php', object &$return=null)
-	{
-		$data ? extract($data) : null;
-		@$_REQUEST['vd'] = $data;
-
-		if (!in_array($engine, ['php', 'blade'])) {
-			$engine = 'php';
-		}
-
-		if (@is_string($action)) {
-			if (@strstr($action, '@')) {
-				$action = explode('@', $action);
-			} elseif (@strstr($action, '/')) {
-				$action = explode('/', $action);
-			} elseif (@strstr($action, '.')) {
-				$action = explode('.', $action);
-			} elseif (@strstr($action, ':')) {
-				$action = explode(':', $action);
-			}
-		}
-
-		if ($action > 1) {
-			$view = !is_string($action) ? @array_pop($action) : $action;
-		} else {
-			$view = $action;
-		}
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (($namespace === null || $namespace !== null) && $view != null) {
-
-			$_nsv = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : $view;
-			$cDir = Dir::app(self::$namespace . $namespace . DIRECTORY_SEPARATOR . 'Cache');
-
-			if ($engine == 'php') {
-
-				$file = Dir::app(self::$namespace . $_nsv . '.php');
-
-				if (file_exists($file)) {
-
-					if ($_ENV['VIEW_CACHE'] == true) {
-						if (!_is_dir($cDir)) {
-							@mkdir($cDir);
-						}
-						$file = self::cache($_nsv, $file, $cDir);
-					}
-
-					ob_start();
-					require_once $file;
-					$ob_content = ob_get_contents();
-					ob_end_clean();
-
-					if (isset($data['page_title'])) {
-						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-					}
-
-					return $return = $ob_content;
-				} else {
-					throw new Exception('View File Found! | File: ' . $_nsv . '.php');
-				}
-			} elseif ($engine == 'blade') {
-				if (!_is_dir($cDir)) {
-					@mkdir($cDir);
-				}
-
-				$file = Dir::app(self::$namespace . $_nsv . '.blade.php');
-
-				if (file_exists($file)) {
-					$blade = new \Jenssegers\Blade\Blade(Dir::app(self::$namespace . $namespace, $cDir));
-					return $blade->make($view, $data)->render();
-				} else {
-					throw new Exception('Blade View File Found! | File: ' . $_nsv . '.blade.php');
-				}
-			}
-		}
+		self::$namespace = trim(str_replace("\\", "/", $namespace), "/");
 	}
 
 	/**
@@ -152,8 +70,8 @@ final class View
 
 				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace . DIRECTORY_SEPARATOR);
 
-				$_file = ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
-				$file  = Dir::app(self::$namespace . $_file);
+				$_file = (self::$namespace . ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
+				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {
 					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
@@ -186,8 +104,9 @@ final class View
 	{
 		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace);
 		$_file = ($_ns . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+		$file  = Dir::app($_file);
 
-		if (file_exists($file = Dir::app($_file))) {
+		if (file_exists($file)) {
 			$content = call_user_func($callback);
 
 			ob_start();
@@ -202,6 +121,86 @@ final class View
 			echo $return = $ob_content;
 		} else {
 			throw new Exception('Layout File Found! | File: ' . $_file);
+		}
+	}
+
+	/**
+	 * @param mixed       $action
+	 * @param array       $data
+	 * @param string      $engine
+	 * @param object|null &$return
+	 */
+	private static function import($action, array $data=[], string $engine='php', object &$return=null)
+	{
+		$data ? extract($data) : null;
+		@$_REQUEST['vd'] = $data;
+
+		if (!in_array($engine, ['php', 'blade'])) {
+			$engine = 'php';
+		}
+
+		if (@is_string($action)) {
+			if (@strstr($action, '@')) {
+				$action = explode('@', $action);
+			} elseif (@strstr($action, '/')) {
+				$action = explode('/', $action);
+			} elseif (@strstr($action, '.')) {
+				$action = explode('.', $action);
+			} elseif (@strstr($action, ':')) {
+				$action = explode(':', $action);
+			}
+		}
+
+		if ($action > 1) {
+			$view = !is_string($action) ? @array_pop($action) : $action;
+		} else {
+			$view = $action;
+		}
+		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
+
+		if (($namespace === null || $namespace !== null) && $view != null) {
+
+			$_nsv = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : DIRECTORY_SEPARATOR . $view;
+			$cDir = Dir::app(self::$namespace . $namespace . DIRECTORY_SEPARATOR . 'Cache');
+
+			if ($engine == 'php') {
+
+				$_file = (self::$namespace . $_nsv . '.php');
+				$file  = Dir::app($_file);
+
+				if (file_exists($file)) {
+
+					if ($_ENV['VIEW_CACHE'] == true) {
+						if (!Dir::is_dir($cDir)) @mkdir($cDir);
+						$file = self::cache($_nsv, $file, $cDir);
+					}
+
+					ob_start();
+					require_once $file;
+					$ob_content = ob_get_contents();
+					ob_end_clean();
+
+					if (isset($data['page_title'])) {
+						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+					}
+
+					return $return = $ob_content;
+				} else {
+					throw new Exception('View File Found! | File: ' . $_file);
+				}
+			} elseif ($engine == 'blade') {
+				if (!Dir::is_dir($cDir)) @mkdir($cDir);
+
+				$_file = (self::$namespace . $_nsv . '.blade.php');
+				$file  = Dir::app($_file);
+
+				if (file_exists($file)) {
+					$blade = new \Jenssegers\Blade\Blade(Dir::app(self::$namespace . $namespace, $cDir));
+					return $blade->make($view, $data)->render();
+				} else {
+					throw new Exception('Blade View File Found! | File: ' . $_file);
+				}
+			}
 		}
 	}
 

@@ -330,3 +330,17 @@ function _curl(string $url, array $array=[], bool $data=false, bool $option=fals
 	curl_close($ch);
 	return $data;
 }
+
+/**
+ * @param mixed        $data
+ * @param bool|boolean $stop
+ */
+function pr($data, bool $stop=false)
+{
+	echo "<pre>";
+	print_r($data);
+	echo "</pre>";
+	if ($stop === true) {
+		die();
+	}
+}

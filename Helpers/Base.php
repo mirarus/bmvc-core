@@ -1,20 +1,6 @@
 <?php
 
 /**
- * @param mixed        $data
- * @param bool|boolean $stop
- */
-function pr($data, bool $stop=false)
-{
-	echo "<pre>";
-	print_r($data);
-	echo "</pre>";
-	if ($stop === true) {
-		die();
-	}
-}
-
-/**
  * @param  string $file
  * @return mixed
  */
