@@ -68,9 +68,9 @@ final class View
 
 			if ($layout == true) {
 
-				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace . DIRECTORY_SEPARATOR);
+				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace);
 
-				$_file = (self::$namespace . ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
+				$_file = (self::$namespace . ($namespacel . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
 				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {
@@ -165,7 +165,7 @@ final class View
 
 			if ($engine == 'php') {
 
-				$_file = (self::$namespace . $_nsv . '.php');
+				$_file = (self::$namespace . DIRECTORY_SEPARATOR . $_nsv . '.php');
 				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {

@@ -68,8 +68,8 @@ class Response
 	 */
 	public static function setHeader(int $code): void
 	{
-		header("HTTP/1.1 " . $code . " " . self::setStatusCode($code));
-		header("Content-Type: application/json; charset=utf-8");
+		@header("HTTP/1.1 " . $code . " " . self::setStatusCode($code));
+		@header("Content-Type: application/json; charset=utf-8");
 	}
 	
 	/**
@@ -108,9 +108,9 @@ class Response
 	public static function json($data=null, bool $status=true, int $code=200)
 	{
 		self::setStatusCode($code);
-		header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
-		header('Content-type: application/json');
-		header('Status: ' . self::$statusCodes[$code]);
+		@header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+		@header('Content-type: application/json');
+		//@header('Status: ' . self::$statusCodes[$code]);
 		return json_encode(['status' => $status, 'message' => $data]);
 	}
 }

@@ -333,8 +333,8 @@ final class App
 	{
 		Route::Run($route);
 
-		$action = $route['action'];
-		$params = $route['params'];
+		$action = @$route['action'];
+		$params = @$route['params'];
 
 		if (is_callable($action)) {
 			return call_user_func_array($action, array_values($params));

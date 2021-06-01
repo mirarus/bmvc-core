@@ -92,8 +92,10 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 	$base_url = trim($base_url, '/') . '/';
 
 	if ($parse) {
+		if (trim(base_url(), "/") == $base_url) $base_url['path'] = "/";
+
 		$base_url = parse_url($base_url);
-		if (isset($base_url['path'])) if ($base_url['path'] == '/') $base_url['path'] = '';
+		//if (isset($base_url['path'])) if ($base_url['path'] == '/') $base_url['path'] = '';
 	}
 
 	return $base_url;
