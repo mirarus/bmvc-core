@@ -4,4 +4,4 @@ composer.phar
 
 /vendor
 /.github
-/.git
+.git
