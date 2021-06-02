@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.0
+ * @version 5.1
  */
 
 namespace BMVC\Core;
@@ -30,7 +30,7 @@ final class View
 	 */
 	public static function namespace(string $namespace): void
 	{
-		self::$namespace = trim(str_replace("\\", "/", $namespace), "/");
+		self::$namespace = trim(str_replace("\\", DIRECTORY_SEPARATOR, $namespace), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -70,7 +70,7 @@ final class View
 
 				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace);
 
-				$_file = (self::$namespace . ($namespacel . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
+				$_file = (self::$namespace . ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
 				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {
@@ -165,7 +165,7 @@ final class View
 
 			if ($engine == 'php') {
 
-				$_file = (self::$namespace . DIRECTORY_SEPARATOR . $_nsv . '.php');
+				$_file = (self::$namespace . $_nsv . '.php');
 				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {
@@ -211,7 +211,7 @@ final class View
 	 */
 	private static function cache(string $fileName, string $fileContent, string $cacheDir)
 	{
-		$file = ($cacheDir . '/' . md5($fileName) . '.php');
+		$file = ($cacheDir . DIRECTORY_SEPARATOR . md5($fileName) . '.php');
 		$expire = 120;
 
 		if (!file_exists($file) || (filemtime($file) < (time() - $expire))) {
