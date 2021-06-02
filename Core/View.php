@@ -70,7 +70,7 @@ final class View
 
 				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace);
 
-				$_file = (self::$namespace . ($namespacel . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
+				$_file = (self::$namespace . ($namespacel . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
 				$file  = Dir::app($_file);
 
 				if (file_exists($file)) {
@@ -103,7 +103,7 @@ final class View
 	public static function layout(Closure $callback, array $data=[], object &$return=null)
 	{
 		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace);
-		$_file = ($_ns . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
+		$_file = ($_ns . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
 		$file  = Dir::app($_file);
 
 		if (file_exists($file)) {
