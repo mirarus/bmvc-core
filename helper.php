@@ -132,7 +132,7 @@ function unparse_url(array $parsed_url=[], bool $domain=false): string
 function get_host(string $addr): string
 {
 	$parseUrl = parse_url(trim($addr));
-	return trim($parseUrl[host] ? $parseUrl[host] : array_shift(explode('/', $parseUrl[path], 2)));
+	return trim($parseUrl['host'] ? $parseUrl['host'] : array_shift(explode('/', $parseUrl['path'], 2)));
 }
 
 /**
@@ -216,7 +216,7 @@ function _route($method, string $pattern, $callback)
 		$methods = ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'];
 
 		if (in_array($method, $methods)) {
-			BMVC\Core\Route::$method($pattern, $callback);
+			BMVC\Core\Route::match($method, $pattern, $callback);
 		}
 	}
 }
@@ -236,9 +236,9 @@ function _lang(string $text, $replace=null, bool $return=true)
 }
 
 array_map(function ($file) {
-	if ($file == BMVC\Libs\Dir::base('/Helpers/index.php')) return false;
+	if ($file == BMVC\Libs\Dir::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
 	require_once $file;
-}, glob(BMVC\Libs\Dir::base("/Helpers/*.php")));
+}, glob(BMVC\Libs\Dir::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));
 
 
 /**
