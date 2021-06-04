@@ -235,12 +235,6 @@ function _lang(string $text, $replace=null, bool $return=true)
 	}
 }
 
-array_map(function ($file) {
-	if ($file == BMVC\Libs\Dir::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
-	require_once $file;
-}, glob(BMVC\Libs\Dir::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));
-
-
 /**
  * @param  array  $array
  * @return object
@@ -346,3 +340,12 @@ function pr($data, bool $stop=false)
 		die();
 	}
 }
+
+
+/**
+ * Helpers
+ */
+array_map(function ($file) {
+	if ($file == BMVC\Libs\Dir::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
+	require_once $file;
+}, glob(BMVC\Libs\Dir::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));
