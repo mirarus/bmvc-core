@@ -229,7 +229,7 @@ final class App
 	 */
 	private static function initWhoops(array $data=[]): void
 	{
-		$bl_array = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS'];
+		$bl_array = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'];
 
 		# Default Black List
 		self::$whoops_blacklist = array_merge(self::$whoops_blacklist, [
