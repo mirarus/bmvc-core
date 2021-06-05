@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.8
+ * @version 4.9
  */
 
 namespace BMVC\Core;
@@ -38,14 +38,6 @@ final class Model
 	}
 
 	/**
-	 * @param string|null $namespace
-	 */
-	public static function namespace(string $namespace): void
-	{
-		self::$namespace = $namespace;
-	}
-
-	/**
 	 * @return BasicDB
 	 */
 	public static function DB(): BasicDB
@@ -69,6 +61,24 @@ final class Model
 				return new BasicDB($dsn);
 			}
 		}
+	}
+
+	/**
+	 * @param string|null $namespace
+	 */
+	public static function namespace(string $namespace): void
+	{
+		self::$namespace = $namespace;
+	}
+
+	/**
+	 * @param  array $params
+	 * @return Model
+	 */
+	public static function par(array $params=[]): Model
+	{
+		self::$params = $params;
+		return new self;
 	}
 
 	/**
@@ -120,16 +130,6 @@ final class Model
 				return $return = new $_model();
 			}
 		}
-	}
-
-	/**
-	 * @param  array $params
-	 * @return Model
-	 */
-	public static function par(array $params=[]): Model
-	{
-		self::$params = $params;
-		return new self;
 	}
 
 	/**

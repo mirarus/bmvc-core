@@ -8,12 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.9
+ * @version 5.0
  */
 
 namespace BMVC\Core;
 
 use BadMethodCallException;
+use BMVC\Libs\Dir;
 
 final class Controller
 {	
@@ -34,6 +35,16 @@ final class Controller
 	public static function namespace(string $namespace): void
 	{
 		self::$namespace = $namespace;
+	}
+
+	/**
+	 * @param  array $params
+	 * @return Controller
+	 */
+	public static function par(array $params=[]): Controller
+	{
+		self::$params = $params;
+		return new self;
 	}
 
 	/**
@@ -78,22 +89,16 @@ final class Controller
 			$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
 			$_controller = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc));
 
+			if ($_controller != $_controller_) {
+				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
+			}
+
 			if (is_array(self::$params) && !empty(self::$params)) {
 				return $return = new $_controller(self::$params);
 			} else {
 				return $return = new $_controller();
 			}
 		}
-	}
-
-	/**
-	 * @param  array $params
-	 * @return Controller
-	 */
-	public static function par(array $params=[]): Controller
-	{
-		self::$params = $params;
-		return new self;
 	}
 
 	/**

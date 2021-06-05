@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.1
+ * @version 6.2
  */
 
 namespace BMVC\Core;
@@ -282,13 +282,11 @@ final class App
 	private static function initHeader(): void
 	{
 		@header_remove();
+		@header("X-Date: " . date('D, d M Y H:i:s \G\M\T'));
 		@header("Strict-Transport-Security: max-age=15552000; preload");
 		@header("X-Frame-Options: sameorigin");
 		@header("X-Powered-By: PHP/BMVC");
-		@header("X-Date: " . date('D, d M Y H:i:s \G\M\T'));
-		@header("X-Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
-		@header("X-Expires: " . date('D, d M Y H:i:s \G\M\T', time() + 3600 * 24));
-		@header("X-Url: " . page_url());
+		(page_url() ? @header("X-Url: " . page_url()) : null);
 		@header("X-XSS-Protection: 1; mode=block");
 	}
 
