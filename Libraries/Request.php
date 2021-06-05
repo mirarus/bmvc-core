@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.8
+ * @version 1.9
  */
 
 namespace BMVC\Libs;
@@ -652,118 +652,12 @@ class Request
 	/**
 	 * @param mixed $method
 	 */
-	private function methodDB($method)
+	private static function methodDB($method)
 	{
 		if (is_array($method)) {
 			$md = [];
 			foreach ($method as $k => $v) {
-				# $v
-				if (is_array($v)) {
-					foreach ($v as $_k => $_v) {
-						# $_v
-						if (is_array($_v)) {
-							foreach ($_v as $__k => $__v) {
-								# $__v
-								if (is_array($__v)) {
-									foreach ($__v as $___k => $___v) {
-										# $___v
-										if (is_array($___v)) {
-											foreach ($___v as $____k => $____v) {
-												# $____v
-												if (is_array($____v)) {
-													foreach ($____v as $_____k => $_____v) {
-														# $_____v
-														if (is_array($_____v)) {
-															foreach ($_____v as $______k => $______v) {
-																# $______v
-																if (is_array($______v)) {
-																	foreach ($______v as $_______k => $_______v) {
-																		# $_______v
-																		if (is_array($_______v)) {
-																			foreach ($_______v as $________k => $________v) {
-																				# $________v
-																				if (is_array($________v)) {
-																					foreach ($________v as $_________k => $_________v) {
-																						# $_________v
-																						if (is_array($_________v)) {
-																							foreach ($_________v as $__________k => $__________v) {
-																								# $__________v
-																								if (is_array($__________v)) {
-																									foreach ($__________v as $___________k => $___________v) {
-																										# $___________v
-																										if (is_array($___________v)) {
-																											foreach ($___________v as $____________k => $____________v) {
-																												# $____________v
-																												if (is_array($____________v)) {
-																													foreach ($____________v as $_____________k => $_____________v) {
-																														# $_____________v
-																														if (is_array($_____________v)) {
-																															foreach ($_____________v as $______________k => $______________v) {
-																																# $______________v
-																																if (is_array($______________v)) {
-																																	foreach ($______________v as $_______________k => $_______________v) {
-																																		
-																																		$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k][$___________k][$____________k][$_____________k][$______________k][$_______________k] = Filter::filterDB($_______________v);
-																																	}
-																																} else {
-																																	$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k][$___________k][$____________k][$_____________k][$______________k] = Filter::filterDB($______________v);
-																																}
-																															}
-																														} else {
-																															$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k][$___________k][$____________k][$_____________k] = Filter::filterDB($_____________v);
-																														}
-																													}
-																												} else {
-																													$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k][$___________k][$____________k] = Filter::filterDB($____________v);
-																												}
-																											}
-																										} else {
-																											$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k][$___________k] = Filter::filterDB($___________v);
-																										}
-																									}
-																								} else {
-																									$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k][$__________k] = Filter::filterDB($__________v);
-																								}
-																							}
-																						} else {
-																							$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k][$_________k] = Filter::filterDB($_________v);
-																						}
-																					}
-																				} else {
-																					$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k][$________k] = Filter::filterDB($________v);
-																				}
-																			}
-																		} else {
-																			$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k][$_______k] = Filter::filterDB($_______v);
-																		}
-																	}
-																} else {
-																	$md[$k][$_k][$__k][$___k][$____k][$_____k][$______k] = Filter::filterDB($______v);
-																}
-															}
-														} else {
-															$md[$k][$_k][$__k][$___k][$____k][$_____k] = Filter::filterDB($_____v);
-														}
-													}
-												} else {
-													$md[$k][$_k][$__k][$___k][$____k] = Filter::filterDB($____v);
-												}
-											}
-										} else {
-											$md[$k][$_k][$__k][$___k] = Filter::filterDB($___v);
-										}
-									}
-								} else {
-									$md[$k][$_k][$__k] = Filter::filterDB($__v);
-								}
-							}
-						} else {
-							$md[$k][$_k] = Filter::filterDB($_v);
-						}
-					}
-				} else {
-					$md[$k] = Filter::filterDB($v);
-				}
+				$md[$k] = self::methodDB($v);
 			}
 			return $md;
 		} else {
