@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.0
+ * @version 3.1
  */
 
 namespace BMVC\Core;
@@ -150,6 +150,8 @@ final class Route
 			} elseif (stripos($callback, '/') !== false) {
 				$closure = $callback;
 			} elseif (stripos($callback, '.') !== false) {
+				$closure = $callback;
+			} elseif (stripos($callback, '::') !== false) {
 				$closure = $callback;
 			} elseif (stripos($callback, ':') !== false) {
 				$closure = $callback;
