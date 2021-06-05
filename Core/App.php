@@ -83,11 +83,11 @@ final class App
 			self::$sc_file = $_SERVER['SCRIPT_FILENAME'];
 		}
 
+		self::initDotenv();
+		self::initDefine();
 		self::initWhoops($data);
 		self::initMonolog();
-		self::initDotenv();
 		self::initError();
-		self::initDefine();
 		self::initHeader();
 		self::initSession();
 		self::initData($data);
@@ -177,15 +177,64 @@ final class App
 		}
 	}
 
+	private static function initDotenv(): void
+	{
+		$dotenv = Dotenv::createImmutable(Dir::app());
+		$dotenv->safeLoad();
+		self::$dotenv = $dotenv;
+	}
+
+	private static function initDefine(): void
+	{
+		@define('URL', base_url());
+
+		# TIMEZONE
+		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
+			@define('TIMEZONE', $_ENV['TIMEZONE']);
+		} else {
+			@define('TIMEZONE', 'Europe/Istanbul');
+		}
+		@date_default_timezone_set(TIMEZONE);
+
+		# ENVIRONMENT
+		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) {
+			@define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
+		} else {
+			@define('ENVIRONMENT', 'development');
+		}
+		switch (ENVIRONMENT) {
+			case 'development':
+			@error_reporting(-1);
+			@ini_set('display_errors', 1);
+			@error_reporting(E_ALL ^ E_WARNING ^ E_USER_WARNING ^ E_NOTICE ^ E_DEPRECATED);
+			break;
+			case 'testing':
+			case 'production':
+			@ini_set('display_errors', 0);
+			if (version_compare(PHP_VERSION, '5.3', '>=')) {
+				@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
+			} else {
+				@error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
+			}
+			break;
+			default:
+			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
+			echo 'The application environment is not set correctly.';
+			exit(1);
+		}
+	}
+
 	/**
 	 * @param array $data
 	 */
 	private static function initWhoops(array $data=[]): void
 	{
+		$bl_array = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS'];
+
 		# Default Black List
 		self::$whoops_blacklist = array_merge(self::$whoops_blacklist, [
-			'_SERVER' => ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS'],
-			'_ENV' => ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'DB_DSN', 'DB_USER', 'DB_PASS']
+			'_SERVER' => $bl_array,
+			'_ENV' => $bl_array
 		]);
 		# Config Black List
 		if (isset($data['whoops_blacklist'])) {
@@ -203,7 +252,9 @@ final class App
 		}
 		# Register
 		$whoops = new WRun;
-		$whoops->pushHandler($PPH);
+		if (ENVIRONMENT == 'development') {
+			$whoops->pushHandler($PPH);
+		}
 		$whoops->register();
 		self::$whoops = $whoops;
 	}
@@ -211,7 +262,7 @@ final class App
 	private static function initMonolog(): void
 	{
 		$log = new MlLogger('BMVC');
-		$stream = new MlStreamHandler(Dir::app('/Logs/app.log'));
+		$stream = new MlStreamHandler(Dir::app('Logs' . DIRECTORY_SEPARATOR . 'app.log'));
 		$formatter = new MlLineFormatter(MlLineFormatter::SIMPLE_FORMAT, MlLineFormatter::SIMPLE_DATE);
 		$formatter->includeStacktraces(true);
 		$stream->setFormatter($formatter);
@@ -219,16 +270,9 @@ final class App
 		self::$log = $log;
 	}
 
-	private static function initDotenv(): void
-	{
-		$dotenv = Dotenv::createImmutable(Dir::app());
-		$dotenv->safeLoad();
-		self::$dotenv = $dotenv;
-	}
-
 	private static function initError(): void
 	{
-		if ($_ENV['LOG'] == true) {
+		if (@$_ENV['LOG'] == true) {
 			self::$whoops->pushHandler(function ($exception, $inspector, $run) {
 				self::$log->error($exception);
 			});
@@ -263,40 +307,6 @@ final class App
 			}
 			@session_name("BMVC");
 			@session_start();
-		}
-	}
-
-	private static function initDefine(): void
-	{
-		@define('URL', base_url());
-
-		# TIMEZONE
-		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
-			@define('TIMEZONE', $_ENV['TIMEZONE']);
-		} else {
-			@define('TIMEZONE', 'Europe/Istanbul');
-		}
-		@date_default_timezone_set(TIMEZONE);
-
-		# ENVIRONMENT
-		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null && in_array($_ENV['ENVIRONMENT'], ['development', 'production'])) {
-			@define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
-		} else {
-			@define('ENVIRONMENT', 'development');
-		}
-		switch (ENVIRONMENT) {
-			case 'development':
-			@error_reporting(-1);
-			@ini_set('display_errors', 0);
-			break;
-			case 'production':
-			@ini_set('display_errors', 0);
-			@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			break;
-			default:
-			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
-			echo 'The application environment is not set correctly.';
-			exit(1);
 		}
 	}
 
