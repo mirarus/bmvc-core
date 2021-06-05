@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.4
+ * @version 5.5
  */
 
 namespace BMVC\Libs;
@@ -18,6 +18,11 @@ use BMVC\Core\Route;
 
 class Lang
 {
+
+	/**
+	 * @var string
+	 */
+	private static $dir = 'Languages';
 
 	/**
 	 * @var array
@@ -36,9 +41,8 @@ class Lang
 
 	public function __construct()
 	{
-		if (!_is_dir(Dir::app('/App/Languages/'))) {
-			@mkdir(Dir::app('/App/Languages/'));
-		}
+		self::$dir = Dir::app('App' . DIRECTORY_SEPARATOR . 'Languages');
+		if (!Dir::is_dir(self::$dir)) @mkdir(self::$dir);
 
 		$_lang = $_ENV['LANG'];
 		
@@ -88,10 +92,9 @@ class Lang
 	}
 
 	/**
-	 * @param  string            $text
-	 * @param  bool|boolean      $return
-	 * @param  array|string|null $replace
-	 * @return string
+	 * @param string       $text
+	 * @param bool|boolean $return
+	 * @param mixed  	     $replace
 	 */
 	private static function _init(string $text, bool $return=true, $replace=null)
 	{
@@ -119,8 +122,7 @@ class Lang
 	}
 
 	/**
-	 * @param  string $text
-	 * @return array|false
+	 * @param string $text
 	 */
 	private static function _get_text(string $text)
 	{
@@ -128,7 +130,7 @@ class Lang
 
 		$_config = false;
 
-		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
+		if (file_exists($file = (self::$dir . DIRECTORY_SEPARATOR . 'config.php'))) {
 
 			$inc_file = include ($file);
 
@@ -151,7 +153,7 @@ class Lang
 		}
 
 		if ($_config == false) {
-			if (file_exists($file = Dir::app('/App/Languages/' . self::$current_lang . '.php'))) {
+			if (file_exists($file = (self::$dir . DIRECTORY_SEPARATOR . self::$current_lang . '.php'))) {
 
 				$_lang = [];
 				include $file;
@@ -167,14 +169,11 @@ class Lang
 		}
 	}
 
-	/**
-	 * @return array|false
-	 */
 	private static function _get_langs()
 	{
 		$_config = false;
 
-		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
+		if (file_exists($file = (self::$dir . DIRECTORY_SEPARATOR . 'config.php'))) {
 
 			$inc_file = include ($file);
 
@@ -190,13 +189,13 @@ class Lang
 		if ($_config == false) {
 
 			$files = [];
-			foreach (glob(Dir::app('/App/Languages/*.php')) as $file) {
-				if ($file == Dir::app('/App/Languages/index.php')) return false;
+			foreach (glob((self::$dir . DIRECTORY_SEPARATOR . '*.php')) as $file) {
+				if ($file == (self::$dir . DIRECTORY_SEPARATOR . 'index.php')) return false;
 
 				$_lang = [];
 				include $file;
 				if ($_lang != null) {
-					$files[] = str_replace([Dir::app('/App/Languages/'), '.php'], '', $file);
+					$files[] = str_replace([self::$dir, '.php'], '', $file);
 				}
 			}
 			return $files;
@@ -204,9 +203,8 @@ class Lang
 	}
 
 	/**
-	 * @param  string      $_xlang
-	 * @param  string|null $par
-	 * @return array|false
+	 * @param string      $_xlang
+	 * @param string|null $par
 	 */
 	private static function _get_lang_info(string $_xlang, string $par=null)
 	{
@@ -216,7 +214,7 @@ class Lang
 		$_data = [];
 		$_lang = [];
 
-		if (file_exists($file = Dir::app('/App/Languages/config.php'))) {
+		if (file_exists($file = (self::$dir . DIRECTORY_SEPARATOR . 'config.php'))) {
 
 			$inc_file = include ($file);
 
@@ -242,7 +240,7 @@ class Lang
 		}
 
 		if ($_config == false) {
-			if (file_exists($file = Dir::app('/App/Languages/' . $_xlang . '.php'))) {
+			if (file_exists($file = (self::$dir . DIRECTORY_SEPARATOR . $_xlang . '.php'))) {
 
 				include $file;
 
@@ -323,9 +321,8 @@ class Lang
 	}
 
 	/**
-	 * @param  string $text
-	 * @param  mixed $replace
-	 * @return string
+	 * @param string $text
+	 * @param mixed $replace
 	 */
 	public static function __(string $text, $replace=null)
 	{
@@ -333,9 +330,8 @@ class Lang
 	}
 
 	/**
-	 * @param  string $text
-	 * @param  mixed $replace
-	 * @return string
+	 * @param string $text
+	 * @param mixed $replace
 	 */
 	public static function ___(string $text, $replace=null)
 	{

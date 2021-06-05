@@ -1,31 +1,6 @@
 <?php
 
 /**
- * @param  string|null $type
- * @param  string|null $dir
- * @return mixed
- */
-function _dir_(string $type=null, string $dir=null)
-{
-	return BMVC\Libs\Dir::get($type, $dir);
-}
-
-function get_404()
-{
-	BMVC\Core\Route::get_404();
-}
-
-/**
- * @param mixed $callback
- */
-function set_404($callback)
-{
-	if (is_nem($callback)) {
-		BMVC\Core\Route::set_404($callback);
-	}
-}
-
-/**
  * @return boolean
  */
 function is_cli(): bool
@@ -88,7 +63,8 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 		$base_url .= $url;
 	}
 
-	$base_url = @str_replace(['/Public', '/public'], null, $base_url);
+	//$base_url = @str_replace(['/Public', '/public'], null, $base_url);
+	$base_url = @str_replace(trim(@$_ENV['PUBLIC_DIR'], '/'), null, rtrim($base_url, '/'));
 	$base_url = trim($base_url, '/') . '/';
 
 	if ($parse) {
@@ -190,19 +166,6 @@ function ep($text, $message, bool $html=false, $title=null, string $color=null, 
 }
 
 /**
- * @param  string $dir
- * @return bool
- */
-function _is_dir(string $dir): bool
-{
-	if (is_dir($dir) && opendir($dir)) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-/**
  * @param  mixed  $method
  * @param  string $pattern
  * @param  mixed  $callback
@@ -233,42 +196,6 @@ function _lang(string $text, $replace=null, bool $return=true)
 	} else {
 		BMVC\Libs\Lang::__($text, $replace);
 	}
-}
-
-/**
- * @param  array  $array
- * @return object
- */
-function arrayToObject($array): object
-{
-	$object = new stdClass();
-	if (is_array($array)) {
-		foreach ($array as $key => $value) {
-			if (is_array($value)) {
-				$value = arrayToObject($value);
-			}
-			$object->$key = $value;
-		}
-	}
-	return $object;
-}
-
-/**
- * @param  object $object
- * @return array
- */
-function objectToArray($object): array
-{
-	$array = [];
-	if (is_object($object)) {
-		foreach ($object as $key => $value) {
-			if (is_object($value)) {
-				$value = objectToArray($value);
-			}
-			$array[$key] = $value;
-		}
-	}
-	return $array;
 }
 
 function _controller($action, object &$return=null)

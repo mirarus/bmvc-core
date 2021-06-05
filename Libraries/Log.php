@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.0
+ * @version 2.1
  */
 
 namespace BMVC\Libs;
@@ -99,9 +99,10 @@ class Log
 	 */
 	private static function save(string $text): void
 	{
-		if (!Dir::check(Dir::app('/Logs/'))) @mkdir(Dir::app('/Logs/'));
+		$dir = Dir::app('Logs');
+		if (!Dir::is_dir($dir)) @mkdir($dir);
 
-		$file = fopen(Dir::app('/Logs/bmvc.log'), 'a');
+		$file = fopen(($dir . DIRECTORY_SEPARATOR . 'bmvc.log'), 'a');
 		if (fwrite($file, $text . "\r\n") === false) {
 			throw new Exception('Log Error! | Failed to create log file. - Check the write permissions.');
 		}
