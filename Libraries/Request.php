@@ -657,7 +657,7 @@ class Request
 		if (is_array($method)) {
 			$md = [];
 			foreach ($method as $k => $v) {
-				if (count($k) > 0) {
+				if (count($method) > 0) {
 					$md[$k] = self::methodDB($v);
 				}
 			}
