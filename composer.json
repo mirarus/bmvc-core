@@ -19,7 +19,15 @@
 		"jenssegers/blade": "^1.4",
 		"monolog/monolog": "^2.2",
 		"vlucas/phpdotenv": "^5.3",
-    "symfony/console": "^5.2"
+		"symfony/console": "^5.2"
+	},
+	"scripts": {
+		"post-install-cmd": [
+			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+		],
+		"post-root-package-install": [
+			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+		]
 	},
 	"autoload": {
 		"psr-4": {
