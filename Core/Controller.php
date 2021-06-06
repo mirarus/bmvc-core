@@ -92,10 +92,10 @@ final class Controller
 			# Last-Modified Change
 			if ($_controller != $_controller_) {
 				$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
-				if (@file_exists(Dir::app($_controller . '.php')) == true) {
-					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
-				} elseif (@$loader->findFile($_controller) != false) {
+				if (@$loader->findFile($_controller) != false) {
 					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($_controller))));
+				} elseif (@file_exists(Dir::app($_controller . '.php')) == true) {
+					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
 				} else {
 					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
 				}
