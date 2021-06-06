@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.1
+ * @version 3.2
  */
 
 namespace BMVC\Core;
@@ -96,7 +96,7 @@ final class Route
 
 					if ($method === @Request::getRequestMethod() && @Request::checkIp($ip)) {
 
-						if (strstr(@Request::_server('REQUEST_URI'), '/Public/')) {
+						if (strstr(@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) {
 							self::get_404();
 						}
 

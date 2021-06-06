@@ -8,12 +8,11 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.1
+ * @version 5.2
  */
 
 namespace BMVC\Core;
 
-use BadMethodCallException;
 use BMVC\Libs\Dir;
 
 final class Controller
@@ -48,77 +47,60 @@ final class Controller
 	}
 
 	/**
-	 * @param mixed       $action
+	 * @param string      $class
 	 * @param object|null &$return
 	 */
-	public static function import($action, object &$return=null)
+	public static function import(string $class, object &$return=null)
 	{
 		$controller = null;
 		$namespace  = null;
 
-		if (@is_string($action)) {
-			if (@strstr($action, '@')) {
-				$action = explode('@', $action);
-			} elseif (@strstr($action, '/')) {
-				$action = explode('/', $action);
-			} elseif (@strstr($action, '.')) {
-				$action = explode('.', $action);
-			} elseif (@strstr($action, '::')) {
-				$action = explode('::', $action);
-			} elseif (@strstr($action, ':')) {
-				$action = explode(':', $action);
-			}
-		}
+		#
+		$class      = @str_replace(['/', '//'], '\\', $class);
+		$action     = @explode('\\', $class);
+		$controller = @array_pop($action);
+		#
+		$_namespace = @str_replace(['/', '//'], '\\', self::$namespace);
+		$namespace  = (($action !== null) ? @implode('\\', $action) : null);
+		$namespace  = @str_replace(['/', '//'], '\\', $namespace);
+		#
+		$_controller_ = ($namespace != null) ? implode('\\', [$namespace, '_controller_']) : '_controller_';
+		$_controller_ = $_namespace . $_controller_;
+		$_controller_ = @str_replace(['/', '//'], '\\', $_controller_);
+		if (class_exists($_controller_, false)) new $_controller_;
+		#
+		$_controller = @ucfirst($controller);
+		$_controller = ($namespace != null) ? implode('\\', [$namespace, $_controller]) : $_controller;
+		$_controller = $_namespace . $_controller;
+		$_controller = @str_replace(['/', '//'], '\\', $_controller);
 
-		if ($action > 1) {
-			$controller = !is_string($action) ? @array_pop($action) : $action;
-		} else {
-			$controller = $action;
-		}
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (($namespace === null || $namespace !== null) && $controller != null) {
-
-			$_nsc_ = ($namespace != null) ? implode('/', [$namespace, '_controller_']) : '_controller_';
-			$_controller_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc_));
-			if (class_exists($_controller_, false)) {
-				new $_controller_;
-			}
-
-			$controller = ucfirst($controller);
-			$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
-			$_controller = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc));
-
-			# Last-Modified Change
-			if ($_controller != $_controller_) {
-				$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
-				if (@$loader->findFile($_controller) != false) {
-					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($_controller))));
-				} elseif (@file_exists(Dir::app($_controller . '.php')) == true) {
-					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
-				} else {
-					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
-				}
-			}
-
-			if (is_array(self::$params) && !empty(self::$params)) {
-				return $return = new $_controller(self::$params);
+		if ($_controller != $_controller_) {
+			$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
+			if (@$loader->findFile($_controller) != false) {
+				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($_controller))));
+			} elseif (@file_exists(Dir::app($_controller . '.php')) == true) {
+				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
 			} else {
-				return $return = new $_controller();
+				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
 			}
+		}
+
+		if (is_array(self::$params) && !empty(self::$params)) {
+			return $return = (new $_controller(self::$params));
+		} else {
+			return $return = (new $_controller);
 		}
 	}
 
 	/**
 	 * @param mixed       $action
-	 * @param array|null  $params
+	 * @param array       $params
 	 * @param object|null &$return
 	 */
-	public static function call($action, array $params=null, object &$return=null)
+	public static function call($action, array $params=[], object &$return=null)
 	{
 		$method     = null;
 		$controller = null;
-		$namespace  = null;
 
 		if (@is_string($action)) {
 			if (@strstr($action, '@')) {
@@ -133,29 +115,26 @@ final class Controller
 				$action = explode(':', $action);
 			}
 		}
-
-		if (@!is_string($action)) {
+		if (@is_array($action)) {
 			$method     = @array_pop($action);
 			$controller = @array_pop($action);
 		}
+		#
+		$namespace  = (($action != null) ? @implode('\\', $action) : null);
+		$namespace  = @str_replace(['/', '//'], '\\', $namespace);
+		$controller = ($namespace != null) ? implode('\\', [$namespace, $controller]) : $controller;
+		$controller = @str_replace(['/', '//'], '\\', $controller);
+		#
+		$class = self::import($controller);
 
-		$namespace  = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (isset($namespace) && $controller != null && $method != null) {
-
-			$class = self::import([$namespace, $controller]);
-			
-			if (method_exists($class, $method)) {
-				if ($params == null) {
-					return $return = call_user_func([$class, $method]);
-				} else {
-					return $return = call_user_func_array([$class, $method], array_values($params));
-				}
+		if (method_exists($class, $method)) {
+			if ($params == null) {
+				return $return = call_user_func([$class, $method]);
 			} else {
-				$controller = ucfirst($controller);
-				$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
-				throw new BadMethodCallException('Controller Method Not Found! | Controller: ' . $_nsc . ' - Method: ' . $method);
+				return $return = call_user_func_array([$class, $method], array_values($params));
 			}
+		} else {
+			return $return = $class->{$method}();
 		}
 	}
 }
