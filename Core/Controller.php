@@ -134,10 +134,10 @@ final class Controller
 			}
 		}
 
-		pr($action);
-
-/*		$method     = @array_pop($action);
-		$controller = @array_pop($action);
+		if (@!is_string($action)) {
+			$method     = @array_pop($action);
+			$controller = @array_pop($action);
+		}
 
 		$namespace  = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
 
@@ -156,6 +156,6 @@ final class Controller
 				$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
 				throw new BadMethodCallException('Controller Method Not Found! | Controller: ' . $_nsc . ' - Method: ' . $method);
 			}
-		}*/
+		}
 	}
 }
