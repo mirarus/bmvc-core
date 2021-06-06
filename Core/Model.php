@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 4.9
+ * @version 5.0
  */
 
 namespace BMVC\Core;
@@ -116,9 +116,10 @@ final class Model
 			$_nsm_ = ($namespace != null) ? implode('/', [$namespace, '_model_']) : '_model_';
 			
 			$_model_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsm_));
-			if (class_exists($_model_)) {
-				new $_model_();
+			if (class_exists($_model_, false)) {
+				new $_model_;
 			}
+
 
 			$model = ucfirst($model);
 			$_nsm = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;

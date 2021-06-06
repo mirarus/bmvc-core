@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.0
+ * @version 5.1
  */
 
 namespace BMVC\Core;
@@ -81,16 +81,24 @@ final class Controller
 
 			$_nsc_ = ($namespace != null) ? implode('/', [$namespace, '_controller_']) : '_controller_';
 			$_controller_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc_));
-			if (class_exists($_controller_)) {
-				new $_controller_();
+			if (class_exists($_controller_, false)) {
+				new $_controller_;
 			}
 
 			$controller = ucfirst($controller);
 			$_nsc = ($namespace != null) ? implode('/', [$namespace, $controller]) : $controller;
 			$_controller = (self::$namespace . str_replace(['/', '//'], '\\', $_nsc));
 
+			# Last-Modified Change
 			if ($_controller != $_controller_) {
-				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
+				$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
+				if (@file_exists(Dir::app($_controller . '.php')) == true) {
+					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($_controller . '.php'))));
+				} elseif (@$loader->findFile($_controller) != false) {
+					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($_controller))));
+				} else {
+					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
+				}
 			}
 
 			if (is_array(self::$params) && !empty(self::$params)) {
