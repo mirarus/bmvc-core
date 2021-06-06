@@ -32,7 +32,7 @@ final class Controller
 	/**
 	 * @param string|null $namespace
 	 */
-	public static function namespace(string $namespace): void
+	public static function namespace(string $namespace=null): void
 	{
 		self::$namespace = $namespace;
 	}

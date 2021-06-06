@@ -28,7 +28,7 @@ final class View
 	/**
 	 * @param string|null $namespace
 	 */
-	public static function namespace(string $namespace): void
+	public static function namespace(string $namespace=null): void
 	{
 		self::$namespace = trim(str_replace("\\", DIRECTORY_SEPARATOR, $namespace), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 	}
