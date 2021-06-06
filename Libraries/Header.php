@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.4
+ * @version 1.5
  */
 
 namespace BMVC\Libs;
@@ -60,20 +60,24 @@ class Header
 
 	public static function get($key=null)
 	{
+		$headers = array_merge(getallheaders(), self::headers_list());
+
 		if ($key == null) {
-			$h = [];
-			foreach (headers_list() as $headerl) {
-				$header = explode(":", $headerl);
-				$h[trim(array_shift($header))] = trim(implode(':', $header));
-			}
-			return $h;
+			return $headers;
 		} else {
-			foreach (headers_list() as $headerl) {
-				$header = explode(":", $headerl);
-				if (trim(array_shift($header)) == $key) {
-					return trim(implode(':', $header));
-				}
+			foreach ($headers as $hkey => $hval) {
+				if ($hkey == $key) return trim($hval);
 			}
 		}
+	}
+
+	private static function headers_list()
+	{
+		$h = [];
+		foreach (headers_list() as $header) {
+			$header = explode(":", $header);
+			$h[trim(array_shift($header))] = trim(implode(':', $header));
+		}
+		return $h;
 	}
 }
