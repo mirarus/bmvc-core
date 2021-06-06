@@ -2,5 +2,4 @@
 
 $_lang_name = ['English', 'English'];
 
-
-$_lang['error'] = 'Error!';
+# $_lang['error'] = 'Error!';

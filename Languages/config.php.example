@@ -7,7 +7,7 @@ return [
 			'name-local' => 'Türkçe'
 		],
 		'langs' => [
-			'error' => 'Hata!'
+			#'error' => 'Hata!'
 		]
 	],
 	'en' => [
@@ -16,7 +16,7 @@ return [
 			'name-local' => 'English'
 		],
 		'langs' => [
-			'error' => 'Error!'
+			#'error' => 'Error!'
 		]
 	]
 ];
