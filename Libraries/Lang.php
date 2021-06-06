@@ -22,7 +22,7 @@ class Lang
 	/**
 	 * @var string
 	 */
-	private static $dir = 'Languages';
+	public static $dir = 'Languages';
 
 	/**
 	 * @var array
@@ -41,7 +41,7 @@ class Lang
 
 	public function __construct()
 	{
-		self::$dir = Dir::app('Languages');
+		self::$dir = Dir::app(self::$dir);
 		if (!Dir::is_dir(self::$dir)) @mkdir(self::$dir);
 
 		$_lang = $_ENV['LANG'];
