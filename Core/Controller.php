@@ -53,7 +53,6 @@ final class Controller
 	public static function import(string $class, object &$return=null)
 	{
 		$controller = null;
-		$namespace  = null;
 
 		#
 		$class      = @str_replace(['/', '//'], '\\', $class);

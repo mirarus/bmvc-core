@@ -8,13 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.0
+ * @version 5.1
  */
 
 namespace BMVC\Core;
 
 use BMVC\Libs\BasicDB;
-use BadMethodCallException;
 
 final class Model
 {
@@ -82,54 +81,36 @@ final class Model
 	}
 
 	/**
-	 * @param mixed       $action
+	 * @param string      $class
 	 * @param object|null &$return
 	 */
-	public static function import($action, object &$return=null)
+	public static function import(string $class, object &$return=null)
 	{
-		$model     = null;
-		$namespace = null;
+		$model = null;
 
-		if (@is_string($action)) {
-			if (@strstr($action, '@')) {
-				$action = explode('@', $action);
-			} elseif (@strstr($action, '/')) {
-				$action = explode('/', $action);
-			} elseif (@strstr($action, '.')) {
-				$action = explode('.', $action);
-			} elseif (@strstr($action, '::')) {
-				$action = explode('::', $action);
-			} elseif (@strstr($action, ':')) {
-				$action = explode(':', $action);
-			}
-		}
+		#
+		$class  = @str_replace(['/', '//'], '\\', $class);
+		$action = @explode('\\', $class);
+		$model  = @array_pop($action);
+		#
+		$_namespace = @str_replace(['/', '//'], '\\', self::$namespace);
+		$namespace  = (($action !== null) ? @implode('\\', $action) : null);
+		$namespace  = @str_replace(['/', '//'], '\\', $namespace);
+		#
+		$_model_ = ($namespace != null) ? implode('\\', [$namespace, '_model_']) : '_model_';
+		$_model_ = $_namespace . $_model_;
+		$_model_ = @str_replace(['/', '//'], '\\', $_model_);
+		if (class_exists($_model_, false)) new $_model_;
+		#
+		$_model = @ucfirst($model);
+		$_model = ($namespace != null) ? implode('\\', [$namespace, $_model]) : $_model;
+		$_model = $_namespace . $_model;
+		$_model = @str_replace(['/', '//'], '\\', $_model);
 
-		if ($action > 1) {
-			$model = !is_string($action) ? @array_pop($action) : $action;
+		if (is_array(self::$params) && !empty(self::$params)) {
+			return $return = (new $_model(self::$params));
 		} else {
-			$model = $action;
-		}
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (($namespace === null || $namespace !== null) && $model != null) {
-
-			$_nsm_ = ($namespace != null) ? implode('/', [$namespace, '_model_']) : '_model_';
-			
-			$_model_ = (self::$namespace . str_replace(['/', '//'], '\\', $_nsm_));
-			if (class_exists($_model_, false)) {
-				new $_model_;
-			}
-
-
-			$model = ucfirst($model);
-			$_nsm = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
-			$_model = (self::$namespace . str_replace(['/', '//'], '\\', $_nsm));
-
-			if (is_array(self::$params) && !empty(self::$params)) {
-				return $return = new $_model(self::$params);
-			} else {
-				return $return = new $_model();
-			}
+			return $return = (new $_model);
 		}
 	}
 
@@ -140,9 +121,8 @@ final class Model
 	 */
 	public static function call($action, array $params=[], object &$return=null)
 	{
-		$method    = null;
-		$model     = null;
-		$namespace = null;
+		$method = null;
+		$model  = null;
 
 		if (@is_string($action)) {
 			if (@strstr($action, '@')) {
@@ -157,26 +137,26 @@ final class Model
 				$action = explode(':', $action);
 			}
 		}
+		if (@is_array($action)) {
+			$method     = @array_pop($action);
+			$model = @array_pop($action);
+		}
+		#
+		$namespace = (($action != null) ? @implode('\\', $action) : null);
+		$namespace = @str_replace(['/', '//'], '\\', $namespace);
+		$model     = ($namespace != null) ? implode('\\', [$namespace, $model]) : $model;
+		$model     = @str_replace(['/', '//'], '\\', $model);
+		#
+		$class = self::import($model);
 
-		$method    = @array_pop($action);
-		$model     = @array_pop($action);
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (isset($namespace) && $model != null && $method != null) {
-
-			$class = self::import([$namespace, $model]);
-			
-			if (method_exists($class, $method)) {
-				if ($params == null) {
-					return $return = call_user_func([$class, $method]);
-				} else {
-					return $return = call_user_func_array([$class, $method], array_values($params));
-				}
+		if (method_exists($class, $method)) {
+			if ($params == null) {
+				return $return = call_user_func([$class, $method]);
 			} else {
-				$model = ucfirst($model);
-				$_nsm  = ($namespace != null) ? implode('/', [$namespace, $model]) : $model;
-				throw new BadMethodCallException('Model Method Not Found! | Model: ' . $_nsm . ' - Method: ' . $method);
+				return $return = call_user_func_array([$class, $method], array_values($params));
 			}
+		} else {
+			return $return = $class->{$method}();
 		}
 	}
 }
