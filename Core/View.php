@@ -215,7 +215,7 @@ final class View
 	/**
 	 * @param mixed &$return
 	 */
-	public function render(&$return=null)
+	public static function render(&$return=null)
 	{
 		if (@self::$content) {
 			echo $return = self::$content;
@@ -271,7 +271,7 @@ final class View
 	 * @param array|null  $data
 	 * @param mixed       &$return
 	 */
-	private function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
+	private static function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{
 		@extract($data);
 		@$_REQUEST['vd'] = $data;
@@ -309,7 +309,7 @@ final class View
 	 * @param array|null  $data
 	 * @param mixed       &$return
 	 */
-	private function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
+	private static function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{	
 		@extract($data);
 		@$_REQUEST['vd'] = $data;
