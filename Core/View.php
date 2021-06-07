@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.2
+ * @version 5.3
  */
 
 namespace BMVC\Core;
@@ -96,9 +96,11 @@ final class View
 	 * @param array|null   $data
 	 * @param bool|boolean $render
 	 */
-	public static function layout(Closure $callback, array $data=null, bool $render=false)
+	public static function layout(Closure $callback, array $data=null, bool $render=true)
 	{
 		$data = array_merge((array) $data, self::$data);
+		@extract($data);
+		@$_REQUEST['vd'] = $data;
 
 		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace;
 		$_ns  = Dir::implode([Dir::trim($_ns), 'Layout', 'Main']);
@@ -112,8 +114,11 @@ final class View
 			require_once $file;
 			$ob_content = ob_get_contents();
 			ob_end_clean();
-
-			self::_replace($data, $ob_content);
+			
+			# Replace
+			if (isset($data['page_title'])) {
+				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+			}
 
 			self::$content = $ob_content;
 
@@ -133,9 +138,11 @@ final class View
 	 * @param bool|boolean $layout
 	 * @param bool|boolean $render
 	 */
-	public static function load($action, array $data=null, bool $layout=false, bool $render=false)
+	public static function load($action, array $data=null, bool $layout=false, bool $render=true)
 	{
 		$data = array_merge((array) $data, self::$data);
+		@extract($data);
+		@$_REQUEST['vd'] = $data;
 
 		$view = null;
 
@@ -179,13 +186,15 @@ final class View
 				$ob_content = ob_get_contents();
 				ob_end_clean();
 
-				self::_replace($data, $ob_content);
-
-				self::$content = $ob_content;
+				# Replace
+				if (isset($data['page_title'])) {
+					$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+				}
 
 				if ($render == true) {
-					echo self::$content;
+					echo $ob_content;
 				} else {
+					self::$content = $ob_content;
 					return new self;
 				}
 			} else {
@@ -220,7 +229,7 @@ final class View
 	 */
 	private static function _import($action, array $data=null, &$return=null)
 	{
-		$data ? extract($data) : null;
+		@extract($data);
 		@$_REQUEST['vd'] = $data;
 
 		if (@is_string($action)) {
@@ -264,6 +273,9 @@ final class View
 	 */
 	private function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{
+		@extract($data);
+		@$_REQUEST['vd'] = $data;
+
 		$_ns  = (self::$namespace . $view);
 		$file = Dir::app($_ns . '.' . self::$extension);
 
@@ -280,7 +292,10 @@ final class View
 			$ob_content = ob_get_contents();
 			ob_end_clean();
 
-			self::_replace($data, $ob_content);
+			# Replace
+			if (isset($data['page_title'])) {
+				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+			}
 
 			return $return = $ob_content;
 		} else {
@@ -295,7 +310,10 @@ final class View
 	 * @param mixed       &$return
 	 */
 	private function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
-	{
+	{	
+		@extract($data);
+		@$_REQUEST['vd'] = $data;
+
 		return $return = 
 		(new Blade(
 			Dir::app(self::$namespace), 
@@ -303,17 +321,6 @@ final class View
 		))
 		->make($view, $data)
 		->render();
-	}
-
-	/**
-	 * @param array|null $data
-	 * @param mixed      &$content
-	 */
-	private function _replace(array $data=null, &$content=null)
-	{
-		if (isset($data['page_title'])) {
-			$content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $content);
-		}
 	}
 
 	/**
