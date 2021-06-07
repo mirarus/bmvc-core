@@ -129,11 +129,11 @@ final class View
 
 	/**
 	 * @param mixed        $action
-	 * @param bool|boolean $layout
 	 * @param array|null   $data
+	 * @param bool|boolean $layout
 	 * @param bool|boolean $render
 	 */
-	public static function load($action, bool $layout=false, array $data=null, bool $render=false)
+	public static function load($action, array $data=null, bool $layout=false, bool $render=false)
 	{
 		$data = array_merge((array) $data, self::$data);
 
