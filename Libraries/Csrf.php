@@ -8,10 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.6
+ * @version 1.7
  */
 
 namespace BMVC\Libs;
+
+use stdClass;
 
 class Csrf
 {
@@ -66,7 +68,7 @@ class Csrf
 			return false;
 		}
 
-		$token = (self::getSessionToken($page) ?? self::setNewToken($page, $expiry));
+		$token = (self::getSessionToken($page) ? self::setNewToken($page, $expiry) : null);
 
 		return $token->sessiontoken;
 	}
@@ -83,7 +85,7 @@ class Csrf
 
 		self::confirmSessionStarted();
 
-		$requestToken = ($requestToken ?? $_POST['csrf_token'] ?? null);
+		$requestToken = ($requestToken ? Request::post('csrf_token') : null);
 
 		if (empty($page)) {
 			return false;
@@ -135,9 +137,9 @@ class Csrf
 	 */
 	private static function setNewToken(string $page, int $expiry)
 	{
-		$token = new \stdClass();
-		$token->page   		 = $page;
-		$token->expiry 		 = time() + $expiry;
+		$token = new stdClass();
+		$token->page   		 	 = $page;
+		$token->expiry 		 	 = time() + $expiry;
 		$token->sessiontoken = base64_encode(random_bytes(32));
 		$token->cookietoken  = md5(base64_encode(random_bytes(32)));
 

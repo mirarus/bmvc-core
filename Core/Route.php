@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.2
+ * @version 3.3
  */
 
 namespace BMVC\Core;
@@ -23,7 +23,7 @@ final class Route
 	/**
 	 * @var string
 	 */
-	private static $notFound = '';
+	public static $notFound = '';
 
 	/**
 	 * @var array
@@ -406,12 +406,8 @@ final class Route
 	 */
 	public static function get_404()
 	{
-		if (self::$notFound) {
-			if (is_callable(self::$notFound)) {
-				call_user_func(self::$notFound);
-			} else {
-				Controller::call(self::$notFound);
-			}
+		if (@self::$notFound) {
+			return self::$notFound;
 		} else {
 			MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
 		}

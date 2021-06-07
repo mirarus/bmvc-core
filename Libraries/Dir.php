@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.4
+ * @version 1.5
  */
 
 namespace BMVC\Libs;
@@ -25,9 +25,9 @@ class Dir
 		$baseDir = dirname(__DIR__) . DIRECTORY_SEPARATOR;
 
 		if ($dir !== null) {
-			return $baseDir . $dir;
+			return self::replace($baseDir . $dir);
 		} else {
-			return $baseDir;
+			return self::replace($baseDir);
 		}
 	}
 
@@ -40,9 +40,9 @@ class Dir
 		$appDir = dirname(dirname(dirname(self::base()))) . DIRECTORY_SEPARATOR;
 
 		if ($dir !== null) {
-			return $appDir . $dir;
+			return self::replace($appDir . $dir);
 		} else {
-			return $appDir;
+			return self::replace($appDir);
 		}
 	}
 
@@ -83,10 +83,66 @@ class Dir
 	public static function is_dir(string $dir, string $type=null): bool
 	{
 		if ($type == 'app') {
-			$dir = Dir::app($dir);
+			$dir = self::app($dir);
 		} elseif ($type == 'base') {
-			$dir = Dir::base($dir);
+			$dir = self::base($dir);
 		}
 		return (is_dir($dir) && opendir($dir));
+	}
+
+	/**
+	 * @param  string       $dir
+	 * @param  string|null  $type
+	 * @param  int|integer  $perms
+	 * @param  bool|boolean $recursive
+	 * @return bool
+	 */
+	public static function mk_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
+	{
+		if ($type == 'app') {
+			$dir = self::app($dir);
+		} elseif ($type == 'base') {
+			$dir = self::base($dir);
+		}
+
+		if (!self::is_dir($dir)) {
+			return (bool) @mkdir($dir, $perms, $recursive);
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * @param  string|null $str
+	 * @return string
+	 */
+	public static function replace(string $str=null): string
+	{
+		return @str_replace(['/', '//', '\\'], DIRECTORY_SEPARATOR, $str);
+	}
+	
+	/**
+	 * @param mixed $arg
+	 */
+	public static function implode($arg=null)
+	{
+		return @implode(DIRECTORY_SEPARATOR, $arg);
+	}
+
+	/**
+	 * @param  mixed $arg
+	 * @return array
+	 */
+	public static function explode($arg=null): array
+	{
+		return @explode(DIRECTORY_SEPARATOR, $arg);
+	}
+
+	/**
+	 * @param mixed $arg
+	 */
+	public static function trim($arg=null)
+	{
+		return @trim($arg, DIRECTORY_SEPARATOR);
 	}
 }

@@ -341,13 +341,10 @@ final class App
 	{
 		Route::Run($route);
 
-		$action = @$route['action'];
-		$params = @$route['params'];
-
-		if (is_callable($action)) {
-			return call_user_func_array($action, array_values($params));
-		} else {
-			Controller::call(@$action, @$params);
+		if (@$route) {
+			Controller::call(@$route['action'], @$route['params']);
+		} elseif (@Route::$notFound) {
+			Controller::call(Route::$notFound);
 		}
 	}
 }

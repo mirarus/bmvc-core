@@ -16,6 +16,7 @@ namespace BMVC\Core;
 use Exception;
 use Closure;
 use BMVC\Libs\Dir;
+use Jenssegers\Blade\Blade;
 
 final class View
 {
@@ -26,89 +27,85 @@ final class View
 	private static $namespace = null;
 
 	/**
+	 * @var array
+	 */
+	private static $engines = ['php', 'blade'];
+
+	/**
+	 * @var string
+	 */
+	private static $engine = 'php';
+
+	/**
+	 * @var array
+	 */
+	private static $data = [];
+
+	/**
+	 * @var string
+	 */
+	private static $extension = 'php';
+
+	/**
+	 * @var mixed
+	 */
+	private static $content;
+
+	/**
 	 * @param string|null $namespace
 	 */
 	public static function namespace(string $namespace=null): void
 	{
-		self::$namespace = trim(str_replace("\\", DIRECTORY_SEPARATOR, $namespace), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		self::$namespace = Dir::trim(Dir::replace($namespace)) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
-	 * @param mixed        $action
-	 * @param array        $data
-	 * @param bool|boolean $layout
-	 * @param string       $engine
-	 * @param object|null  &$return
+	 * @param  string $engine
+	 * @return View
 	 */
-	public static function load($action, array $data=[], bool $layout=false, string $engine='php', object &$return=null)
+	public static function engine(string $engine): View
 	{
-		$view      = null;
-		$namespace = null;
-
-		if (@is_string($action)) {
-			if (@strstr($action, '@')) {
-				$action = explode('@', $action);
-			} elseif (@strstr($action, '/')) {
-				$action = explode('/', $action);
-			} elseif (@strstr($action, '.')) {
-				$action = explode('.', $action);
-			} elseif (@strstr($action, '::')) {
-				$action = explode('::', $action);
-			} elseif (@strstr($action, ':')) {
-				$action = explode(':', $action);
-			}
+		if (in_array($engine, self::$engines)) {
+			self::$engine = $engine;
 		}
-
-		if ($action > 1) {
-			$view = !is_string($action) ? @array_pop($action) : $action;
-		} else {
-			$view = $action;
-		}
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
-
-		if (($namespace === null || $namespace !== null) && $view != null) {
-
-			if ($layout == true) {
-
-				$namespacel = (array_key_exists('namespace', $data) ? $data['namespace'] : $namespace);
-
-				$_file = (self::$namespace . ($namespacel . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php'));
-				$file  = Dir::app($_file);
-
-				if (file_exists($file)) {
-					$content = $view != null ? self::import([$namespace, $view], $data, $engine, $return) : null;
-
-					ob_start();
-					require_once $file;
-					$ob_content = ob_get_contents();
-					ob_end_clean();
-
-					if (isset($data['page_title'])) {
-						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-					}
-
-					echo $return = $ob_content;
-				} else {
-					throw new Exception('Layout File Found! | File: ' . $_file);
-				}
-			} else {
-				echo self::import([$namespace, $view], $data, $engine, $return);
-			}
-		}
+		return new self;
 	}
 
 	/**
-	 * @param Closure     $callback
-	 * @param array       $data
-	 * @param object|null &$return
+	 * @param  array|null $data
+	 * @return View
 	 */
-	public static function layout(Closure $callback, array $data=[], object &$return=null)
+	public static function data(array $data=null): View
 	{
-		$_ns   = (array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace);
-		$_file = ($_ns . DIRECTORY_SEPARATOR . 'Layout' . DIRECTORY_SEPARATOR . 'Main.php');
-		$file  = Dir::app($_file);
+		self::$data = $data;
+		return new self;
+	}
+
+	/**
+	 * @param  string $extension
+	 * @return View
+	 */
+	public static function extension(string $extension='php'): View
+	{
+		self::$extension = $extension;
+		return new self;
+	}
+
+	/**
+	 * @param Closure      $callback
+	 * @param array|null   $data
+	 * @param bool|boolean $render
+	 */
+	public static function layout(Closure $callback, array $data=null, bool $render=false)
+	{
+		$data = array_merge((array) $data, self::$data);
+
+		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace;
+		$_ns  = Dir::implode([Dir::trim($_ns), 'Layout', 'Main']);
+		$file = Dir::app($_ns . '.' . self::$extension);
 
 		if (file_exists($file)) {
+
 			$content = call_user_func($callback);
 
 			ob_start();
@@ -116,30 +113,31 @@ final class View
 			$ob_content = ob_get_contents();
 			ob_end_clean();
 
-			if (isset($data['page_title'])) {
-				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-			}
+			self::_replace($data, $ob_content);
 
-			echo $return = $ob_content;
+			self::$content = $ob_content;
+
+			if ($render == true) {
+				echo self::$content;
+			} else {
+				return new self;
+			}
 		} else {
-			throw new Exception('Layout File Found! | File: ' . $_file);
+			throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 		}
 	}
 
 	/**
-	 * @param mixed       $action
-	 * @param array       $data
-	 * @param string      $engine
-	 * @param object|null &$return
+	 * @param mixed        $action
+	 * @param bool|boolean $layout
+	 * @param array|null   $data
+	 * @param bool|boolean $render
 	 */
-	private static function import($action, array $data=[], string $engine='php', object &$return=null)
+	public static function load($action, bool $layout=false, array $data=null, bool $render=false)
 	{
-		$data ? extract($data) : null;
-		@$_REQUEST['vd'] = $data;
+		$data = array_merge((array) $data, self::$data);
 
-		if (!in_array($engine, ['php', 'blade'])) {
-			$engine = 'php';
-		}
+		$view = null;
 
 		if (@is_string($action)) {
 			if (@strstr($action, '@')) {
@@ -155,76 +153,201 @@ final class View
 			}
 		}
 
-		if ($action > 1) {
-			$view = !is_string($action) ? @array_pop($action) : $action;
-		} else {
+		if (@is_array($action) && count($action) > 1) {
+			$view = @array_pop($action);
+		} elseif (@is_string($action)) {
 			$view = $action;
 		}
-		$namespace = ($action !== null && !is_string($action)) ? @implode('\\', $action) : null;
+		#
+		$namespace = (($action != null) ? Dir::implode($action) : null);
+		$namespace = Dir::replace($namespace);
+		$view			 = ($namespace != null) ? Dir::implode([$namespace, $view]) : $view;
+		$view			 = Dir::replace($view);
+		#
+		if ($layout == true) {
 
-		if (($namespace === null || $namespace !== null) && $view != null) {
+			$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
+			$_ns 	= (self::$namespace . Dir::implode([Dir::trim($_ns), 'Layout', 'Main']));
+			$file = Dir::app($_ns . '.' . self::$extension);
 
-			$_nsv = ($namespace != null) ? implode(DIRECTORY_SEPARATOR, [$namespace, $view]) : DIRECTORY_SEPARATOR . $view;
-			$cDir = Dir::app(self::$namespace . $namespace . DIRECTORY_SEPARATOR . 'Cache');
+			if (file_exists($file)) {
 
-			if ($engine == 'php') {
+				$content = ($view != null ? self::_import([$namespace, $view], $data, $return) : null);
 
-				$_file = (self::$namespace . $_nsv . '.php');
-				$file  = Dir::app($_file);
+				ob_start();
+				require_once $file;
+				$ob_content = ob_get_contents();
+				ob_end_clean();
 
-				if (file_exists($file)) {
+				self::_replace($data, $ob_content);
 
-					if ($_ENV['VIEW_CACHE'] == true) {
-						if (!Dir::is_dir($cDir)) @mkdir($cDir);
-						$file = self::cache($_nsv, $file, $cDir);
-					}
+				self::$content = $ob_content;
 
-					ob_start();
-					require_once $file;
-					$ob_content = ob_get_contents();
-					ob_end_clean();
-
-					if (isset($data['page_title'])) {
-						$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-					}
-
-					return $return = $ob_content;
+				if ($render == true) {
+					echo self::$content;
 				} else {
-					throw new Exception('View File Found! | File: ' . $_file);
+					return new self;
 				}
-			} elseif ($engine == 'blade') {
-				if (!Dir::is_dir($cDir)) @mkdir($cDir);
+			} else {
+				throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
+			}
+		} else {
 
-				$_file = (self::$namespace . $_nsv . '.blade.php');
-				$file  = Dir::app($_file);
+			self::$content = self::_import([$namespace, $view], $data, $return);
 
-				if (file_exists($file)) {
-					$blade = new \Jenssegers\Blade\Blade(Dir::app(self::$namespace . $namespace, $cDir));
-					return $blade->make($view, $data)->render();
-				} else {
-					throw new Exception('Blade View File Found! | File: ' . $_file);
-				}
+			if ($render == true) {
+				echo self::$content;
+			} else {
+				return new self;
+			}
+		}
+	}
+
+	public function render()
+	{
+		if (@self::$content) {
+			echo self::$content;
+		}
+	}
+
+	/**
+	 * @param mixed      $action
+	 * @param array|null $data
+	 * @param mixed      &$return
+	 */
+	private static function _import($action, array $data=null, &$return=null)
+	{
+		$data ? extract($data) : null;
+		@$_REQUEST['vd'] = $data;
+
+		if (@is_string($action)) {
+			if (@strstr($action, '@')) {
+				$action = explode('@', $action);
+			} elseif (@strstr($action, '/')) {
+				$action = explode('/', $action);
+			} elseif (@strstr($action, '.')) {
+				$action = explode('.', $action);
+			} elseif (@strstr($action, '::')) {
+				$action = explode('::', $action);
+			} elseif (@strstr($action, ':')) {
+				$action = explode(':', $action);
+			}
+		}
+
+		if (@is_array($action) && count($action) > 1) {
+			$view = @array_pop($action);
+		} elseif (@is_string($action)) {
+			$view = $action;
+		}
+		#
+		$namespace = (($action != null) ? Dir::implode($action) : null);
+		$namespace = Dir::replace($namespace);
+
+		if ($view != null) {
+
+			if (self::$engine == 'php') {
+				return $return = self::_enginePHP($view, $namespace, $data);
+			} elseif (self::$engine == 'blade') {
+				return $return = self::_engineBLADE($view, $namespace, $data);
 			}
 		}
 	}
 
 	/**
-	 * @param string $fileName
-	 * @param string $fileContent
-	 * @param string $cacheDir
+	 * @param string|null $view
+	 * @param string|null $namespace
+	 * @param array|null  $data
+	 * @param mixed       &$return
 	 */
-	private static function cache(string $fileName, string $fileContent, string $cacheDir)
+	private function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{
-		$file = ($cacheDir . DIRECTORY_SEPARATOR . md5($fileName) . '.php');
-		$expire = 120;
+		$_ns  = (self::$namespace . $view);
+		$file = Dir::app($_ns . '.' . self::$extension);
 
-		if (!file_exists($file) || (filemtime($file) < (time() - $expire))) {
+		if (file_exists($file)) {
 
-			$content = file_get_contents($fileContent);
-			$signature = "\n<?php /** FILE: " . $fileContent . " - DATE: " . date(DATE_RFC822) ." - EXPIRE: " . date(DATE_RFC822, time() + $expire) . " */ ?>";
-			$content = $content . $signature;
-			file_put_contents($file, $content, LOCK_EX);
+			# Cache
+			if ($_ENV['VIEW_CACHE'] == true) {
+				$file = self::_cache($view, $file, self::_cache_dir($namespace));
+			}
+
+			# Ob
+			ob_start();
+			require_once $file;
+			$ob_content = ob_get_contents();
+			ob_end_clean();
+
+			self::_replace($data, $ob_content);
+
+			return $return = $ob_content;
+		} else {
+			throw new Exception('View [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 		}
-		return $file;
+	}
+
+	/**
+	 * @param string|null $view
+	 * @param string|null $namespace
+	 * @param array|null  $data
+	 * @param mixed       &$return
+	 */
+	private function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
+	{
+		return $return = 
+		(new Blade(
+			Dir::app(self::$namespace), 
+			self::_cache_dir($namespace)
+		))
+		->make($view, $data)
+		->render();
+	}
+
+	/**
+	 * @param array|null $data
+	 * @param mixed      &$content
+	 */
+	private function _replace(array $data=null, &$content=null)
+	{
+		if (isset($data['page_title'])) {
+			$content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $content);
+		}
+	}
+
+	/**
+	 * @param string|null $namespace
+	 * @param mixed       &$return
+	 */
+	private function _cache_dir(string $namespace=null, &$return=null)
+	{
+		$_ns = (($namespace != null) ? Dir::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
+		$dir = Dir::app($_ns);
+
+		Dir::mk_dir($dir);
+
+		return $return = $dir;
+	}
+
+	/**
+	 * @param string $view
+	 * @param string $file
+	 * @param string $dir
+	 */
+	private static function _cache(string $view, string $file, string $dir)
+	{
+		if (file_exists($file)) {
+			
+			$_view = Dir::explode($view);
+			$_view = @array_pop($_view);
+			$_file = Dir::implode([$dir, (md5($_view) . '.' . self::$extension)]);
+			$expir = 120;
+			
+			if (!file_exists($_file) || (filemtime($_file) < (time() - $expir))) {
+
+				$signature = "<?php\n/**\n * @file " . $file . "\n * @date " . date(DATE_RFC822) ."\n * @expire " . date(DATE_RFC822, time() + $expir) . "\n */\n?>\n";
+				$content = $signature . file_get_contents($file);
+				file_put_contents($_file, $content, LOCK_EX);
+			}
+			return $_file;
+		}
 	}
 }
