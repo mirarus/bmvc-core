@@ -203,10 +203,13 @@ final class View
 		}
 	}
 
-	public function render()
+	/**
+	 * @param mixed &$return
+	 */
+	public function render(&$return=null)
 	{
 		if (@self::$content) {
-			echo self::$content;
+			echo $return = self::$content;
 		}
 	}
 
