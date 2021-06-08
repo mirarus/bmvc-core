@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.8
+ * @version 1.9
  */
 
 namespace BMVC\Libs;
@@ -68,7 +68,7 @@ class Csrf
 			return false;
 		}
 
-		$token = (self::getSessionToken($page) ? self::setNewToken($page, $expiry) : null);
+		$token = (self::getSessionToken($page) ? self::getSessionToken($page) : self::setNewToken($page, $expiry));
 
 		return $token->sessiontoken;
 	}
