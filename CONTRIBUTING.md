@@ -1,1 +1,0 @@
-- [Ali Güçlü](https://github.com/mirarus)
