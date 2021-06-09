@@ -415,3 +415,23 @@ function datetotime(string $date, string $format='YYYY-MM-DD')
 
 	return mktime(0, 0, 0, $month, $day, $year);
 }
+	
+/**
+ * @param string $file
+ */
+function ob_template(string $file)
+{
+	ob_start();
+	require_once $file;
+	$ob_content = ob_get_contents();
+	ob_end_clean();
+
+	$ob_content = preg_replace([
+		"/({{ url\(\) }})/i",
+		"/({{ url\('(.*?)'\) }})/i",
+		"/({{ url\(\"(.*?)\"\) }})/i",
+		"/({{ url\((.*?)\) }})/i"
+	], url('$2'), $ob_content);
+
+	return $ob_content;
+}
