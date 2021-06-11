@@ -8,14 +8,14 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.4
+ * @version 3.5
  */
 
 namespace BMVC\Core;
 
 use Exception;
 use Closure;
-use BMVC\Libs\{Request, MError};
+use BMVC\Libs\{CL, Request, MError};
 
 final class Route
 {
@@ -46,9 +46,9 @@ final class Route
 	private static $ip;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	private static $namespace;
+	private static $namespaces = [];
 
 	/**
 	 * @var integer
@@ -92,11 +92,11 @@ final class Route
 
 			foreach ($routes as $route) {
 
-				$method 	 = $route['method'];
-				$action 	 = $route['callback'];
-				$url 	  	 = $route['pattern'];
-				$ip 	  	 = (isset($route['ip']) ? $route['ip'] : null);
-				$namespace = (isset($route['namespace']) ? $route['namespace'] : null);
+				$method 	  = $route['method'];
+				$action 	  = $route['callback'];
+				$url 	  	  = $route['pattern'];
+				$ip 	  	  = (isset($route['ip']) ? $route['ip'] : null);
+				$namespaces = (isset($route['namespaces']) ? $route['namespaces'] : null);
 
 				if (preg_match("#^{$url}$#", ('/' . page_url()), $params)) {
 
@@ -110,12 +110,12 @@ final class Route
 						array_shift($params);
 
 						return $return = [
-							'method'    => $method,
-							'action'    => $action,
-							'params'    => $params,
-							'namespace' => $namespace,
-							'url'       => $url,
-							'_url'      => page_url()
+							'method'     => $method,
+							'action'     => $action,
+							'params'     => $params,
+							'namespaces' => $namespaces,
+							'url'        => $url,
+							'_url'       => page_url()
 						];
 					}
 				}
@@ -177,8 +177,8 @@ final class Route
 			if (self::$ip) {
 				$route_['ip'] = self::$ip;
 			}
-			if (self::$namespace) {
-				$route_['namespace'] = self::$namespace;
+			if (self::$namespaces) {
+				$route_['namespaces'] = self::$namespaces;
 			}
 			self::$routes[] = $route_;
 		}
@@ -191,21 +191,21 @@ final class Route
 	{
 		self::$groupped++;
 		self::$groups[] = [
-			'baseRoute' => self::$prefix,
-			'ip'        => self::$ip,
-			'namespace' => self::$namespace
+			'baseRoute'  => self::$prefix,
+			'ip'         => self::$ip,
+			'namespaces' => self::$namespaces
 		];
 		call_user_func($callback);
 		if (self::$groupped > 0) {
-			self::$prefix		 = self::$groups[self::$groupped-1]['baseRoute'];
-			self::$ip				 = self::$groups[self::$groupped-1]['ip'];
-			self::$namespace = self::$groups[self::$groupped-1]['namespace'];
+			self::$prefix		  = self::$groups[self::$groupped-1]['baseRoute'];
+			self::$ip				  = self::$groups[self::$groupped-1]['ip'];
+			self::$namespaces = self::$groups[self::$groupped-1]['namespaces'];
 		}
 		self::$groupped--;
 		if (self::$groupped <= 0) {
-			self::$prefix		 = '/';
-			self::$ip				 = '';
-			self::$namespace = '';
+			self::$prefix		  = '/';
+			self::$ip				  = '';
+			self::$namespaces = [];
 		}
 		self::$prefix = @self::$groups[self::$groupped-1]['baseRoute'];
 	}
@@ -231,12 +231,19 @@ final class Route
 	}
 
 	/**
-	 * @param  string $namespace
+	 * @param  array       $arg
+	 * @param  string|null $sub
 	 * @return Route
 	 */
-	public static function namespace(string $namespace): Route
+	public static function namespace(array $arg, string $sub=null): Route
 	{
-		self::$namespace = $namespace;
+		foreach (@$arg as $key => $val) {
+			if (array_key_exists($key, App::$namespaces)) {
+
+				$sub = ($sub != null) ? (CL::trim(CL::replace($sub)) . '\\') : null;
+				self::$namespaces[$key] = CL::trim(CL::replace(($sub . $val))) . '\\';
+			}
+		}
 		return new self;
 	}
 

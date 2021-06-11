@@ -8,17 +8,21 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.3
+ * @version 6.4
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\Dir;
-use Whoops\Run as WRun;
-use Whoops\Handler\PrettyPageHandler as WPrettyPageHandler;
-use Monolog\Logger as MlLogger;
-use Monolog\Handler\StreamHandler as MlStreamHandler;
-use Monolog\Formatter\LineFormatter as MlLineFormatter;
+use BMVC\Libs\{Dir, CL};
+use Whoops\{
+	Run as WRun, 
+	Handler\PrettyPageHandler as WPrettyPageHandler
+};
+use Monolog\{
+	Logger as MlLogger, 
+	Handler\StreamHandler as MlStreamHandler, 
+	Formatter\LineFormatter as MlLineFormatter
+};
 use Dotenv\Dotenv;
 
 final class App
@@ -110,9 +114,11 @@ final class App
 	 */
 	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null)
 	{
+		$sub = ($sub != null) ? (CL::trim(CL::replace($sub)) . '\\') : null;
+
 		if (is_string($par)) {
 			if (array_key_exists($par, self::$namespaces)) {
-				self::$namespaces[$par] = $sub . $value;
+				self::$namespaces[$par] = CL::trim(CL::replace(($sub . $value))) . '\\';
 				if ($get === true) {
 					return self::$namespaces[$par];
 				}
@@ -120,7 +126,7 @@ final class App
 		} elseif (is_array($par)) {
 			foreach (@$par as $key) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = $sub . $value;
+					self::$namespaces[$key] = CL::trim(CL::replace(($sub . $value))) . '\\';
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
@@ -129,7 +135,7 @@ final class App
 
 			foreach (@$par as $key => $val) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = $sub . $val;
+					self::$namespaces[$key] = CL::trim(CL::replace(($sub . $val))) . '\\';
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
@@ -342,7 +348,15 @@ final class App
 		Route::Run($route);
 
 		if (@$route) {
-			if ($route['namespace'] != null) Controller::namespace($route['namespace']);
+
+			if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
+				foreach ($route['namespaces'] as $key => $val) {
+					if (array_key_exists($key, self::$namespaces)) {
+						call_user_func_array(["BMVC\Core\\" . ucfirst($key), 'namespace'], [$val]);
+					}
+				}
+			}
+
 			Controller::call(@$route['action'], @$route['params']);
 		} elseif (@Route::$notFound) {
 			Controller::call(Route::$notFound);

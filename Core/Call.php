@@ -19,9 +19,9 @@ trait Call
 {
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	private static $namespace = null;
+	private static $namespace = [];
 
 	/**
 	 * @var array
