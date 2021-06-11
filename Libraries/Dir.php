@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.5
+ * @version 1.6
  */
 
 namespace BMVC\Libs;
@@ -143,6 +143,6 @@ class Dir
 	 */
 	public static function trim($arg=null)
 	{
-		return @trim($arg, DIRECTORY_SEPARATOR);
+		return @trim(self::replace($arg), DIRECTORY_SEPARATOR);
 	}
 }
