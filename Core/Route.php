@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.3
+ * @version 3.4
  */
 
 namespace BMVC\Core;
@@ -44,6 +44,11 @@ final class Route
 	 * @var string
 	 */
 	private static $ip;
+
+	/**
+	 * @var string
+	 */
+	private static $namespace;
 
 	/**
 	 * @var integer
@@ -87,10 +92,11 @@ final class Route
 
 			foreach ($routes as $route) {
 
-				$method = $route['method'];
-				$action = $route['callback'];
-				$url 	  = $route['pattern'];
-				$ip 	  = (isset($route['ip']) ? $route['ip'] : null);
+				$method 	 = $route['method'];
+				$action 	 = $route['callback'];
+				$url 	  	 = $route['pattern'];
+				$ip 	  	 = (isset($route['ip']) ? $route['ip'] : null);
+				$namespace = (isset($route['namespace']) ? $route['namespace'] : null);
 
 				if (preg_match("#^{$url}$#", ('/' . page_url()), $params)) {
 
@@ -104,11 +110,12 @@ final class Route
 						array_shift($params);
 
 						return $return = [
-							'method' => $method,
-							'action' => $action,
-							'params' => $params,
-							'url'    => $url,
-							'_url'   => page_url()
+							'method'    => $method,
+							'action'    => $action,
+							'params'    => $params,
+							'namespace' => $namespace,
+							'url'       => $url,
+							'_url'      => page_url()
 						];
 					}
 				}
@@ -170,6 +177,9 @@ final class Route
 			if (self::$ip) {
 				$route_['ip'] = self::$ip;
 			}
+			if (self::$namespace) {
+				$route_['namespace'] = self::$namespace;
+			}
 			self::$routes[] = $route_;
 		}
 	}
@@ -182,17 +192,20 @@ final class Route
 		self::$groupped++;
 		self::$groups[] = [
 			'baseRoute' => self::$prefix,
-			'ip'        => self::$ip
+			'ip'        => self::$ip,
+			'namespace' => self::$namespace
 		];
 		call_user_func($callback);
 		if (self::$groupped > 0) {
-			self::$prefix = self::$groups[self::$groupped-1]['baseRoute'];
-			self::$ip     = self::$groups[self::$groupped-1]['ip'];
+			self::$prefix		 = self::$groups[self::$groupped-1]['baseRoute'];
+			self::$ip				 = self::$groups[self::$groupped-1]['ip'];
+			self::$namespace = self::$groups[self::$groupped-1]['namespace'];
 		}
 		self::$groupped--;
 		if (self::$groupped <= 0) {
-			self::$prefix = '/';
-			self::$ip     = '';
+			self::$prefix		 = '/';
+			self::$ip				 = '';
+			self::$namespace = '';
 		}
 		self::$prefix = @self::$groups[self::$groupped-1]['baseRoute'];
 	}
@@ -214,6 +227,16 @@ final class Route
 	public static function ip(string $ip): Route
 	{
 		self::$ip = $ip;
+		return new self;
+	}
+
+	/**
+	 * @param  string $namespace
+	 * @return Route
+	 */
+	public static function namespace(string $namespace): Route
+	{
+		self::$namespace = $namespace;
 		return new self;
 	}
 
@@ -423,16 +446,5 @@ final class Route
 		if (!in_array($url, $urls)) {
 			self::get_404();
 		}
-	}
-
-	/**
-	 * @param  array       $namespaces
-	 * @param  string|null $sub
-	 * @return Route
-	 */
-	public static function namespace(array $namespaces=[], string $sub=null): Route
-	{
-		App::SGnamespace($namespaces, null, false, $sub);
-		return new self;
 	}
 }

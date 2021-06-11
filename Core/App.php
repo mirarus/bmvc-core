@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.2
+ * @version 6.3
  */
 
 namespace BMVC\Core;
@@ -342,6 +342,7 @@ final class App
 		Route::Run($route);
 
 		if (@$route) {
+			if ($route['namespace'] != null) Controller::namespace($route['namespace']);
 			Controller::call(@$route['action'], @$route['params']);
 		} elseif (@Route::$notFound) {
 			Controller::call(Route::$notFound);
