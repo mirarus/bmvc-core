@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.0
+ * @version 1.1
  */
 
 namespace BMVC\Core;
@@ -27,6 +27,11 @@ trait Call
 	 * @var array
 	 */
 	protected static $params = [];
+
+	/**
+	 * @var array
+	 */
+	private static $separators = ['@', '/', '.', '::', ':'];
 
 	/**
 	 * @param string|null $namespace
@@ -67,19 +72,16 @@ trait Call
 			if ($action == null) return;
 
 			if (@is_string($action)) {
-				if (@strstr($action, '@')) {
-					$action = explode('@', $action);
-				} elseif (@strstr($action, '/')) {
-					$action = explode('/', $action);
-				} elseif (@strstr($action, '.')) {
-					$action = explode('.', $action);
-				} elseif (@strstr($action, '::')) {
-					$action = explode('::', $action);
-				} elseif (@strstr($action, ':')) {
-					$action = explode(':', $action);
+				if (self::$separators != null) {
+					foreach (self::$separators as $separator) {
+						if (@strstr($action, $separator)) {
+							$action = explode($separator, $action);
+						}
+					}
 				}
 			}
 
+			#
 			if (@is_array($action)) {
 				if (count($action) > 1) {
 					$method = @array_pop($action);
