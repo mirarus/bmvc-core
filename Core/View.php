@@ -199,7 +199,8 @@ final class View
 					return new self;
 				}
 			} else {
-				throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
+				throw new Exception('Layout [' . @str_replace([Dir::app()], null, $file) . '] not found.');
+				//throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 			}
 		} else {
 
@@ -296,7 +297,8 @@ final class View
 
 			return $return = $ob_content;
 		} else {
-			throw new Exception('View [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
+			throw new Exception('View [' . @str_replace([Dir::app()], null, $file) . '] not found.');
+			//throw new Exception('View [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 		}
 	}
 
