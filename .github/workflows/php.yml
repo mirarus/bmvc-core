@@ -27,11 +27,4 @@ jobs:
           ${{ runner.os }}-php-
    
     - name: Install dependencies
-      uses: php-actions/composer@v6
-      with:
-        php_version: 7.3
-        php_extensions: ext-intl
-        version: 2
-   
-    - name: Install dependencies
       run: composer install --prefer-dist --no-progress
