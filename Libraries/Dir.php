@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.6
+ * @version 1.7
  */
 
 namespace BMVC\Libs;
@@ -25,9 +25,9 @@ class Dir
 		$baseDir = dirname(__DIR__) . DIRECTORY_SEPARATOR;
 
 		if ($dir !== null) {
-			return self::replace($baseDir . $dir);
+			return self::trim($baseDir . $dir);
 		} else {
-			return self::replace($baseDir);
+			return self::trim($baseDir);
 		}
 	}
 
@@ -40,9 +40,9 @@ class Dir
 		$appDir = dirname(dirname(dirname(self::base()))) . DIRECTORY_SEPARATOR;
 
 		if ($dir !== null) {
-			return self::replace($appDir . $dir);
+			return self::trim($appDir . $dir);
 		} else {
-			return self::replace($appDir);
+			return self::trim($appDir);
 		}
 	}
 
@@ -63,16 +63,6 @@ class Dir
 				'app' => self::app($dir)
 			];
 		}
-	}
-
-	/**
-	 * @param  string      $dir
-	 * @param  string|null $type
-	 * @return boolean
-	 */
-	public static function check(string $dir, string $type=null): bool
-	{
-		return self::is_dir($dir, $type);
 	}
 
 	/**
