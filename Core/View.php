@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.4
+ * @version 5.5
  */
 
 namespace BMVC\Core;
@@ -154,8 +154,10 @@ final class View
 		if (@is_string($action)) {
 			if (self::$separators != null) {
 				foreach (self::$separators as $separator) {
-					if (@strstr($action, $separator)) {
-						$action = explode($separator, $action);
+					if (@is_string($action)) {
+						if (@strstr($action, $separator)) {
+							$action = @explode($separator, $action);
+						}
 					}
 				}
 			}
@@ -237,8 +239,10 @@ final class View
 		if (@is_string($action)) {
 			if (self::$separators != null) {
 				foreach (self::$separators as $separator) {
-					if (@strstr($action, $separator)) {
-						$action = explode($separator, $action);
+					if (@is_string($action)) {
+						if (@strstr($action, $separator)) {
+							$action = @explode($separator, $action);
+						}
 					}
 				}
 			}
