@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.0
+ * @version 6.1
  */
 
 namespace BMVC\Libs;
@@ -22,7 +22,7 @@ class Lang
 	/**
 	 * @var string
 	 */
-	private static $dir;
+	public static $dir = 'Languages';
 
 	/**
 	 * @var array
@@ -35,18 +35,18 @@ class Lang
 	public static $lang = 'en';
 
 	/**
-	 * @var boolean
-	 */
-	public static $active = false;
-
-	/**
 	 * @var string
 	 */
 	private static $current_lang = 'en';
 
+	/**
+	 * @var boolean
+	 */
+	private static $active = false;
+
 	public function __construct()
 	{
-		self::$dir = Dir::app('Languages');
+		self::$dir = Dir::app(self::$dir);
 		Dir::mk_dir(self::$dir);
 
 		$_lang = $_ENV['LANG'];

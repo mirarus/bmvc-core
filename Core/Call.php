@@ -106,15 +106,17 @@ trait Call
 				return $return = $_class;
 			} else {
 
-				if (class_exists(get_class($_class), false)) {
-					if (method_exists($_class, $method)) {
-						if ($params == null) {
-							return $return = call_user_func([$_class, $method]);
+				if (is_object($_class)) {
+					if (class_exists(get_class($_class), false)) {
+						if (method_exists($_class, $method)) {
+							if ($params == null) {
+								return $return = call_user_func([$_class, $method]);
+							} else {
+								return $return = call_user_func_array([$_class, $method], array_values($params));
+							}
 						} else {
-							return $return = call_user_func_array([$_class, $method], array_values($params));
+							return $return = $_class->{$method}();
 						}
-					} else {
-						return $return = $_class->{$method}();
 					}
 				}
 			}
