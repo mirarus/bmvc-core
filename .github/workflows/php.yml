@@ -25,6 +25,12 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
+   
     - name: Install dependencies
-    
+      uses: php-actions/composer@v6
+      with:
+        php_version: 7.4
+        version: 2
+   
+    - name: Install dependencies
       run: composer install --prefer-dist --no-progress
