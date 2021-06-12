@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.8
+ * @version 5.9
  */
 
 namespace BMVC\Libs;
@@ -33,6 +33,11 @@ class Lang
 	 * @var string
 	 */
 	public static $lang = 'en';
+
+	/**
+	 * @var boolean
+	 */
+	public static $active = false;
 
 	/**
 	 * @var string
@@ -65,6 +70,8 @@ class Lang
 		self::$current_lang = self::get();
 
 		self::_routes();
+
+		self::$active = true;
 	}
 
 	/**
@@ -203,6 +210,8 @@ class Lang
 	 */
 	private static function _get_text(string $text)
 	{
+		if (self::$active == false) return false;
+
 		if (self::$current_lang == 'index') return;
 
 		$_config = false;
@@ -248,6 +257,8 @@ class Lang
 
 	private static function _get_langs()
 	{
+		if (self::$active == false) return false;
+
 		$_config = false;
 
 		if (file_exists($file = Dir::implode([self::$dir, 'config.php']))) {
@@ -287,6 +298,8 @@ class Lang
 	 */
 	private static function _get_lang_info(string $_xlang, string $par=null)
 	{
+		if (self::$active == false) return false;
+
 		if ($_xlang == 'index') return;
 
 		$_config = false;
