@@ -74,9 +74,11 @@ trait Call
 			if (@is_string($action)) {
 				if (self::$separators != null) {
 					foreach (self::$separators as $separator) {
-						if (@strstr($action, $separator)) {
-							$action = explode($separator, $action);
-						}
+						var_dump($action);
+							/*if (@strstr($action, $separator)) {
+								$action = explode($separator, $action);
+							}*/
+						
 					}
 				}
 			}
