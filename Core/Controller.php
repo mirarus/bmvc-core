@@ -44,6 +44,6 @@ final class Controller
 			}*/
 		}
 
-	//	return $return = @$get['_cl'];
+		return $return = @$get['_cl'];
 	}
 }
