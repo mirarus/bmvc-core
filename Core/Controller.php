@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.3
+ * @version 5.4
  */
 
 namespace BMVC\Core;
@@ -28,9 +28,12 @@ final class Controller
 		self::get('controller', $class, $get);
 
 		if (@$get['_class'] != @$get['_class_']) {
+			
 			$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
-			if (@$loader->findFile($get['_class']) != false) {
-				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($get['_class']))));
+			if (@class_exists(get_class($loader), false)) {
+				if (@$loader->findFile($get['_class']) != false) {
+					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime($loader->findFile($get['_class']))));
+				}
 			} elseif (@file_exists(Dir::app($get['_class'] . '.php')) == true) {
 				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($get['_class'] . '.php'))));
 			} else {
