@@ -250,7 +250,15 @@ class Lang
 					return $text;
 				}
 			} else {
-				throw new Exception('Language Not Found! | Language: ' . implode('*', glob(Dir::implode([self::$dir, '*']))));
+
+				pr(self::$dir);
+
+
+				pr(glob(Dir::implode([self::$dir, '*.php'])));
+
+				pr(Dir::app(self::$dir));
+
+				//throw new Exception('Language Not Found! | Language: ' . self::$current_lang);
 			}
 		}
 	}
