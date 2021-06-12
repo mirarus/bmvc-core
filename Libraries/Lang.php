@@ -250,7 +250,7 @@ class Lang
 					return $text;
 				}
 			} else {
-				throw new Exception('Language Not Found! | Language: ' . implode('*', glob(self::$dir)));
+				throw new Exception('Language Not Found! | Language: ' . implode('*', glob(Dir::implode([self::$dir, '*']))));
 			}
 		}
 	}
