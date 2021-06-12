@@ -30,6 +30,7 @@ jobs:
       uses: php-actions/composer@v6
       with:
         php_version: 7.3
+        php_extensions: ext-intl
         version: 2
    
     - name: Install dependencies
