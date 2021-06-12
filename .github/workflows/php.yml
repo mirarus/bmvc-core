@@ -10,9 +10,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+     
     steps:
-    - uses: actions/checkout@v2
+    
+    - name: Composer Action install - 7.3
+      uses: mileschou/composer-action/7.3/install@master
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
