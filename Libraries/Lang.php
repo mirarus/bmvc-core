@@ -22,7 +22,7 @@ class Lang
 	/**
 	 * @var string
 	 */
-	public static $dir = 'Languages';
+	private static $dir;
 
 	/**
 	 * @var array
@@ -46,8 +46,7 @@ class Lang
 
 	public function __construct()
 	{
-		$dir = (@$_ENV['LANGUAGES_DIR'] ? $_ENV['LANGUAGES_DIR'] : self::$dir);
-		self::$dir = Dir::app($dir);
+		self::$dir = Dir::app('Languages');
 		Dir::mk_dir(self::$dir);
 
 		$_lang = $_ENV['LANG'];
@@ -251,7 +250,7 @@ class Lang
 					return $text;
 				}
 			} else {
-				throw new Exception('Language Not Found! | Language: ' . $file);
+				throw new Exception('Language Not Found! | Language: ' . implode('*', glob(self::$dir)));
 			}
 		}
 	}
