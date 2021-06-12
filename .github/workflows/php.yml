@@ -18,8 +18,6 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.3'
-    - name: Check PHP Version
-      run: php -v
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
