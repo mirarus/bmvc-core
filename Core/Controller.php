@@ -31,7 +31,9 @@ final class Controller
 			
 			$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
 
-			if (@class_exists(@get_class($loader), false)) {
+			pr($loader);
+
+			/*if (is_object($loader) && @class_exists(@get_class($loader), false)) {
 				if (@$loader->findFile($get['_class']) != false) {
 					@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(@$loader->findFile($get['_class']))));
 				}
@@ -39,9 +41,9 @@ final class Controller
 				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T', filemtime(Dir::app($get['_class'] . '.php'))));
 			} else {
 				@header("Last-Modified: " . date('D, d M Y H:i:s \G\M\T'));
-			}
+			}*/
 		}
 
-		return $return = @$get['_cl'];
+	//	return $return = @$get['_cl'];
 	}
 }
