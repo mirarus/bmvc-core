@@ -93,9 +93,9 @@ trait Call
 				$class = $action;
 			}
 			#
-			$namespace = (($action != null) ? CL::implode($action) : null);
+			$namespace = (($action != null) ? @CL::implode($action) : null);
 			$namespace = CL::replace($namespace);
-			$class		 = ($namespace != null) ? CL::implode([$namespace, $class]) : $class;
+			$class		 = ($namespace != null) ? @CL::implode([$namespace, $class]) : $class;
 			$class		 = CL::replace($class);
 			#
 			$_class = get_called_class();
