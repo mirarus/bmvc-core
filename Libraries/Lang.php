@@ -250,7 +250,7 @@ class Lang
 					return $text;
 				}
 			} else {
-				throw new Exception('Language Not Found! | Language: ' . self::$current_lang);
+				throw new Exception('Language Not Found! | Language: ' . $file);
 			}
 		}
 	}
