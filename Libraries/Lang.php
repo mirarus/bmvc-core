@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.9
+ * @version 6.0
  */
 
 namespace BMVC\Libs;
@@ -46,7 +46,8 @@ class Lang
 
 	public function __construct()
 	{
-		self::$dir = Dir::app(self::$dir);
+		$dir = (@$_ENV['LANGUAGES_DIR'] ? $_ENV['LANGUAGES_DIR'] : self::$dir);
+		self::$dir = Dir::app($dir);
 		Dir::mk_dir(self::$dir);
 
 		$_lang = $_ENV['LANG'];
