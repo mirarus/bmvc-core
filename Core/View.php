@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.5
+ * @version 5.6
  */
 
 namespace BMVC\Core;
@@ -61,7 +61,7 @@ final class View
 	 */
 	public static function namespace(string $namespace=null): void
 	{
-		self::$namespace = Dir::trim(Dir::replace($namespace)) . DIRECTORY_SEPARATOR;
+		self::$namespace = Dir::trim($namespace) . DIRECTORY_SEPARATOR;
 	}
 
 	/**
@@ -169,7 +169,7 @@ final class View
 			$view = $action;
 		}
 		#
-		$namespace = (($action != null) ? Dir::implode($action) : null);
+		$namespace = (($action != null && @is_array($action)) ? Dir::implode($action) : null);
 		$namespace = Dir::replace($namespace);
 		$view			 = ($namespace != null) ? Dir::implode([$namespace, $view]) : $view;
 		$view			 = Dir::replace($view);
@@ -202,7 +202,6 @@ final class View
 				}
 			} else {
 				throw new Exception('Layout [' . @str_replace([Dir::app()], null, $file) . '] not found.');
-				//throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 			}
 		} else {
 
@@ -254,7 +253,7 @@ final class View
 			$view = $action;
 		}
 		#
-		$namespace = (($action != null) ? Dir::implode($action) : null);
+		$namespace = (($action != null && @is_array($action)) ? Dir::implode($action) : null);
 		$namespace = Dir::replace($namespace);
 
 		if ($view != null) {

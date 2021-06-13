@@ -29,7 +29,7 @@ final class Controller
 
 		if (@$get['_class'] != @$get['_class_']) {
 			
-			$loader = include(Dir::app('vendor' . DIRECTORY_SEPARATOR . 'autoload.php'));
+			$loader = include(Dir::app(Dir::implode(['vendor', 'autoload.php'])));
 
 			if (is_object($loader)) {
 				if (@class_exists(get_class($loader), false)) {

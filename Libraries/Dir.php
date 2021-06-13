@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.8
+ * @version 1.9
  */
 
 namespace BMVC\Libs;
@@ -103,35 +103,36 @@ class Dir
 	}
 
 	/**
-	 * @param  string|null $str
-	 * @return string
+	 * @param mixed $arg
 	 */
-	public static function replace(string $str=null): string
+	public static function replace($arg)
 	{
-		return @str_replace(['/', '//', '\\'], DIRECTORY_SEPARATOR, $str);
+		return @str_replace(['/', '//', '\\'], DIRECTORY_SEPARATOR, $arg);
 	}
 	
 	/**
-	 * @param mixed $arg
+	 * @param  array  $arg
+	 * @return string
 	 */
-	public static function implode($arg=null)
+	public static function implode(array $arg): string
 	{
 		return @implode(DIRECTORY_SEPARATOR, $arg);
 	}
 
 	/**
-	 * @param  mixed $arg
+	 * @param  string $arg
 	 * @return array
 	 */
-	public static function explode($arg=null): array
+	public static function explode(string $arg): array
 	{
 		return @explode(DIRECTORY_SEPARATOR, $arg);
 	}
 
 	/**
-	 * @param mixed $arg
+	 * @param  string $arg
+	 * @return string
 	 */
-	public static function trim($arg=null)
+	public static function trim(string $arg): string
 	{
 		return @trim(self::replace($arg), DIRECTORY_SEPARATOR);
 	}
