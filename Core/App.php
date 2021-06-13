@@ -8,21 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.4
+ * @version 6.5
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{Dir, CL};
-use Whoops\{
-	Run as WRun, 
-	Handler\PrettyPageHandler as WPrettyPageHandler
-};
-use Monolog\{
-	Logger as MlLogger, 
-	Handler\StreamHandler as MlStreamHandler, 
-	Formatter\LineFormatter as MlLineFormatter
-};
+use BMVC\Libs\{Dir, CL, Whoops, Log};
 use Dotenv\Dotenv;
 
 final class App
@@ -33,23 +24,7 @@ final class App
 	 */
 	private static $init = false;
 	
-	public static $sc_file;
-	public static $whoops;
-	public static $log;
 	public static $dotenv;
-
-	/**
-	 * @var array
-	 */
-	private static $whoops_blacklist = [
-		'_GET' => [],
-		'_POST' => [],
-		'_FILES' => [],
-		'_COOKIE' => [],
-		'_SESSION' => [],
-		'_SERVER' => [],
-		'_ENV' => []
-	];
 
 	/**
 	 * @var array
@@ -83,15 +58,10 @@ final class App
 	{
 		if (self::$init == true) return;
 
-		if (isset($_SERVER['SCRIPT_FILENAME'])) {
-			self::$sc_file = $_SERVER['SCRIPT_FILENAME'];
-		}
-
 		self::initDotenv();
 		self::initDefine();
 		self::initWhoops($data);
 		self::initMonolog();
-		self::initError();
 		self::initHeader();
 		self::initSession();
 		self::initData($data);
@@ -114,11 +84,11 @@ final class App
 	 */
 	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null)
 	{
-		$sub = ($sub != null) ? (CL::trim(CL::replace($sub)) . '\\') : null;
+		$sub = ($sub != null) ? (CL::trim($sub) . '\\') : null;
 
 		if (is_string($par)) {
 			if (array_key_exists($par, self::$namespaces)) {
-				self::$namespaces[$par] = CL::trim(CL::replace(($sub . $value))) . '\\';
+				self::$namespaces[$par] = (CL::trim(($sub . $value)) . '\\');
 				if ($get === true) {
 					return self::$namespaces[$par];
 				}
@@ -126,7 +96,7 @@ final class App
 		} elseif (is_array($par)) {
 			foreach (@$par as $key) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = CL::trim(CL::replace(($sub . $value))) . '\\';
+					self::$namespaces[$key] = (CL::trim(($sub . $value)) . '\\');
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
@@ -135,7 +105,7 @@ final class App
 
 			foreach (@$par as $key => $val) {
 				if (array_key_exists($key, self::$namespaces)) {
-					self::$namespaces[$key] = CL::trim(CL::replace(($sub . $val))) . '\\';
+					self::$namespaces[$key] = (CL::trim(($sub . $val)) . '\\');
 					if ($get === true) {
 						return self::$namespaces[$key];
 					}
@@ -165,21 +135,6 @@ final class App
 	{
 		if (in_array($key, get_class_vars(__CLASS__))) {
 			return self::${$key};
-		}
-	}
-
-	/**
-	 * @param string $method
-	 * @param mixed  $keys
-	 */
-	public static function whoops_blacklist(string $name, $keys): void
-	{
-		if (is_array($keys)) {
-			foreach ($keys as $key) {
-				self::$whoops_blacklist[$name][] = $key;
-			}
-		} elseif (is_string($keys)) {
-			self::$whoops_blacklist[$name][] = $keys;
 		}
 	}
 
@@ -235,52 +190,28 @@ final class App
 	 */
 	private static function initWhoops(array $data=[]): void
 	{
-		$bl_array = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'];
+		$blacklist = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'];
 
-		# Default Black List
-		self::$whoops_blacklist = array_merge(self::$whoops_blacklist, [
-			'_SERVER' => $bl_array,
-			'_ENV' => $bl_array
-		]);
+		Whoops::blacklist('_SERVER', $blacklist);
+		Whoops::blacklist('_ENV', $blacklist);
+		
 		# Config Black List
 		if (isset($data['whoops_blacklist'])) {
 			foreach ($data['whoops_blacklist'] as $key => $val) {
-				self::whoops_blacklist($key, $val);
+				Whoops::blacklist($key, $val);
 			}
 		}
-		# Class
-		$PPH = new WPrettyPageHandler;
-		# BlackList Add
-		foreach (self::$whoops_blacklist as $key => $val) {
-			foreach ($val as $data) {
-				$PPH->blacklist($key, $data);
-			}
-		}
-		# Register
-		$whoops = new WRun;
-		if (ENVIRONMENT == 'development') {
-			$whoops->pushHandler($PPH);
-		}
-		$whoops->register();
-		self::$whoops = $whoops;
+
+		Whoops::init();
 	}
 
 	private static function initMonolog(): void
 	{
-		$log = new MlLogger('BMVC');
-		$stream = new MlStreamHandler(Dir::app('Logs' . DIRECTORY_SEPARATOR . 'app.log'));
-		$formatter = new MlLineFormatter(MlLineFormatter::SIMPLE_FORMAT, MlLineFormatter::SIMPLE_DATE);
-		$formatter->includeStacktraces(true);
-		$stream->setFormatter($formatter);
-		$log->pushHandler($stream);
-		self::$log = $log;
-	}
+		Log::monolog();
 
-	private static function initError(): void
-	{
 		if (@$_ENV['LOG'] == true) {
-			self::$whoops->pushHandler(function ($exception, $inspector, $run) {
-				self::$log->error($exception);
+			Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
+				Log::$monolog->error($exception);
 			});
 		}
 	}
@@ -319,17 +250,13 @@ final class App
 	 */
 	private static function initData(array $data=[])
 	{
-		if (is_callable($data)) {
-			call_user_func($data);
-		} elseif (is_array($data)) {
-
+		if ($data != null) {
 			# File Import
 			if (isset($data['files'])) {
 				foreach ($data['files'] as $file) {
 					require_once $file;
 				}
 			}
-
 			# Class Load
 			if (isset($data['init'])) {
 				foreach ($data['init'] as $init) {
@@ -337,6 +264,7 @@ final class App
 				}
 			}
 		}
+		#
 
 		if (function_exists('mb_internal_encoding')) @mb_internal_encoding("UTF-8");
 
