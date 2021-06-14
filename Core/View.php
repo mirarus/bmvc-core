@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.6
+ * @version 5.7
  */
 
 namespace BMVC\Core;
@@ -194,10 +194,11 @@ final class View
 					$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
 				}
 
+				self::$content = $ob_content;
+
 				if ($render == true) {
-					echo $ob_content;
+					echo self::$content;
 				} else {
-					self::$content = $ob_content;
 					return new self;
 				}
 			} else {
@@ -216,12 +217,17 @@ final class View
 	}
 
 	/**
-	 * @param mixed &$return
+	 * @param bool|boolean $return
+	 * @param mixed        &$print
 	 */
-	public static function render(&$return=null)
+	public static function render(bool $return=false, &$print=null)
 	{
 		if (@self::$content) {
-			echo $return = self::$content;
+			if ($return == true) {
+				return $print = self::$content;
+			} else {
+				echo $print = self::$content;
+			}
 		}
 	}
 
