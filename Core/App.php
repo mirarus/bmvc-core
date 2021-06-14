@@ -219,7 +219,7 @@ final class App
 	private static function initHeader(): void
 	{
 		@header_remove();
-		@header("X-Date: " . date('D, d M Y H:i:s \G\M\T'));
+		@header("Date: " . date("D, d M Y H:i:s") . " GMT");
 		@header("Strict-Transport-Security: max-age=15552000; preload");
 		@header("X-Frame-Options: sameorigin");
 		@header("X-Powered-By: PHP/BMVC");
