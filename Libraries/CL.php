@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.1
+ * @version 1.2
  */
 
 namespace BMVC\Libs;
@@ -19,7 +19,7 @@ class CL
 	/**
 	 * @param mixed $arg
 	 */
-	public static function replace($arg)
+	public static function replace($arg=null)
 	{
 		return @str_replace(['/', '//'], '\\', $arg);
 	}
@@ -43,10 +43,10 @@ class CL
 	}
 
 	/**
-	 * @param  string $arg
+	 * @param  string|null $arg
 	 * @return string
 	 */
-	public static function trim(string $arg): string
+	public static function trim(string $arg=null): string
 	{
 		return @trim(self::replace($arg), '\\');
 	}
