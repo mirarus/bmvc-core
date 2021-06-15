@@ -267,7 +267,6 @@ function pr($data, bool $stop=false)
 	}
 }
 
-
 /**
  * Helpers
  */

@@ -388,7 +388,7 @@ final class Route
 	 * @param  array  $params
 	 * @return string
 	 */
-	public static function url(string $name, array $params=[]): string
+	public static function url(string $name, array $params=[])
 	{
 		foreach (self::$routes as $route) {
 			if (array_key_exists('name', $route) && $route['name'] == $name) {

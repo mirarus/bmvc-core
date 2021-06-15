@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.9
+ * @version 2.0
  */
 
 namespace BMVC\Libs;
@@ -171,11 +171,36 @@ class Request
 	}
 
 	/**
+	 * @return string
+	 */
+	public static function getRequestMethod(): string
+	{
+		$method = self::getMethod();
+		if ($method === self::METHOD_HEAD) {
+			ob_start();
+			$method = self::METHOD_GET;
+		} elseif ($method === self::METHOD_POST) {
+			if (function_exists('getallheaders'))
+				getallheaders();
+			$headers = [];
+			foreach (self::_server() as $name => $value) {
+				if ((substr($name, 0, 5) == 'HTTP_') || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
+					$headers[@strtr(ucwords(strtolower(@strtr(substr($name, 5), ['_' => ' ']))), [' ' => '-', 'Http' => 'HTTP'])] = $value;
+				}
+			}
+			if (self::header('X-HTTP-Method-Override') !== null && in_array(self::header('X-HTTP-Method-Override'), [self::METHOD_PUT, self::METHOD_DELETE, self::METHOD_PATCH])) {
+				$method = self::header('X-HTTP-Method-Override');
+			}
+		}
+		return $method;
+	}
+
+	/**
 	 * @return boolean
 	 */
 	public static function isGet(): bool
 	{
-		return self::getMethod() === self::METHOD_GET;
+		return self::getRequestMethod() === self::METHOD_GET;
 	}
 
 	/**
@@ -183,7 +208,7 @@ class Request
 	 */
 	public static function isPost(): bool
 	{
-		return self::getMethod() === self::METHOD_POST;
+		return self::getRequestMethod() === self::METHOD_POST;
 	}
 
 	/**
@@ -191,7 +216,7 @@ class Request
 	 */
 	public static function isPut(): bool
 	{
-		return self::getMethod() === self::METHOD_PUT;
+		return self::getRequestMethod() === self::METHOD_PUT;
 	}
 
 	/**
@@ -199,7 +224,7 @@ class Request
 	 */
 	public static function isPatch(): bool
 	{
-		return self::getMethod() === self::METHOD_PATCH;
+		return self::getRequestMethod() === self::METHOD_PATCH;
 	}
 
 	/**
@@ -207,7 +232,7 @@ class Request
 	 */
 	public static function isDelete(): bool
 	{
-		return self::getMethod() === self::METHOD_DELETE;
+		return self::getRequestMethod() === self::METHOD_DELETE;
 	}
 
 	/**
@@ -215,7 +240,7 @@ class Request
 	 */
 	public static function isHead(): bool
 	{
-		return self::getMethod() === self::METHOD_HEAD;
+		return self::getRequestMethod() === self::METHOD_HEAD;
 	}
 
 	/**
@@ -223,7 +248,7 @@ class Request
 	 */
 	public static function isOptions(): bool
 	{
-		return self::getMethod() === self::METHOD_OPTIONS;
+		return self::getRequestMethod() === self::METHOD_OPTIONS;
 	}
 
 	/**
@@ -242,7 +267,7 @@ class Request
 	 */
 	public static function isFormData(): bool
 	{
-		return (self::getMethod() === self::METHOD_POST && is_null(self::getContentType())) || in_array(self::getMediaType(), self::$formDataMediaTypes);
+		return (self::getRequestMethod() === self::METHOD_POST && is_null(self::getContentType())) || in_array(self::getMediaType(), self::$formDataMediaTypes);
 	}
 
 	/**
@@ -417,31 +442,6 @@ class Request
 	public static function getUserAgent(): string
 	{
 		return self::header('HTTP_USER_AGENT');
-	}
-
-	/**
-	 * @return string
-	 */
-	public static function getRequestMethod(): string
-	{
-		$method = self::getMethod();
-		if ($method === self::METHOD_HEAD) {
-			ob_start();
-			$method = self::METHOD_GET;
-		} elseif ($method === self::METHOD_POST) {
-			if (function_exists('getallheaders'))
-				getallheaders();
-			$headers = [];
-			foreach (self::_server() as $name => $value) {
-				if ((substr($name, 0, 5) == 'HTTP_') || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
-					$headers[@strtr(ucwords(strtolower(@strtr(substr($name, 5), ['_' => ' ']))), [' ' => '-', 'Http' => 'HTTP'])] = $value;
-				}
-			}
-			if (self::header('X-HTTP-Method-Override') !== null && in_array(self::header('X-HTTP-Method-Override'), [self::METHOD_PUT, self::METHOD_DELETE, self::METHOD_PATCH])) {
-				$method = self::header('X-HTTP-Method-Override');
-			}
-		}
-		return $method;
 	}
 
 	/**
