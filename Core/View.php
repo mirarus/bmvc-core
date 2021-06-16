@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.7
+ * @version 5.8
  */
 
 namespace BMVC\Core;
@@ -59,9 +59,10 @@ final class View
 	/**
 	 * @param string|null $namespace
 	 */
-	public static function namespace(string $namespace=null): void
+	public static function namespace(string $namespace=null, bool $new=false)
 	{
 		self::$namespace = Dir::trim($namespace) . DIRECTORY_SEPARATOR;
+		if ($new == true) return new self;
 	}
 
 	/**
@@ -177,7 +178,7 @@ final class View
 		if ($layout == true) {
 
 			$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
-			$_ns 	= (self::$namespace . Dir::implode([Dir::trim($_ns), 'Layout', 'Main']));
+			$_ns  = Dir::implode([Dir::trim(self::$namespace), Dir::trim(Dir::implode([Dir::trim($_ns), 'Layout', 'Main']))]);
 			$file = Dir::app($_ns . '.' . self::$extension);
 
 			if (file_exists($file)) {

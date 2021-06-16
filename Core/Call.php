@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.4
+ * @version 1.5
  */
 
 namespace BMVC\Core;
@@ -36,9 +36,10 @@ trait Call
 	/**
 	 * @param string|null $namespace
 	 */
-	public static function namespace(string $namespace=null): void
+	public static function namespace(string $namespace=null, bool $new=false)
 	{
 		self::$namespace[@get_called_class()] = CL::trim($namespace) . '\\';
+		if ($new == true) return new self;
 	}
 
 	/**
