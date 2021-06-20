@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.1
+ * @version 6.2
  */
 
 namespace BMVC\Libs;
@@ -157,7 +157,7 @@ class Lang
 
 			Route::match(['GET', 'POST'], 'set/{lowercase}', function($lang) {
 				self::set($lang);
-				if (check_method('GET')) {
+				if (Request::isGet()) {
 					redirect(url());
 				}
 			});
