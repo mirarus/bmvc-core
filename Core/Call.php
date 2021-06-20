@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.6
+ * @version 1.7
  */
 
 namespace BMVC\Core;
@@ -139,6 +139,7 @@ trait Call
 		$_namespace = CL::trim(CL::replace(self::$namespace[@get_called_class()]));
 		$namespace  = (($action != null && @is_array($action)) ? CL::implode($action) : null);
 		$namespace  = CL::replace($namespace);
+		$namespace  = @ucfirst($namespace);
 		#
 		$_type_  = '_' . strtolower($type) . '_';
 		$_class_ = ($namespace != null) ? CL::implode([$namespace, $_type_]) : $_type_;
