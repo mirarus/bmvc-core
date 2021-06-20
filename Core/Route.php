@@ -8,14 +8,14 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.6
+ * @version 3.7
  */
 
 namespace BMVC\Core;
 
 use Exception;
 use Closure;
-use BMVC\Libs\{CL, Request, MError};
+use BMVC\Libs\{CL, Request, Response, MError};
 
 final class Route
 {
@@ -447,7 +447,16 @@ final class Route
 		if (@self::$notFound) {
 			return self::$notFound;
 		} else {
-			MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
+			if (Request::isGet()) {
+				MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
+			} else {
+				echo Response::json((page_url() ? [
+					'error' => '404 Page Not Found!',
+					'page' => page_url()
+				] : [
+					'error' => '404 Page Not Found!'
+				]), false, 404);
+			}
 		}
 	}
 
