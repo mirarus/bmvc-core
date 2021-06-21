@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.5
+ * @version 6.6
  */
 
 namespace BMVC\Core;
@@ -190,7 +190,7 @@ final class App
 	 */
 	private static function initWhoops(array $data=[]): void
 	{
-		$blacklist = ['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'];
+		$blacklist = array_merge(['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'], array_keys($_ENV));
 
 		Whoops::blacklist('_SERVER', $blacklist);
 		Whoops::blacklist('_ENV', $blacklist);
