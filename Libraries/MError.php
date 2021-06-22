@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.7
+ * @version 2.8
  */
 
 namespace BMVC\Libs;
@@ -49,7 +49,8 @@ class MError
 		'warning' => '255 235 59',
 		'info' => '3 169 244',
 		'success' => '76 175 80',
-		'primary' => '33 150 243'
+		'primary' => '0 40 255',
+		'dark' => '0 40 60'
 	];
 
 	public function __construct()
