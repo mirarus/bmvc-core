@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.6
+ * @version 6.7
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{Dir, CL, Whoops, Log};
+use BMVC\Libs\{Dir, CL, Whoops, Log, Request};
 use Dotenv\Dotenv;
 
 final class App
@@ -65,6 +65,7 @@ final class App
 		self::initHeader();
 		self::initSession();
 		self::initData($data);
+		self::_routes();
 
 		if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
 		Controller::namespace(@self::$namespaces['controller']);
@@ -243,6 +244,21 @@ final class App
 			@session_name("BMVC");
 			@session_start();
 		}
+	}
+
+	#
+	private static function _routes(): void
+	{		
+		Route::match(['GET', 'POST'], 'route/:all', function($url) {
+			$_url = Route::url($url);
+			if ($_url) {
+				if (Request::get('return') == true) {
+					url($_url);
+				} else {
+					url($_url, true);
+				}
+			}
+		});
 	}
 
 	/**
