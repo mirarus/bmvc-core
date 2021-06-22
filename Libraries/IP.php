@@ -65,7 +65,7 @@ class IP
 	}
 
 	/**
-	 * @return string|null
+	 * @return mixed
 	 */
 	private static function getFromProxy()
 	{

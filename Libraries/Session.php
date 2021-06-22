@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.7
+ * @version 1.8
  */
 
 namespace BMVC\Libs;
@@ -17,10 +17,10 @@ class Session
 {
 
 	/**
-	 * @param  mixed $storage
-	 * @param  mixed $content
+	 * @param mixed $storage
+	 * @param mixed $content
 	 */
-	public static function set($storage, $content=null)
+	public static function set($storage, $content=null): void
 	{
 		if (is_array($storage)) {
 			foreach ($storage as $key => $value) {
@@ -32,9 +32,8 @@ class Session
 	}
 
 	/**
-	 * @param  string|null $storage
-	 * @param  string|null $child
-	 * @return mixed
+	 * @param string|null $storage
+	 * @param string|null $child
 	 */
 	public static function get(string $storage=null, string $child=null)
 	{
@@ -47,27 +46,26 @@ class Session
 	/**
 	 * @param  string      $storage
 	 * @param  string|null $child
-	 * @return mixed
+	 * @return boolean
 	 */
-	public static function has(string $storage, string $child=null)
+	public static function has(string $storage, string $child=null): bool
 	{
 		if ($child === null) {
 			if (isset($_SESSION[$storage])) {
-				return $_SESSION[$storage];
+				return (bool) $_SESSION[$storage];
 			}
 		} else {
 			if (isset($_SESSION[$storage][$child])) {
-				return $_SESSION[$storage][$child];
+				return (bool) $_SESSION[$storage][$child];
 			}
 		}
 	}
 
 	/**
-	 * @param  string|null $storage
-	 * @param  string|null $child
-	 * @return mixed
+	 * @param string|null $storage
+	 * @param string|null $child
 	 */
-	public static function delete(string $storage=null, string $child=null)
+	public static function delete(string $storage=null, string $child=null): void
 	{
 		if (is_null($storage)) {
 			session_unset();

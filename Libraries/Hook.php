@@ -12,7 +12,6 @@
  */
 
 namespace BMVC\Libs;
-
 use Closure;
 
 class Hook

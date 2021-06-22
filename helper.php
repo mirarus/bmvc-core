@@ -77,6 +77,27 @@ function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool
 }
 
 /**
+ * @param string|null  $url
+ * @param bool|boolean $return
+ */
+function url(string $url=null, bool $return=false)
+{
+	if ($url) {
+		if ($return == false) {
+			return base_url() . $url;
+		} else {
+			echo base_url() . $url;
+		}
+	} else {
+		if ($return == false) {
+			return base_url();
+		} else {
+			echo base_url();
+		}
+	}
+}
+
+/**
  * @param  array        $parsed_url
  * @param  bool|boolean $domain
  * @return string

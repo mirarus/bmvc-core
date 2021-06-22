@@ -8,11 +8,10 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.0
+ * @version 2.1
  */
 
 namespace BMVC\Libs;
-
 use stdClass;
 
 class Request
@@ -32,49 +31,14 @@ class Request
 	 */
 	private static $formDataMediaTypes = ['application/x-www-form-urlencoded'];
 
-	/**
-	 * @var mixed
-	 */
 	public $body;
-
-	/**
-	 * @var mixed
-	 */
 	public $server;
-
-	/**
-	 * @var mixed
-	 */
 	public $request;
-
-	/**
-	 * @var mixed
-	 */
 	public $env;
-
-	/**
-	 * @var mixed
-	 */
 	public $session;
-	
-	/**
-	 * @var mixed
-	 */
 	public $cookie;
-
-	/**
-	 * @var mixed
-	 */
 	public $files;
-
-	/**
-	 * @var mixed
-	 */
 	public $post;
-	
-	/**
-	 * @var mixed
-	 */
 	public $get;
 
 	public function __construct()
@@ -481,7 +445,7 @@ class Request
 
 	public static function inputToPost()
 	{
-		$_POST = objectToArray(json_decode(file_get_contents('php://input')));
+		$_POST = Convert::obj_arr(json_decode(file_get_contents('php://input')));
 	}
 
 	/**

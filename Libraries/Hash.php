@@ -40,10 +40,11 @@ class Hash
 	}
 
 	/**
-	 * @param string $value
-	 * @param string $hashedValue
+	 * @param  string $value
+	 * @param  string $hashedValue
+	 * @return boolean
 	 */
-	public static function check(string $value, string $hashedValue)
+	public static function check(string $value, string $hashedValue): bool
 	{
 		return password_verify($value, $hashedValue);
 	}

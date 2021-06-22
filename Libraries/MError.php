@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.6
+ * @version 2.7
  */
 
 namespace BMVC\Libs;
@@ -76,15 +76,15 @@ class MError
 	}
 
 	/**
-	 * @param  mixed        $text
-	 * @param  mixed        $message
-	 * @param  bool|boolean $html
-	 * @param  mixed        $title
-	 * @param  string|null  $color
-	 * @param  bool|boolean $stop
-	 * @param  int|integer  $response_code
+	 * @param mixed        $text
+	 * @param mixed        $message
+	 * @param bool|boolean $html
+	 * @param string|null  $title
+	 * @param string|null  $color
+	 * @param bool|boolean $stop
+	 * @param int|integer  $response_code
 	 */
-	private static function template($text, $message, bool $html=false, $title=null, string $color=null, bool $stop=false, int $response_code=200): void
+	private static function template($text, $message, bool $html=false, string $title=null, string $color=null, bool $stop=false, int $response_code=200): void
 	{
 		http_response_code($response_code);
 		echo $html == true ? '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>' . $title . '</title></head><body>' : null;
@@ -97,15 +97,15 @@ class MError
 	}
 
 	/**
-	 * @param  mixed        $text
-	 * @param  mixed        $message
-	 * @param  bool|boolean $html
-	 * @param  mixed|null   $title
-	 * @param  string|null  $color
-	 * @param  bool|boolean $stop
-	 * @param  int|integer  $response_code
+	 * @param mixed        $text
+	 * @param mixed        $message
+	 * @param bool|boolean $html
+	 * @param string|null  $title
+	 * @param string|null  $color
+	 * @param bool|boolean $stop
+	 * @param int|integer  $response_code
 	 */
-	public static function print($text, $message=null, bool $html=false, $title=null, string $color=null, bool $stop=false, int $response_code=200): void
+	public static function print($text, $message=null, bool $html=false, string $title=null, string $color=null, bool $stop=false, int $response_code=200): void
 	{
 		if (self::$color == null) {
 			self::$color = self::$colors['primary'];

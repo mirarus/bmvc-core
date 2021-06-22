@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.7
+ * @version 3.8
  */
 
 namespace BMVC\Core;
@@ -66,6 +66,7 @@ final class Route
 	private static $patterns = [
 		':all'        => '(.*)',
 		':num'        => '([0-9]+)',
+		':id'         => '([0-9]+)',
 		':alpha'	  	=> '([a-zA-Z]+)',
 		':alpnum'     => '([a-zA-Z0-9_-]+)',
 		':lowercase'  => '([a-z]+)',

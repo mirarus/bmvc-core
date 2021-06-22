@@ -85,7 +85,7 @@ class Dir
 	 * @param  string|null  $type
 	 * @param  int|integer  $perms
 	 * @param  bool|boolean $recursive
-	 * @return bool
+	 * @return boolean
 	 */
 	public static function mk_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
 	{

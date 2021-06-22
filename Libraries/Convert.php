@@ -8,11 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 1.0
+ * @version 1.1
  */
 
 namespace BMVC\Libs;
 use stdClass;
+use SimpleXMLElement;
 
 class Convert
 {
@@ -54,16 +55,23 @@ class Convert
 	}
 
 	/**
-	 * @param  mixed        $arg
-	 * @param  bool|boolean $array
-	 * @return mixed
+	 * @param array       $array
+	 * @param object|null &$xml
 	 */
-	public static function __($arg, bool $array=true)
+	public static function arr_xml(array $array, object &$xml=null)
 	{
-		if ($array == true) {
-			return self::arr_obj($arg);
-		} else {
-			return self::obj_arr($arg);
+		if ($xml == null) {
+			$xml = new SimpleXMLElement('<result/>');
 		}
+		if (is_array($array)) {
+			foreach ($array as $key => $value) {
+				if (is_array($value)) {
+					self::arr_xml($value, $xml->addChild($key));
+				} else {
+					$xml->addChild($key, $value);
+				}
+			}
+		}
+		return $xml->asXML();
 	}
 }

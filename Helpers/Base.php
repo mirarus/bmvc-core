@@ -105,27 +105,6 @@ function em($data)
 }
 
 /**
- * @param string|null  $url
- * @param bool|boolean $return
- */
-function url(string $url=null, bool $return=false)
-{
-	if ($url) {
-		if ($return == false) {
-			return base_url() . $url;
-		} else {
-			echo base_url() . $url;
-		}
-	} else {
-		if ($return == false) {
-			return base_url();
-		} else {
-			echo base_url();
-		}
-	}
-}
-
-/**
  * @param string       $par
  * @param int|integer  $time
  * @param bool|boolean $stop
@@ -373,26 +352,6 @@ function slug(string $str, array $options=[])
 function html_decode(string $par): string
 {
 	return htmlspecialchars_decode(html_entity_decode(htmlspecialchars_decode($par, ENT_QUOTES), ENT_QUOTES), ENT_QUOTES);
-}
-
-/**
- * @param array       $array
- * @param object|null &$xml
- */
-function arrayToXml(array $array, object &$xml=null)
-{
-	if ($xml == null) {
-		$xml = new SimpleXMLElement('<result/>');
-	}
-
-	foreach ($array as $key => $value) {
-		if (is_array($value)) {
-			arrayToXml($value, $xml->addChild($key));
-		} else {
-			$xml->addChild($key, $value);
-		}
-	}
-	return $xml->asXML();
 }
 
 /**

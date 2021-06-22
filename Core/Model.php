@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.2
+ * @version 5.3
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\BasicDB;
+use BMVC\Libs\{Validate, BasicDB};
 
 final class Model 
 {
@@ -34,9 +34,6 @@ final class Model
 		self::DB();
 	}
 
-	/**
-	 * @return BasicDB
-	 */
 	public static function DB()
 	{
 		if (self::$active == true) {
@@ -45,7 +42,7 @@ final class Model
 
 			$dsn = $_ENV['DB_DSN'];
 
-			if (is_nem(@$dsn)) {
+			if (Validate::check(@$dsn)) {
 				if (@strstr($dsn, 'mysql:')) {
 
 					App::$dotenv->required(['DB_USER', 'DB_PASS']);

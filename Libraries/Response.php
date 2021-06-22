@@ -101,9 +101,9 @@ class Response
 	}
 
 	/**
-	 * @param  mixed        $data
-	 * @param  bool|boolean $status
-	 * @param  int|integer  $code
+	 * @param mixed        $data
+	 * @param bool|boolean $status
+	 * @param int|integer  $code
 	 */
 	public static function json($data=null, bool $status=true, int $code=200)
 	{

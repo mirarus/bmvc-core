@@ -150,7 +150,6 @@ class Lang
 	}
 	
 	#
-
 	private static function _routes(): void
 	{
 		Route::prefix('lang')::group(function() {
