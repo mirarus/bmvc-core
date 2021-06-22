@@ -44,19 +44,18 @@ class Session
 	}
 
 	/**
-	 * @param  string      $storage
-	 * @param  string|null $child
-	 * @return boolean
+	 * @param string      $storage
+	 * @param string|null $child
 	 */
-	public static function has(string $storage, string $child=null): bool
+	public static function has(string $storage, string $child=null)
 	{
 		if ($child === null) {
 			if (isset($_SESSION[$storage])) {
-				return (bool) $_SESSION[$storage];
+				return $_SESSION[$storage];
 			}
 		} else {
 			if (isset($_SESSION[$storage][$child])) {
-				return (bool) $_SESSION[$storage][$child];
+				return $_SESSION[$storage][$child];
 			}
 		}
 	}
