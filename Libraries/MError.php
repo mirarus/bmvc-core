@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.8
+ * @version 2.9
  */
 
 namespace BMVC\Libs;
@@ -53,6 +53,14 @@ class MError
 		'dark' => '0 40 60'
 	];
 
+	/**
+	 * @var array
+	 */
+	private static $border = [
+		'top' => '60',
+		'left' => '80'
+	];
+
 	public function __construct()
 	{
 		self::reset();
@@ -89,7 +97,7 @@ class MError
 	{
 		http_response_code($response_code);
 		echo $html == true ? '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /><title>' . $title . '</title></head><body>' : null;
-		echo '<div style="padding: 15px; border-left: 5px solid rgb(' . $color . ' / 80%); border-top: 5px solid rgb(' . $color . ' / 60%); background: #f8f8f8; margin-bottom: 10px; border-radius: 5px 5px 0 3px;">';
+		echo '<div style="padding: 15px; border-left: 5px solid rgb(' . $color . ' / ' . self::$border['left'] . '%); border-top: 5px solid rgb(' . $color . ' / ' . self::$border['top'] . '%); background: #f8f8f8; margin-bottom: 10px; border-radius: 5px 5px 0 3px;">';
 		echo isset($text) && !empty($text) ? '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, \'Helvetica Neue\', Arial, sans-serif; font-size: 16px; font-weight: 500; color: black;">' . $text . "</div>" : null;
 		echo isset($message) && !empty($message) ? '<div style="margin-top: 15px; font-size: 14px; font-family: Consolas, Monaco, Menlo, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, sans-serif; color: #ac0e10;">' . $message . "</div>" : null; 
 		echo "</div>";
@@ -202,7 +210,7 @@ class MErrorA extends MError
 	 */
 	public function setColor(string $color): MErrorA
 	{
-		self::$color = self::$colors[$color] ? self::$colors[$color] : self::$colors['primary'];
+		self::$color = self::$colors[$color] ? self::$colors[$color] : self::$colors['info'];
 		return $this;
 	}
 
