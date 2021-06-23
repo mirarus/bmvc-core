@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.7
+ * @version 6.8
  */
 
 namespace BMVC\Core;
@@ -257,6 +257,8 @@ final class App
 				} else {
 					url($_url, true);
 				}
+			} else {
+				Route::get_404();
 			}
 		});
 	}
