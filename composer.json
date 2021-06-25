@@ -28,8 +28,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"BMVC\\": ".",
-			"BMVC\\Libs\\": "Libraries"
+			"BMVC\\": "."
 		},
 		"files": [
 			"helper.php"
