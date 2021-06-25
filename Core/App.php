@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.8
+ * @version 6.9
  */
 
 namespace BMVC\Core;
@@ -121,12 +121,14 @@ final class App
 	}
 
 	/**
-	 * @param array       $namespaces
-	 * @param string|null $sub
+	 * @param array        $namespaces
+	 * @param string|null  $sub
+	 * @param bool|boolean $new
 	 */
-	public static function namespace(array $namespaces=[], string $sub=null): void
+	public static function namespace(array $namespaces=[], string $sub=null, bool $new=false)
 	{
 		self::SGnamespace($namespaces, null, false, $sub);
+		if ($new == true) return new self;
 	}
 
 	/**
