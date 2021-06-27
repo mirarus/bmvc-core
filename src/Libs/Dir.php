@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.0
+ * @version 2.1
  */
 
 namespace BMVC\Libs;
@@ -37,7 +37,7 @@ class Dir
 	 */
 	public static function app(string $dir=null): string
 	{
-		$appDir = dirname(dirname(dirname(self::base()))) . DIRECTORY_SEPARATOR;
+		$appDir = dirname(dirname(dirname(dirname(self::base())))) . DIRECTORY_SEPARATOR;
 
 		if ($dir !== null) {
 			return self::replace($appDir . $dir);
