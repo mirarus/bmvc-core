@@ -1,6 +1,0 @@
-#!usr/bin/php
-<?php
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-new BMVC\Libs\Console(__DIR__ . '/test.php');

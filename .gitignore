@@ -1,5 +1,2 @@
 /vendor
 /.github
-.env
-
-*.log

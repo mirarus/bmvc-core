@@ -21,17 +21,13 @@
 		"vlucas/phpdotenv": "^5.3",
 		"symfony/console": "^5.2"
 	},
-	"scripts": {
-		"post-install-cmd": [
-			"@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-		]
-	},
+	"bin": ["bin/bmvc"],
 	"autoload": {
 		"psr-4": {
-			"BMVC\\": "."
+			"BMVC\\": "src/"
 		},
 		"files": [
-			"helper.php"
+			"src/helper.php"
 		]
 	}
 }
