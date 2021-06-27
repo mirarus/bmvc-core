@@ -1,2 +1,6 @@
 /vendor
 /.github
+
+.env
+.env.*
+*.log
