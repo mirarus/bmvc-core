@@ -9,6 +9,7 @@
 			"email": "aliguclutr@gmail.com"
 		}
 	],
+	"bin": ["bin/bmvc"],
 	"require": {
 		"php": "^7.3 || ^8.0",
 		"ext-json": "*",
@@ -21,19 +22,24 @@
 		"vlucas/phpdotenv": "^5.3",
 		"symfony/console": "^5.2"
 	},
-	"bin": ["bin/bmvc"],
+	"require-dev": {
+		"phpunit/phpunit": "7"
+	},
 	"autoload": {
 		"psr-4": {
 			"BMVC\\": "src"
 		},
 		"files": [
 			"src/helper.php"
+		],
+		"classmap": [
+			"src/"
 		]
 	},
 	"scripts": {
-		"post-install-cmd": ["BMVC\\Libs\\Composer::postInstall"],
+		"post-install-cmd": "BMVC\\Libs\\Composer::postInstall",
 		"post-update-cmd": "BMVC\\Libs\\Composer::postUpdate",
-		"post-package-install": ["BMVC\\Libs\\Composer::postPackageInstall"],
-		"post-package-update": ["BMVC\\Libs\\Composer::postPackageUpdate"]
+		"post-package-install": "BMVC\\Libs\\Composer::postPackageInstall",
+		"post-package-update": "BMVC\\Libs\\Composer::postPackageUpdate"
 	}
 }
