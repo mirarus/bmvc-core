@@ -36,22 +36,4 @@ class Composer
 		Dir::rm_dir(".git");
 		Dir::rm_dir(".github");
 	}
-
-	/**
-	 * @param PackageEvent $event
-	 */
-	public static function postPackageInstall(PackageEvent $event)
-	{
-		Dir::rm_dir(".git");
-		Dir::rm_dir(".github");
-	}
-
-	/**
-	 * @param PackageEvent $event
-	 */
-	public static function postPackageUpdate(PackageEvent $event)
-	{
-		Dir::rm_dir(".git");
-		Dir::rm_dir(".github");
-	}
 }
