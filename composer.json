@@ -31,10 +31,7 @@
 		]
 	},
 	"scripts": {
-		"delete-git-dir": "php -r \"rmdir('.git');\"",
-		"pre-install-cmd": "@delete-git-dir",
-		"pre-update-cmd": "@delete-git-dir",
-		"post-install-cmd": "@delete-git-dir",
-		"post-update-cmd": "@delete-git-dir"
+		"post-install-cmd": "BMVC\\Libs\\Composer::postInstall",
+		"post-update-cmd": "BMVC\\Libs\\Composer::postUpdate"
 	}
 }
