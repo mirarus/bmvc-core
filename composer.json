@@ -24,10 +24,17 @@
 	"bin": ["bin/bmvc"],
 	"autoload": {
 		"psr-4": {
-			"BMVC\\": "src/"
+			"BMVC\\": "src"
 		},
 		"files": [
 			"src/helper.php"
 		]
+	},
+	"scripts": {
+		"remove-git-dir" : "find . -mindepth 2 -type d -name .git | xargs rm -rf",
+		"pre-install-cmd": ["@remove-git-dir"],
+		"pre-update-cmd": ["@remove-git-dir"],
+		"post-install-cmd": ["@remove-git-dir"],
+		"post-update-cmd": ["@remove-git-dir"]
 	}
 }
