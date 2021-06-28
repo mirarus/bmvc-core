@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.2
+ * @version 2.3
  */
 
 namespace BMVC\Libs;
@@ -137,7 +137,7 @@ class Dir
 		}
 	}
 
-	public static function rm_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
+	public static function rm_dir(string $dir, string $type=null, bool $recursive=true): bool
 	{
 		if ($type == 'app') {
 			$dir = self::app($dir);
@@ -146,18 +146,11 @@ class Dir
 		}
 
 		if (self::is_dir($dir)) {
-
-			array_map(function ($file) {
-				if (self::is_dir($file)) {
-					self::rm_dir($file);
-				} else {
-					unlink($full);
-				}
-
-			}, glob($dir));
-
-			closedir($dir);
-			return (bool) @rmdir($dir, $recursive);
+			if (PHP_OS_FAMILY === 'Windows') {
+				return (bool) (null !== exec(sprintf("rd /s /q %s", escapeshellarg($dir))));
+			} else {
+				return (bool) (null !== exec(sprintf("rm -rf %s", escapeshellarg($dir))));
+			}
 		} else {
 			return false;
 		}

@@ -192,9 +192,7 @@ class Browser
 	}
 
 	public function getOs()
-	{	
-		pr($_SERVER);
-
+	{
 		$os = [
 			'/windows nt 10/i'      =>  'Windows 10',
 			'/windows nt 6.3/i'     =>  'Windows 8.1',
