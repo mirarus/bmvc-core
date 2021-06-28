@@ -137,7 +137,12 @@ class Dir
 		}
 	}
 
-	public static function rm_dir(string $dir, string $type=null, bool $recursive=true): bool
+	/**
+	 * @param  string      $dir
+	 * @param  string|null $type
+	 * @return boolean
+	 */
+	public static function rm_dir(string $dir, string $type=null): bool
 	{
 		if ($type == 'app') {
 			$dir = self::app($dir);
