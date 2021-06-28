@@ -31,7 +31,7 @@
 		]
 	},
 	"scripts": {
-		"remove-git-dir" : "find . -mindepth 2 -type d -name .git | xargs rm -rf",
+		"remove-git-dir" : "find . -type d | grep .git | xargs rm -rf",
 		"pre-install-cmd": ["@remove-git-dir"],
 		"pre-update-cmd": ["@remove-git-dir"],
 		"post-install-cmd": ["@remove-git-dir"],
