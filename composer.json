@@ -31,9 +31,9 @@
 		]
 	},
 	"scripts": {
-		"post-install-cmd": "BMVC\\Libs\\Composer::postInstall",
+		"post-install-cmd": ["BMVC\\Libs\\Composer::postInstall"],
 		"post-update-cmd": "BMVC\\Libs\\Composer::postUpdate",
-		"post-package-install": "BMVC\\Libs\\Composer::postPackageInstall",
-		"post-package-update": "BMVC\\Libs\\Composer::postPackageUpdate"
+		"post-package-install": ["BMVC\\Libs\\Composer::postPackageInstall"],
+		"post-package-update": ["BMVC\\Libs\\Composer::postPackageUpdate"]
 	}
 }
