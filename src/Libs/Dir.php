@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 2.1
+ * @version 2.2
  */
 
 namespace BMVC\Libs;
@@ -81,28 +81,6 @@ class Dir
 	}
 
 	/**
-	 * @param  string       $dir
-	 * @param  string|null  $type
-	 * @param  int|integer  $perms
-	 * @param  bool|boolean $recursive
-	 * @return boolean
-	 */
-	public static function mk_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
-	{
-		if ($type == 'app') {
-			$dir = self::app($dir);
-		} elseif ($type == 'base') {
-			$dir = self::base($dir);
-		}
-
-		if (!self::is_dir($dir)) {
-			return (bool) @mkdir($dir, $perms, $recursive);
-		} else {
-			return false;
-		}
-	}
-
-	/**
 	 * @param mixed $arg
 	 */
 	public static function replace($arg=null)
@@ -135,5 +113,53 @@ class Dir
 	public static function trim(string $arg=null): string
 	{
 		return @trim(self::replace($arg), DIRECTORY_SEPARATOR);
+	}
+
+	/**
+	 * @param  string       $dir
+	 * @param  string|null  $type
+	 * @param  int|integer  $perms
+	 * @param  bool|boolean $recursive
+	 * @return boolean
+	 */
+	public static function mk_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
+	{
+		if ($type == 'app') {
+			$dir = self::app($dir);
+		} elseif ($type == 'base') {
+			$dir = self::base($dir);
+		}
+
+		if (!self::is_dir($dir)) {
+			return (bool) @mkdir($dir, $perms, $recursive);
+		} else {
+			return false;
+		}
+	}
+
+	public static function rm_dir(string $dir, string $type=null, int $perms=0777, bool $recursive=true): bool
+	{
+		if ($type == 'app') {
+			$dir = self::app($dir);
+		} elseif ($type == 'base') {
+			$dir = self::base($dir);
+		}
+
+		if (self::is_dir($dir)) {
+
+			array_map(function ($file) {
+				if (self::is_dir($file)) {
+					self::rm_dir($file);
+				} else {
+					unlink($full);
+				}
+
+			}, glob($dir));
+
+			closedir($dir);
+			return (bool) @rmdir($dir, $recursive);
+		} else {
+			return false;
+		}
 	}
 }
