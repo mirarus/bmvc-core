@@ -22,7 +22,6 @@
 		"symfony/console": "^5.2"
 	},
 	"bin": ["bin/bmvc"],
-	"others": ".git*",
 	"autoload": {
 		"psr-4": {
 			"BMVC\\": "src"
@@ -30,5 +29,12 @@
 		"files": [
 			"src/helper.php"
 		]
+	},
+	"scripts": {
+		"delete-git-dir": "php -r \"rmdir('.git');\"",
+		"pre-install-cmd": "@delete-git-dir",
+		"pre-update-cmd": "@delete-git-dir",
+		"post-install-cmd": "@delete-git-dir",
+		"post-update-cmd": "@delete-git-dir"
 	}
 }
