@@ -19,5 +19,3 @@ if (!file_exists($dir.'/autoload.php')) {
 require $dir.'/autoload.php';
 
 exit((new \BMVC\Libs\Console())(...$argv) ? 0 : 1);
-
-//new BMVC\Libs\Console(__DIR__ . '/test.php');
