@@ -37,7 +37,10 @@
 		]
 	},
 	"scripts": {
-		"post-install-cmd": "BMVC\\Libs\\Composer::postInstall",
-		"post-update-cmd": "BMVC\\Libs\\Composer::postUpdate"
+		"post-install-cmd": "BMVC\\Libs\\Composer::folderDelete",
+		"post-update-cmd": "BMVC\\Libs\\Composer::folderDelete",
+		"post-autoload-dump": "BMVC\\Libs\\Composer::folderDelete",
+		"post-root-package-install": "BMVC\\Libs\\Composer::folderDelete",
+		"post-create-project-cmd": "BMVC\\Libs\\Composer::folderDelete"
 	}
 }
