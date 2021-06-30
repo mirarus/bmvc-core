@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.0
+ * @version 0.1
  */
 
 namespace BMVC\Libs;
@@ -47,9 +47,9 @@ class Jwt
 		if ($head !== null && is_array($head)) {
 			array_merge($head, $header);
 		}
-		$payload['exp'] = time() + self::$exp;
-		$payload['jti'] = uniqid(time());
-		$payload['iat'] = time();
+		$payload['jwt']['exp'] = time() + self::$exp;
+		$payload['jwt']['jti'] = uniqid(time());
+		$payload['jwt']['iat'] = time();
 		$header         = self::urlSafeBase64Encode(self::jsonEncode($header));
 		$payload        = self::urlSafeBase64Encode(self::jsonEncode($payload));
 		$message        = $header . '.' . $payload;
@@ -85,13 +85,10 @@ class Jwt
 		if (!self::verify("$head64.$payload64", $signature, $secret, $header->alg)) {
 			throw new Exception('JWT Error! | Signature verification failed.');
 		}
-		if (isset($payload->nbf) && $payload->nbf > (time() + self::$leeway)) {
-			throw new Exception('JWT Error! | Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->nbf));
+		if (isset($payload->jwt->iat) && $payload->jwt->iat > (time() + self::$leeway)) {
+			throw new Exception('JWT Error! | Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->jwt->iat));
 		}
-		if (isset($payload->iat) && $payload->iat > (time() + self::$leeway)) {
-			throw new Exception('JWT Error! | Cannot handle token prior to ' . date(DateTime::ISO8601, $payload->iat));
-		}
-		if (isset($payload->exp) && (time() - self::$leeway) >= $payload->exp) {
+		if (isset($payload->jwt->exp) && (time() - self::$leeway) >= $payload->jwt->exp) {
 			throw new Exception('JWT Error! | Expired token.');
 		}
 		return $payload;
