@@ -289,6 +289,21 @@ function pr($data, bool $stop=false)
 }
 
 /**
+ * @param mixed        $data
+ * @param bool|boolean $stop
+ */
+function dump($data, bool $stop=false)
+{
+	echo "<pre>";
+	var_dump($data);
+	echo "</pre>";
+	if ($stop === true) {
+		die();
+	}
+}
+
+
+/**
  * Helpers
  */
 array_map(function ($file) {
