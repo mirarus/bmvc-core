@@ -374,12 +374,11 @@ function datetotime(string $date, string $format='YYYY-MM-DD')
 
 	return mktime(0, 0, 0, $month, $day, $year);
 }
-	
+
 /**
  * @param string $file
  */
-function ob_template(string $file)
-{
+function ob_template(string $file) {
 	ob_start();
 	require_once $file;
 	$ob_content = ob_get_contents();
@@ -393,4 +392,31 @@ function ob_template(string $file)
 	], url('$2'), $ob_content);
 
 	return $ob_content;
+}
+
+function resize_image($file, $w, $h, $crop=false) {
+	list($width, $height) = getimagesize($file);
+	$r = $width / $height;
+	if ($crop) {
+		if ($width > $height) {
+			$width = ceil($width-($width * abs($r - $w / $h)));
+		} else {
+			$height = ceil($height-($height * abs($r - $w / $h)));
+		}
+		$newwidth = $w;
+		$newheight = $h;
+	} else {
+		if ($w/$h > $r) {
+			$newwidth = $h*$r;
+			$newheight = $h;
+		} else {
+			$newheight = $w/$r;
+			$newwidth = $w;
+		}
+	}
+	$src = imagecreatefromjpeg($file);
+	$dst = imagecreatetruecolor($newwidth, $newheight);
+	imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+
+	return $dst;
 }
