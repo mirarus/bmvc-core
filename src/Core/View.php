@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.8
+ * @version 5.9
  */
 
 namespace BMVC\Core;
@@ -108,8 +108,8 @@ final class View
 		@extract($data);
 		@$_REQUEST['vd'] = $data;
 
-		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : self::$namespace;
-		$_ns  = Dir::implode([Dir::trim($_ns), 'Layout', 'Main']);
+		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
+		$_ns  = Dir::implode([Dir::trim(self::$namespace), Dir::trim(Dir::implode([Dir::trim($_ns), 'Layout', 'Main']))]);
 		$file = Dir::app($_ns . '.' . self::$extension);
 
 		if (file_exists($file)) {
@@ -120,8 +120,8 @@ final class View
 			require_once $file;
 			$ob_content = ob_get_contents();
 			ob_end_clean();
-			
-			# Replace
+
+				# Replace
 			if (isset($data['page_title'])) {
 				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
 			}
@@ -134,7 +134,7 @@ final class View
 				return new self;
 			}
 		} else {
-			throw new Exception('Layout [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
+			throw new Exception('Layout [' . @str_replace([Dir::app()], null, $file) . '] not found.');
 		}
 	}
 
