@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.2
+ * @version 6.3
  */
 
 namespace BMVC\Libs;
@@ -39,11 +39,6 @@ class Lang
 	 */
 	private static $current_lang = 'en';
 
-	/**
-	 * @var boolean
-	 */
-	private static $active = false;
-
 	public function __construct()
 	{
 		self::$dir = Dir::app(self::$dir);
@@ -70,8 +65,6 @@ class Lang
 		self::$current_lang = self::get();
 
 		self::_routes();
-
-		self::$active = true;
 	}
 
 	/**
@@ -123,7 +116,7 @@ class Lang
 	 * @param string|null $lang
 	 */
 	public static function set(string $lang=null): void
-	{
+	{				
 		if (empty($lang)) {
 			$lang = self::$current_lang;
 		} if (in_array($lang, self::$langs)) {
@@ -209,8 +202,6 @@ class Lang
 	 */
 	private static function _get_text(string $text)
 	{
-		if (self::$active == false) return false;
-
 		if (self::$current_lang == 'index') return;
 
 		$_config = false;
@@ -256,8 +247,6 @@ class Lang
 
 	private static function _get_langs()
 	{
-		if (self::$active == false) return false;
-
 		$_config = false;
 
 		if (file_exists($file = Dir::implode([self::$dir, 'config.php']))) {
@@ -283,7 +272,7 @@ class Lang
 					$_lang = [];
 					include $file;
 					if ($_lang != null) {
-						$files[] = str_replace([self::$dir, '.php'], '', $file);
+						$files[] = Dir::trim(str_replace([self::$dir, '.php'], '', $file));
 					}
 				}
 			}
@@ -297,8 +286,6 @@ class Lang
 	 */
 	private static function _get_lang_info(string $_xlang, string $par=null)
 	{
-		if (self::$active == false) return false;
-
 		if ($_xlang == 'index') return;
 
 		$_config = false;
