@@ -452,10 +452,10 @@ final class Route
 				MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
 			} else {
 				echo Response::_json((page_url() ? [
-					'error' => '404 Page Not Found!',
+					'message' => '404 Page Not Found!',
 					'page' => page_url()
 				] : [
-					'error' => '404 Page Not Found!'
+					'message' => '404 Page Not Found!'
 				]), 404);
 			}
 		}
