@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.8
+ * @version 3.9
  */
 
 namespace BMVC\Core;
@@ -451,12 +451,12 @@ final class Route
 			if (Request::isGet()) {
 				MError::print('404 Page Not Found!', (page_url() ? 'Page: ' . page_url() : null), true, 'Page Error!', null, true, 404);
 			} else {
-				echo Response::json((page_url() ? [
+				echo Response::_json((page_url() ? [
 					'error' => '404 Page Not Found!',
 					'page' => page_url()
 				] : [
 					'error' => '404 Page Not Found!'
-				]), false, 404);
+				]), 404);
 			}
 		}
 	}
