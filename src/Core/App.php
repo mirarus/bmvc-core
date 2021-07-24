@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.0
+ * @version 7.1
  */
 
 namespace BMVC\Core;
@@ -25,6 +25,9 @@ final class App
 	private static $init = false;
 	
 	public static $dotenv;
+	public static $url;
+	public static $page;
+	public static $timezone;
 	public static $environment;
 
 	/**
@@ -151,15 +154,19 @@ final class App
 
 	private static function initDefine(): void
 	{
-		@define('URL', base_url());
+		# URL
+		self::$url = base_url();
+		@define('URL', self::$url);
+
+		# PAGE
+		self::$page = page_url();
+		@define('PAGE', self::$page);
 
 		# TIMEZONE
-		if (isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) {
-			@define('TIMEZONE', $_ENV['TIMEZONE']);
-		} else {
-			@define('TIMEZONE', 'Europe/Istanbul');
-		}
-		@date_default_timezone_set(TIMEZONE);
+		self::$timezone = ((isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) ? $_ENV['TIMEZONE'] : 'Europe/Istanbul');
+		@define('TIMEZONE', self::$timezone);
+
+		@date_default_timezone_set(self::$timezone);
 
 		# ENVIRONMENT
 		self::$environment = ((isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) ? $_ENV['ENVIRONMENT'] : 'development');
@@ -227,7 +234,7 @@ final class App
 		@header("Strict-Transport-Security: max-age=15552000; preload");
 		@header("X-Frame-Options: sameorigin");
 		@header("X-Powered-By: PHP/BMVC");
-		(page_url() ? @header("X-Url: " . page_url()) : null);
+		@header("X-Url: " . self::$page);
 		@header("X-XSS-Protection: 1; mode=block");
 	}
 
