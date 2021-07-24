@@ -27,6 +27,9 @@
 		},
 		"files": [
 			"src/helper.php"
+		],
+		"classmap": [
+			"src/"
 		]
 	},
 	"scripts": {
