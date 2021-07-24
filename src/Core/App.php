@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.9
+ * @version 7.0
  */
 
 namespace BMVC\Core;
@@ -25,6 +25,7 @@ final class App
 	private static $init = false;
 	
 	public static $dotenv;
+	public static $environment;
 
 	/**
 	 * @var array
@@ -161,12 +162,10 @@ final class App
 		@date_default_timezone_set(TIMEZONE);
 
 		# ENVIRONMENT
-		if (isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) {
-			@define('ENVIRONMENT', $_ENV['ENVIRONMENT']);
-		} else {
-			@define('ENVIRONMENT', 'development');
-		}
-		switch (ENVIRONMENT) {
+		self::$environment = ((isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) ? $_ENV['ENVIRONMENT'] : 'development');
+		@define('ENVIRONMENT', self::$environment);
+
+		switch (self::$environment) {
 			case 'staging':
 			case 'development':
 			@error_reporting(-1);
@@ -206,6 +205,7 @@ final class App
 			}
 		}
 
+		Whoops::set('environment', self::$environment);
 		Whoops::init();
 	}
 
