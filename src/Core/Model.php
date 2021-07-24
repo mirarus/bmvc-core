@@ -13,12 +13,11 @@
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{Validate, BasicDB};
+use BMVC\Libs\{classCall, Validate, BasicDB};
 
 final class Model 
 {
-	use Call;
-
+	
 	/**
 	 * @var boolean
 	 */
@@ -66,7 +65,7 @@ final class Model
 	 */
 	public static function import(string $class, object &$return=null)
 	{
-		self::get('model', $class, $get);
+		classCall::get('model', $class, $get);
 
 		return $return = @$get['_cl'];
 	}

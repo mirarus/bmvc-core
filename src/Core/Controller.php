@@ -8,16 +8,15 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.5
+ * @version 5.6
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\Dir;
+use BMVC\Libs\{classCall, Dir};
 
 final class Controller
 {
-	use Call;
 
 	/**
 	 * @param string      $class
@@ -25,7 +24,7 @@ final class Controller
 	 */
 	public static function import(string $class, object &$return=null)
 	{
-		self::get('controller', $class, $get);
+		classCall::get('controller', $class, $get);
 
 		if (@$get['_class'] != @$get['_class_']) {
 			
