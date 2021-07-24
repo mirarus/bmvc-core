@@ -97,22 +97,6 @@ function PageCheck(string $url=null): bool
 }
 
 /**
- * @param string|null $data
- */
-function vd(string $data=null)
-{
-	if ($data == null) {
-		if (isset($_REQUEST['vd'])) {
-			return $_REQUEST['vd'];
-		}
-	} else {
-		if (isset($_REQUEST['vd'][$data])) {
-			return $_REQUEST['vd'][$data];
-		}
-	}
-}
-
-/**
  * @param string       $url
  * @param bool|boolean $return
  */
