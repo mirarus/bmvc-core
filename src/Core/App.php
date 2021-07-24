@@ -72,6 +72,7 @@ final class App
 		self::_routes();
 
 		if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
+
 		Controller::namespace(@self::$namespaces['controller']);
 		Model::namespace(@self::$namespaces['model']);
 		View::namespace((@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']));
@@ -86,8 +87,9 @@ final class App
 	 * @param string|null  $value
 	 * @param bool|boolean $get
 	 * @param string|null  $sub
+	 * @param bool|boolean $new
 	 */
-	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null)
+	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null, bool $new=false)
 	{
 		$sub = ($sub != null) ? (CL::trim($sub) . '\\') : null;
 
@@ -121,7 +123,7 @@ final class App
 				return self::$namespaces;
 			}
 		}
-		# if ($get === false) return new self;
+		if ($new == true) return new self;
 	}
 
 	/**
@@ -308,7 +310,7 @@ final class App
 			if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
 				foreach ($route['namespaces'] as $key => $val) {
 					if (array_key_exists($key, self::$namespaces)) {
-						call_user_func_array(["BMVC\Core\\" . ucfirst($key), 'namespace'], [$val]);
+						call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]);
 					}
 				}
 			}
