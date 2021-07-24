@@ -51,60 +51,6 @@ function app(string $class=null, string $method=null, array $params=[])
 }
 
 /**
- * @param  mixed  $data
- * @return boolean
- */
-function is_nem($data)
-{
-	return isset($data) && !empty($data);
-}
-
-/**
- * @param  mixed  $data
- * @return boolean
- */
-function nis_em($data)
-{
-	return !isset($data) && empty($data);
-}
-
-/**
- * @param  mixed  $data
- * @return boolean
- */
-function is($data)
-{
-	return isset($data);
-}
-
-/**
- * @param  mixed  $data
- * @return boolean
- */
-function nis($data)
-{
-	return !isset($data);
-}
-
-/**
- * @param  mixed  $data
- * @return boolean
- */
-function nem($data)
-{
-	return !empty($data);
-}
-
-/**
- * @param  mixed  $data
- * @return boolean
- */
-function em($data)
-{
-	return empty($data);
-}
-
-/**
  * @param string       $par
  * @param int|integer  $time
  * @param bool|boolean $stop
@@ -176,29 +122,6 @@ function ct(string $url, bool $return=true)
 		return $url . '?ct=' . time();
 	} else {
 		echo $url . '?ct=' . time();
-	}
-}
-
-/**
- * @param  string $email
- * @return bool
- */
-function valid_email(string $email): bool
-{
-	return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
-}
-
-/**
- * @return mixed
- */
-function _password()
-{
-	$args = func_get_args();
-
-	if ($args[0] == 'hash') {
-		return password_hash(md5($args[1]), PASSWORD_DEFAULT, ['cost' => @$args[2] ? $args[2] : 12]);
-	} elseif ($args[0] == 'verify') {
-		return (bool) password_verify(md5($args[1]), $args[2]);
 	}
 }
 
