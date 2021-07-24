@@ -16,7 +16,7 @@
 		"ext-pdo": "*",
 		"ext-mbstring": "*",
 		"ext-intl" : "*",
-		"mirarus/bmvc-libs": "@dev",
+		"mirarus/bmvc-libs": "^0.*",
 		"filp/whoops": "^2.12",
 		"jenssegers/blade": "^1.4",
 		"monolog/monolog": "^2.2",
