@@ -1,5 +1,7 @@
 <?php
 
+BMVC\Libs\Dir::setBase(__DIR__);
+
 /**
  * @return boolean
  */
