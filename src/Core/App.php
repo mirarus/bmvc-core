@@ -236,7 +236,7 @@ final class App
 		@header("Strict-Transport-Security: max-age=15552000; preload");
 		@header("X-Frame-Options: sameorigin");
 		@header("X-Powered-By: PHP/BMVC");
-		@header("X-Url: " . self::$page);
+		if (self::$page) @header("X-Url: " . self::$page);
 		@header("X-XSS-Protection: 1; mode=block");
 	}
 
