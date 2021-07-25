@@ -1,6 +1,6 @@
 <?php
 
-BMVC\Libs\Dir::setBase(__DIR__);
+BMVC\Libs\Dir::setPath(__DIR__);
 
 /**
  * @return boolean
@@ -271,7 +271,7 @@ function dump($data, bool $stop=false)
 	}
 }
 
-
+	
 /**
  * Helpers
  */
