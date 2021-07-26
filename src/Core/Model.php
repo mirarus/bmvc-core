@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.4
+ * @version 5.5
  */
 
 namespace BMVC\Core;
@@ -60,12 +60,14 @@ final class Model
 	}
 
 	/**
-	 * @param string|null  $namespace
-	 * @param bool|boolean $new
+	 * @param  string|null $namespace
+	 * @return Model
 	 */
-	public static function namespace(string $namespace=null, bool $new=false)
+	public static function namespace(string $namespace=null): Model
 	{
-		classCall::init(get_class())->namespace($namespace, $new);
+		classCall::init(get_class())->namespace($namespace);
+
+		return new self;
 	}
 
 	/**
