@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.2
+ * @version 7.3
  */
 
 namespace BMVC\Core;
@@ -303,6 +303,10 @@ final class App
 
 	private static function initRoute()
 	{
+		if (strpos(Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
+			redirect(str_replace(@$_ENV['PUBLIC_DIR'], '/', Request::server('REQUEST_URI')));
+		}
+
 		Route::Run($route);
 
 		if (@$route) {
