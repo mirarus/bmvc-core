@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.5
+ * @version 5.6
  */
 
 namespace BMVC\Core;
@@ -17,6 +17,8 @@ use BMVC\Libs\{classCall, Validate, BasicDB};
 
 final class Model 
 {
+
+	use classCall;
 
 	/**
 	 * @var boolean
@@ -60,33 +62,12 @@ final class Model
 	}
 
 	/**
-	 * @param  string|null $namespace
-	 * @return Model
-	 */
-	public static function namespace(string $namespace=null): Model
-	{
-		classCall::init(get_class())->namespace($namespace);
-
-		return new self;
-	}
-
-	/**
-	 * @param mixed       $action
-	 * @param array|null  $params
-	 * @param object|null &$return
-	 */
-	public static function call($action, array $params=null, object &$return=null)
-	{
-		classCall::init(get_class())->call($action, $params, $return);
-	}
-
-	/**
 	 * @param string      $class
 	 * @param object|null &$return
 	 */
 	public static function import(string $class, object &$return=null)
 	{
-		classCall::init(get_class())->get('model', $class, $get);
+		self::get('model', $class, $get);
 
 		return $return = @$get['_cl'];
 	}
