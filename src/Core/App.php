@@ -303,7 +303,7 @@ final class App
 
 	private static function initRoute()
 	{
-		if (strpos(Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
+		if (@$_ENV['PUBLIC_DIR'] && strpos(Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
 			redirect(str_replace(@$_ENV['PUBLIC_DIR'], '/', Request::server('REQUEST_URI')));
 		}
 
