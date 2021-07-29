@@ -8,15 +8,15 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.9
+ * @version 6.0
  */
 
 namespace BMVC\Core;
 
+use Jenssegers\Blade\Blade;
+use BMVC\Libs\Dir;
 use Exception;
 use Closure;
-use BMVC\Libs\Dir;
-use Jenssegers\Blade\Blade;
 
 final class View
 {
@@ -178,7 +178,10 @@ final class View
 		if ($layout == true) {
 
 			$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
-			$_ns  = Dir::implode([Dir::trim(self::$namespace), Dir::trim(Dir::implode([Dir::trim($_ns), 'Layout', 'Main']))]);
+			$_ns  = Dir::trim($_ns);
+			$_ns  = ($_ns != null) ? Dir::implode([$_ns, 'Layout', 'Main']) : Dir::implode(['Layout', 'Main']);
+			$_ns  = Dir::trim($_ns);
+			$_ns  = (Dir::trim(self::$namespace) != null) ? Dir::implode([Dir::trim(self::$namespace), $_ns]) : $_ns;
 			$file = Dir::app($_ns . '.' . self::$extension);
 
 			if (file_exists($file)) {
@@ -308,7 +311,6 @@ final class View
 			return $return = $ob_content;
 		} else {
 			throw new Exception('View [' . @str_replace([Dir::app()], null, $file) . '] not found.');
-			//throw new Exception('View [' . @str_replace([Dir::app(), self::$namespace, @$data['namespace']], null, $file) . '] not found.');
 		}
 	}
 
