@@ -1,6 +1,6 @@
 <?php
 
-BMVC\Libs\Dir::setPath(__DIR__);
+BMVC\Libs\File::setPath(__DIR__);
 
 /**
  * @return boolean
@@ -309,6 +309,6 @@ function dump($data, bool $stop=false)
  * Helpers
  */
 array_map(function ($file) {
-	if ($file == BMVC\Libs\Dir::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
+	if ($file == BMVC\Libs\File::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
 	require_once $file;
-}, glob(BMVC\Libs\Dir::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));
+}, glob(BMVC\Libs\File::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));

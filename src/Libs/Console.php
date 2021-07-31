@@ -206,7 +206,7 @@ class CommandClearLog extends SymfonyCommand
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		array_map('unlink', glob(Dir::app("Logs/*")));
+		array_map('unlink', glob(File::app("Logs/*")));
 
 		$output->writeln([
 			'',
@@ -222,12 +222,12 @@ function CmakeCM(string $type, string $class): array
 {
 	$useLib = ucfirst($type);
 
-	$class = Dir::replace($class);
+	$class = File::replace($class);
 	$file = $class . '.php';
 
-	$parts = Dir::explode($class);
+	$parts = File::explode($class);
 	$class = array_pop($parts);
-	$ns    = Dir::implode($parts);
+	$ns    = File::implode($parts);
 
 	if (file_exists($file)) {
 
@@ -237,7 +237,7 @@ function CmakeCM(string $type, string $class): array
 		];
 	} else {
 
-		$ns ? Dir::mk_dir($ns) : null;
+		$ns ? File::mk_dir($ns) : null;
 		$namespace = $ns ? "namespace $ns;\n\n" : null;
 
 		$f = fopen($file, 'w');

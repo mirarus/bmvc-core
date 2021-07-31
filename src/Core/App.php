@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.3
+ * @version 7.5
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{Dir, CL, Whoops, Log, Request};
+use BMVC\Libs\{File, CL, Whoops, Log, Request};
 use Dotenv\Dotenv;
 
 final class App
@@ -149,7 +149,7 @@ final class App
 
 	private static function initDotenv(): void
 	{
-		$dotenv = Dotenv::createImmutable(Dir::app());
+		$dotenv = Dotenv::createImmutable(File::app());
 		$dotenv->safeLoad();
 		self::$dotenv = $dotenv;
 	}

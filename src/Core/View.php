@@ -14,7 +14,7 @@
 namespace BMVC\Core;
 
 use Jenssegers\Blade\Blade;
-use BMVC\Libs\Dir;
+use BMVC\Libs\File;
 use Exception;
 use Closure;
 
@@ -61,7 +61,7 @@ final class View
 	 */
 	public static function namespace(string $namespace=null, bool $new=false)
 	{
-		self::$namespace = Dir::trim($namespace) . DIRECTORY_SEPARATOR;
+		self::$namespace = File::trim($namespace) . DIRECTORY_SEPARATOR;
 		if ($new == true) return new self;
 	}
 
@@ -109,8 +109,8 @@ final class View
 		@$_REQUEST['vd'] = $data;
 
 		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
-		$_ns  = Dir::implode([Dir::trim(self::$namespace), Dir::trim(Dir::implode([Dir::trim($_ns), 'Layout', 'Main']))]);
-		$file = Dir::app($_ns . '.' . self::$extension);
+		$_ns  = File::implode([File::trim(self::$namespace), File::trim(File::implode([File::trim($_ns), 'Layout', 'Main']))]);
+		$file = File::app($_ns . '.' . self::$extension);
 
 		if (file_exists($file)) {
 
@@ -134,7 +134,7 @@ final class View
 				return new self;
 			}
 		} else {
-			throw new Exception('Layout [' . @str_replace([Dir::app()], null, $file) . '] not found.');
+			throw new Exception('Layout [' . @str_replace([File::app()], null, $file) . '] not found.');
 		}
 	}
 
@@ -170,19 +170,19 @@ final class View
 			$view = $action;
 		}
 		#
-		$namespace = (($action != null && @is_array($action)) ? Dir::implode($action) : null);
-		$namespace = Dir::replace($namespace);
-		$view			 = ($namespace != null) ? Dir::implode([$namespace, $view]) : $view;
-		$view			 = Dir::replace($view);
+		$namespace = (($action != null && @is_array($action)) ? File::implode($action) : null);
+		$namespace = File::replace($namespace);
+		$view			 = ($namespace != null) ? File::implode([$namespace, $view]) : $view;
+		$view			 = File::replace($view);
 		#
 		if ($layout == true) {
 
 			$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
-			$_ns  = Dir::trim($_ns);
-			$_ns  = ($_ns != null) ? Dir::implode([$_ns, 'Layout', 'Main']) : Dir::implode(['Layout', 'Main']);
-			$_ns  = Dir::trim($_ns);
-			$_ns  = (Dir::trim(self::$namespace) != null) ? Dir::implode([Dir::trim(self::$namespace), $_ns]) : $_ns;
-			$file = Dir::app($_ns . '.' . self::$extension);
+			$_ns  = File::trim($_ns);
+			$_ns  = ($_ns != null) ? File::implode([$_ns, 'Layout', 'Main']) : File::implode(['Layout', 'Main']);
+			$_ns  = File::trim($_ns);
+			$_ns  = (File::trim(self::$namespace) != null) ? File::implode([File::trim(self::$namespace), $_ns]) : $_ns;
+			$file = File::app($_ns . '.' . self::$extension);
 
 			if (file_exists($file)) {
 
@@ -206,7 +206,7 @@ final class View
 					return new self;
 				}
 			} else {
-				throw new Exception('Layout [' . @str_replace([Dir::app()], null, $file) . '] not found.');
+				throw new Exception('Layout [' . @str_replace([File::app()], null, $file) . '] not found.');
 			}
 		} else {
 
@@ -263,8 +263,8 @@ final class View
 			$view = $action;
 		}
 		#
-		$namespace = (($action != null && @is_array($action)) ? Dir::implode($action) : null);
-		$namespace = Dir::replace($namespace);
+		$namespace = (($action != null && @is_array($action)) ? File::implode($action) : null);
+		$namespace = File::replace($namespace);
 
 		if ($view != null) {
 
@@ -288,7 +288,7 @@ final class View
 		@$_REQUEST['vd'] = $data;
 
 		$_ns  = (self::$namespace . $view);
-		$file = Dir::app($_ns . '.' . self::$extension);
+		$file = File::app($_ns . '.' . self::$extension);
 
 		if (file_exists($file)) {
 
@@ -310,7 +310,7 @@ final class View
 
 			return $return = $ob_content;
 		} else {
-			throw new Exception('View [' . @str_replace([Dir::app()], null, $file) . '] not found.');
+			throw new Exception('View [' . @str_replace([File::app()], null, $file) . '] not found.');
 		}
 	}
 
@@ -327,7 +327,7 @@ final class View
 
 		return $return = 
 		(new Blade(
-			Dir::app(self::$namespace), 
+			File::app(self::$namespace), 
 			self::_cache_dir($namespace)
 		))
 		->make($view, $data)
@@ -340,10 +340,10 @@ final class View
 	 */
 	private function _cache_dir(string $namespace=null, &$return=null)
 	{
-		$_ns = (($namespace != null) ? Dir::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
-		$dir = Dir::app($_ns);
+		$_ns = (($namespace != null) ? File::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
+		$dir = File::app($_ns);
 
-		Dir::mk_dir($dir);
+		File::mk_dir($dir);
 
 		return $return = $dir;
 	}
@@ -357,9 +357,9 @@ final class View
 	{
 		if (file_exists($file)) {
 			
-			$_view = Dir::explode($view);
+			$_view = File::explode($view);
 			$_view = @array_pop($_view);
-			$_file = Dir::implode([$dir, (md5($_view) . '.' . self::$extension)]);
+			$_file = File::implode([$dir, (md5($_view) . '.' . self::$extension)]);
 			$expir = 120;
 			
 			if (!file_exists($_file) || (filemtime($_file) < (time() - $expir))) {
