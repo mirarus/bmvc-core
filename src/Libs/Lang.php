@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.4
+ * @version 6.6
  */
 
 namespace BMVC\Libs;
@@ -41,8 +41,8 @@ class Lang
 
 	public function __construct()
 	{
-		self::$dir = File::app(self::$dir);
-		File::mk_dir(self::$dir);
+		self::$dir = FS::app(self::$dir);
+		FS::mk_dir(self::$dir);
 
 		$_lang = $_ENV['LANG'];
 		
@@ -199,7 +199,7 @@ class Lang
 		}
 
 		if ($_config == false) {
-			if (file_exists($file = File::implode([self::$dir, self::$current_lang . '.php']))) {
+			if (file_exists($file = FS::implode([self::$dir, self::$current_lang . '.php']))) {
 
 				$_lang = [];
 				include $file;
@@ -229,13 +229,13 @@ class Lang
 		if ($_config == false) {
 
 			$files = [];
-			foreach (glob(File::implode([self::$dir, '*.php'])) as $file) {
-				if ($file != File::implode([self::$dir, 'index.php'])) {
+			foreach (glob(FS::implode([self::$dir, '*.php'])) as $file) {
+				if ($file != FS::implode([self::$dir, 'index.php'])) {
 
 					$_lang = [];
 					include $file;
 					if ($_lang != null) {
-						$files[] = File::trim(str_replace([self::$dir, '.php'], '', $file));
+						$files[] = FS::trim(str_replace([self::$dir, '.php'], '', $file));
 					}
 				}
 			}
@@ -276,7 +276,7 @@ class Lang
 		}
 
 		if ($_config == false) {
-			if (file_exists($file = File::implode([self::$dir, $_xlang . '.php']))) {
+			if (file_exists($file = FS::implode([self::$dir, $_xlang . '.php']))) {
 
 				include $file;
 
@@ -304,7 +304,7 @@ class Lang
 	 */
 	private static function _config_file(array &$_file=null)
 	{
-		if (file_exists($file = File::implode([self::$dir, 'config.php']))) {
+		if (file_exists($file = FS::implode([self::$dir, 'config.php']))) {
 
 			$_file_ = include ($file);
 
