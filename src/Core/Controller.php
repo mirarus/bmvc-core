@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.1
+ * @version 6.2
  */
 
 namespace BMVC\Core;
@@ -30,14 +30,13 @@ final class Controller
 
 		if (@$get['_class'] != @$get['_class_']) {
 			
-			$loader = include(FS::app(FS::implode(['vendor', 'autoload.php'])));
+			$load = include(FS::app('vendor' . DIRECTORY_SEPARATOR .  'autoload.php'));
+			$file = FS::app($get['_class'] . '.php');
 
-			if (@is_object($loader) && @class_exists(get_class($loader), false)) {
-				if (@$loader->findFile($get['_class']) != false) {
-					@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime(@$loader->findFile($get['_class']))) . " GMT");
-				}
-			} elseif (@file_exists(FS::app($get['_class'] . '.php')) == true) {
-				@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime(FS::app($get['_class'] . '.php'))) . " GMT");
+			if (@is_object($load) && @class_exists(get_class($load), false) && (@$load->findFile($get['_class']) != false)) {
+				@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime(@$load->findFile($get['_class']))) . " GMT");
+			} elseif (@file_exists($file) == true) {
+				@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime($file)) . " GMT");
 			} else {
 				@header("Last-Modified: " . date("D, d M Y H:i:s") . " GMT");
 			}
