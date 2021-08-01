@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.7
+ * @version 7.8
  */
 
 namespace BMVC\Core;
@@ -22,7 +22,7 @@ final class App
 	/**
 	 * @var boolean
 	 */
-	private static $init = false;
+	private static $active = false;
 	
 	public static $dotenv;
 	public static $url;
@@ -60,7 +60,7 @@ final class App
 	 */
 	public static function Run(array $data=[]): void
 	{
-		if (self::$init == true) return;
+		if (self::$active == true) return;
 
 		self::initDotenv();
 		self::initDefine();
@@ -73,13 +73,19 @@ final class App
 
 		if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
 
-		Controller::namespace(@self::$namespaces['controller']);
-		Model::namespace(@self::$namespaces['model']);
-		View::namespace((@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']));
+		if (@self::$namespaces['controller']) {
+			Controller::namespace(@self::$namespaces['controller']);
+		}
+		if (@self::$namespaces['model']) {
+			Model::namespace(@self::$namespaces['model']);
+		}
+		if (@self::$namespaces['view'] || @$_ENV['VIEW_DIR']) {
+			View::namespace((@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']));
+		}
 
 		self::initRoute();
 
-		self::$init = true;
+		self::$active = true;
 	}
 
 	/**
@@ -244,15 +250,11 @@ final class App
 	{
 		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
 			@ini_set('session.use_only_cookies', 1);
-			if (PHP_VERSION_ID < 70300) {
-				@session_set_cookie_params(3600 * 24, base_url(null, false, false, true)['path'], null, null, true);
-			} else {
-				@session_set_cookie_params([
-					'lifetime' => 3600 * 24,
-					'httponly' => true,
-					'path' => base_url(null, false, false, true)['path']
-				]);
-			}
+			@session_set_cookie_params([
+				'lifetime' => 3600 * 24,
+				'httponly' => true,
+				'path' => base_url(null, false, false, true)['path']
+			]);
 			@session_name("BMVC");
 			@session_start();
 		}
