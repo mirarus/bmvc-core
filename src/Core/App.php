@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.6
+ * @version 7.7
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{FS, CL, Whoops, Log, Request};
+use BMVC\Libs\{FS, CL, Whoops, Log, Request, Header};
 use Dotenv\Dotenv;
 
 final class App
@@ -320,6 +320,9 @@ final class App
 			}
 
 			Controller::call(@$route['action'], @$route['params']);
+
+			if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
+
 		} elseif (@Route::$notFound) {
 			Controller::call(Route::$notFound);
 		}
