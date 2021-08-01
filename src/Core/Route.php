@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 3.9
+ * @version 4.0
  */
 
 namespace BMVC\Core;
@@ -44,6 +44,11 @@ final class Route
 	 * @var string
 	 */
 	private static $ip;
+
+	/**
+	 * @var string
+	 */
+	private static $return;
 
 	/**
 	 * @var array
@@ -93,10 +98,11 @@ final class Route
 
 			foreach ($routes as $route) {
 
-				$method 	  = $route['method'];
-				$action 	  = $route['callback'];
-				$url 	  	  = $route['pattern'];
-				$ip 	  	  = (isset($route['ip']) ? $route['ip'] : null);
+				$method			= $route['method'];
+				$action			= $route['callback'];
+				$url				= $route['pattern'];
+				$ip					= (isset($route['ip']) ? $route['ip'] : null);
+				$_return		= (isset($route['return']) ? $route['return'] : null);
 				$namespaces = (isset($route['namespaces']) ? $route['namespaces'] : null);
 
 				if (preg_match("#^{$url}$#", ('/' . page_url()), $params)) {
@@ -116,7 +122,8 @@ final class Route
 							'params'     => $params,
 							'namespaces' => $namespaces,
 							'url'        => $url,
-							'_url'       => page_url()
+							'_url'       => page_url(),
+							'_return'    => $_return,
 						];
 					}
 				}
@@ -175,12 +182,10 @@ final class Route
 				'callback' => @$closure
 			];
 
-			if (self::$ip) {
-				$route_['ip'] = self::$ip;
-			}
-			if (self::$namespaces) {
-				$route_['namespaces'] = self::$namespaces;
-			}
+			if (self::$ip) $route_['ip'] = self::$ip;
+			if (self::$return) $route_['return'] = self::$return;
+			if (self::$namespaces) $route_['namespaces'] = self::$namespaces;
+
 			self::$routes[] = $route_;
 		}
 	}
@@ -194,18 +199,21 @@ final class Route
 		self::$groups[] = [
 			'baseRoute'  => self::$prefix,
 			'ip'         => self::$ip,
+			'return'     => self::$return,
 			'namespaces' => self::$namespaces
 		];
 		call_user_func($callback);
 		if (self::$groupped > 0) {
-			self::$prefix		  = self::$groups[self::$groupped-1]['baseRoute'];
-			self::$ip				  = self::$groups[self::$groupped-1]['ip'];
+			self::$prefix	= self::$groups[self::$groupped-1]['baseRoute'];
+			self::$ip			= self::$groups[self::$groupped-1]['ip'];
+			self::$return = self::$groups[self::$groupped-1]['return'];
 		//self::$namespaces = self::$groups[self::$groupped-1]['namespaces'];
 		}
 		self::$groupped--;
 		if (self::$groupped <= 0) {
 			self::$prefix		  = '/';
 			self::$ip				  = '';
+			self::$return			= '';
 			self::$namespaces = [];
 		}
 		self::$prefix = @self::$groups[self::$groupped-1]['baseRoute'];
@@ -228,6 +236,16 @@ final class Route
 	public static function ip(string $ip): Route
 	{
 		self::$ip = $ip;
+		return new self;
+	}
+
+	/**
+	 * @param  string $return
+	 * @return Route
+	 */
+	public static function return(string $return): Route
+	{
+		self::$return = $return;
 		return new self;
 	}
 
@@ -292,11 +310,11 @@ final class Route
 	 * @param  mixed       $callback
 	 * @return Route
 	 */
-	public static function delete(string $pattern=null, $callback): Route
+	public static function delete(string $pattern=null, $callback, string $type=null): Route
 	{
 		$pattern = trim($pattern);
 		$pattern = ($pattern == '/' ? null : $pattern);
-		self::Route('DELETE', self::$mainRoute . $pattern, $callback);
+		self::Route('DELETE', self::$mainRoute . $pattern, $callback, $type);
 		return new self;
 	}
 
