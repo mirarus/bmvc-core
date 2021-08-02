@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.8
+ * @version 7.9
  */
 
 namespace BMVC\Core;
@@ -30,6 +30,7 @@ final class App
 	public static $timezone;
 	public static $environment;
 	public static $microtime;
+	public static $memory;
 
 	/**
 	 * @var array
@@ -63,7 +64,7 @@ final class App
 	{
 		if (self::$active == true) return;
 
-		$start_time = microtime(true);
+		$microtime = microtime(true);
 
 		self::initDotenv();
 		self::initDefine();
@@ -88,7 +89,8 @@ final class App
 
 		self::initRoute();
 
-		self::$microtime = (microtime(true) - $start_time);
+		self::$microtime = number_format(microtime(true) - $microtime, 3);
+		self::$memory = round(memory_get_usage() / 1024, 2);
 
 		self::$active = true;
 	}
