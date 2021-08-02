@@ -29,6 +29,7 @@ final class App
 	public static $page;
 	public static $timezone;
 	public static $environment;
+	public static $microtime;
 
 	/**
 	 * @var array
@@ -62,6 +63,8 @@ final class App
 	{
 		if (self::$active == true) return;
 
+		$start_time = microtime(true);
+
 		self::initDotenv();
 		self::initDefine();
 		self::initWhoops($data);
@@ -84,6 +87,8 @@ final class App
 		}
 
 		self::initRoute();
+
+		self::$microtime = (microtime(true) - $start_time);
 
 		self::$active = true;
 	}
