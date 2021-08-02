@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.9
+ * @version 8.0
  */
 
 namespace BMVC\Core;
@@ -89,8 +89,13 @@ final class App
 
 		self::initRoute();
 
+		# MICROTIME
 		self::$microtime = number_format(microtime(true) - $microtime, 3);
+		@define('MICROTIME', self::$microtime);
+
+		# MEMORY
 		self::$memory = round(memory_get_usage() / 1024, 2);
+		@define('MEMORY', self::$memory);
 
 		self::$active = true;
 	}
