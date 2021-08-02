@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.4
+ * @version 6.5
  */
 
 namespace BMVC\Core;
@@ -206,7 +206,7 @@ final class View
 					return new self;
 				}
 			} else {
-				throw new Exception('Layout [' . @str_replace([FS::app()], null, $file) . '] not found.');
+				throw new Exception('View Error! | Layout [' . @str_replace([FS::app()], null, $file) . '] not found.');
 			}
 		} else {
 
@@ -310,7 +310,7 @@ final class View
 
 			return $return = $ob_content;
 		} else {
-			throw new Exception('View [' . @str_replace([FS::app()], null, $file) . '] not found.');
+			throw new Exception('View Error! | View [' . @str_replace([FS::app()], null, $file) . '] not found.');
 		}
 	}
 
