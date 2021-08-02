@@ -27,11 +27,11 @@ class ClassException extends Exception
 
 	public function __construct($message)
 	{
-		$class = CL::replace(str_replace([FS::app(), '.php'], null, self::getFile()));
+		$class = str_replace([FS::app(), '.php'], null, self::getFile());
+
+		if (CL::is_class($class)) {
 		
-		if (class_exists($class, false)) {
-		
-			$class = CL::replace(str_replace(self::$namespaces, null, $class));
+			$class = str_replace(self::$namespaces, null, $class);
 			$message = '(' . $class . ') Error! | ' . $message;
 		}
 
