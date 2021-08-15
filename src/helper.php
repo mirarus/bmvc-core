@@ -304,11 +304,173 @@ function dump($data, bool $stop=false)
 	}
 }
 
+	/** *//* */
 
 /**
- * Helpers
+ * @param  string $file
+ * @return mixed
  */
-array_map(function ($file) {
-	if ($file == BMVC\Libs\FS::base('Helpers' . DIRECTORY_SEPARATOR . 'index.php')) return false;
+function _ob(string $file)
+{
+	ob_start();
 	require_once $file;
-}, glob(BMVC\Libs\FS::base("Helpers" . DIRECTORY_SEPARATOR . "*.php")));
+	$ob_content = ob_get_contents();
+	ob_end_clean();
+	return $ob_content;
+}
+
+/**
+ * @param string $file
+ */
+function ob_template(string $file)
+{
+	ob_start();
+	require_once $file;
+	$ob_content = ob_get_contents();
+	ob_end_clean();
+
+	$ob_content = preg_replace([
+		"/({{ url\(\) }})/i",
+		"/({{ url\('(.*?)'\) }})/i",
+		"/({{ url\(\"(.*?)\"\) }})/i",
+		"/({{ url\((.*?)\) }})/i"
+	], url('$2'), $ob_content);
+
+	return $ob_content;
+}
+
+/**
+ * @param  string|null $class
+ * @param  string|null $method
+ * @param  array       $params
+ * @return mixed
+ */
+function app(string $class=null, string $method=null, array $params=[])
+{
+	$std = new \stdClass;
+	if ($class) {
+		if (isset($method) && !empty($method)) {
+			return call_user_func_array([$std->$class, $method], $params);
+		} else {
+			return $std->$class;
+		}
+	}
+	return $std;
+}
+
+/**
+ * @param string       $par
+ * @param int|integer  $time
+ * @param bool|boolean $stop
+ */
+function redirect(string $par, int $time=0, bool $stop=true)
+{
+	if ($time == 0) {
+		header("Location: " . $par);
+	} else {
+		header("Refresh: " . $time . "; url=" . $par);
+	}
+	if ($stop === true) {
+		die();
+	}
+}
+
+/**
+ * @param string       $par
+ * @param int|integer  $time
+ * @param bool|boolean $stop
+ */
+function refresh(string $par, int $time=0, bool $stop=true)
+{
+	if ($time == 0) {
+		echo "<meta http-equiv='refresh' content='URL=" . $par . "'>";
+	} else {
+		echo "<meta http-equiv='refresh' content='" . $time . ";URL=" . $par . "'>";
+	}
+	if ($stop === true) {
+		die();
+	}
+}
+
+/**
+ * @param  string|null $url
+ * @return bool
+ */
+function PageCheck(string $url=null): bool
+{
+	if (@$_GET['url'] == @$url) {
+		return true;
+	}
+	return false;
+}
+
+/**
+ * @param string       $url
+ * @param bool|boolean $return
+ */
+function ct(string $url, bool $return=true)
+{
+	if ($return == true) {
+		return $url . '?ct=' . time();
+	} else {
+		echo $url . '?ct=' . time();
+	}
+}
+
+/**
+ * @param  string $par
+ * @return string
+ */
+function html_decode(string $par): string
+{
+	return htmlspecialchars_decode(html_entity_decode(htmlspecialchars_decode($par, ENT_QUOTES), ENT_QUOTES), ENT_QUOTES);
+}
+
+/**
+ * @param string $date
+ * @param string $format
+ */
+function datetotime(string $date, string $format='YYYY-MM-DD')
+{
+	if ($format == 'YYYY-MM-DD') list($year, $month, $day) = explode('-', $date);
+	if ($format == 'YYYY/MM/DD') list($year, $month, $day) = explode('/', $date);
+	if ($format == 'YYYY.MM.DD') list($year, $month, $day) = explode('.', $date);
+
+	if ($format == 'DD-MM-YYYY') list($day, $month, $year) = explode('-', $date);
+	if ($format == 'DD/MM/YYYY') list($day, $month, $year) = explode('/', $date);
+	if ($format == 'DD.MM.YYYY') list($day, $month, $year) = explode('.', $date);
+
+	if ($format == 'MM-DD-YYYY') list($month, $day, $year) = explode('-', $date);
+	if ($format == 'MM/DD/YYYY') list($month, $day, $year) = explode('/', $date);
+	if ($format == 'MM.DD.YYYY') list($month, $day, $year) = explode('.', $date);
+
+	return mktime(0, 0, 0, $month, $day, $year);
+}
+
+function resize_image($file, $w, $h, $crop=false)
+{
+	list($width, $height) = getimagesize($file);
+	$r = $width / $height;
+	if ($crop) {
+		if ($width > $height) {
+			$width = ceil($width-($width * abs($r - $w / $h)));
+		} else {
+			$height = ceil($height-($height * abs($r - $w / $h)));
+		}
+		$newwidth = $w;
+		$newheight = $h;
+	} else {
+		if ($w/$h > $r) {
+			$newwidth = $h*$r;
+			$newheight = $h;
+		} else {
+			$newheight = $w/$r;
+			$newwidth = $w;
+		}
+	}
+	$src = imagecreatefromjpeg($file);
+	$dst = imagecreatetruecolor($newwidth, $newheight);
+	imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+
+	return $dst;
+}
