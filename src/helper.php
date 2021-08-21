@@ -408,9 +408,9 @@ function PageCheck(string $url=null): bool
  * @param string       $url
  * @param bool|boolean $return
  */
-function ct(string $url, bool $return=true)
+function ct(string $url, bool $return=false)
 {
-	if ($return == true) {
+	if ($return == false) {
 		return $url . '?ct=' . time();
 	} else {
 		echo $url . '?ct=' . time();
