@@ -1,9 +1,12 @@
 <?php
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
-use BMVC\Core\{App, Route, Controller};
-use BMVC\Libs\{MError, Benchmark};
+use BMVC\Core\App;
+use BMVC\Libs\Route;
+use BMVC\Core\Controller;
+use BMVC\Libs\MError;
+use BMVC\Libs\Benchmark;
 
 class Main {
 	function index() {
