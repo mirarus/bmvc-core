@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.1
+ * @version 8.2
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{FS, CL, Whoops, Log, Request, Header, Route};
+use BMVC\Libs\{FS, CL, Whoops, Log, Request, Header, Route, Util};
 use Dotenv\Dotenv;
 
 final class App
@@ -221,7 +221,6 @@ final class App
 	private static function initWhoops(array $data=[]): void
 	{
 		$blacklist = array_keys($_ENV);
-		//$blacklist = array_merge(['DIR', 'ENVIRONMENT', 'TIMEZONE', 'LOG', 'LANG', 'VIEW_DIR', 'VIEW_CACHE', 'PUBLIC_DIR', 'DB_DSN', 'DB_USER', 'DB_PASS'], $blacklist);
 
 		Whoops::blacklist('_SERVER', $blacklist);
 		Whoops::blacklist('_ENV', $blacklist);
@@ -313,7 +312,7 @@ final class App
 
 		if (function_exists('mb_internal_encoding')) @mb_internal_encoding("UTF-8");
 
-		if (is_cli()) die("Cli Not Available, Browser Only.");
+		if (Util::is_cli()) die("Cli Not Available, Browser Only.");
 	}
 
 	private static function initRoute()
