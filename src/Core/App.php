@@ -8,12 +8,12 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.2
+ * @version 8.3
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{FS, CL, Whoops, Log, Request, Header, Route, Util};
+use BMVC\Libs\{FS, CL, Whoops, Monolog, Request, Header, Route, Util};
 use Dotenv\Dotenv;
 
 final class App
@@ -238,11 +238,11 @@ final class App
 
 	private static function initMonolog(): void
 	{
-		Log::monolog();
+		Monolog::run();
 
 		if (@$_ENV['LOG'] == true) {
 			Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
-				Log::$monolog->error($exception);
+				Monolog::$log->error($exception);
 			});
 		}
 	}

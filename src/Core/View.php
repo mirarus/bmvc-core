@@ -13,10 +13,10 @@
 
 namespace BMVC\Core;
 
-use Jenssegers\Blade\Blade;
-use BMVC\Libs\FS;
 use Exception;
 use Closure;
+use BMVC\Libs\FS;
+use Jenssegers\Blade\Blade;
 
 final class View
 {
