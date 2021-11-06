@@ -8,12 +8,15 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.6
+ * @version 5.7
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{classCall, Validate, BasicDB};
+use BMVC\Libs\classCall;
+use BMVC\Libs\Validate;
+use Mirarus\DB\DB;
+use Mirarus\DB\Connect;
 
 final class Model 
 {
@@ -41,22 +44,26 @@ final class Model
 
 			App::$dotenv->required('DB_DSN')->notEmpty();
 
-			$dsn = $_ENV['DB_DSN'];
+			$dsn = @$_ENV['DB_DSN'];
+			$user = @$_ENV['DB_USER'];
+			$pass = @$_ENV['DB_PASS'];
 
 			if (Validate::check(@$dsn)) {
+
+				$connect = new Connect();
+				$connect->driver('basicdb-mysql');
+
 				if (@strstr($dsn, 'mysql:')) {
 
 					App::$dotenv->required(['DB_USER', 'DB_PASS']);
 					App::$dotenv->required('DB_USER')->notEmpty();
 
-					$user = $_ENV['DB_USER'];
-					$pass = $_ENV['DB_PASS'];
-
-					return new BasicDB($dsn, $user, $pass);
+					$connect->dsn($dsn, $user, $pass);			
 				} elseif (@strstr($dsn, 'sqlite:')) {
-
-					return new BasicDB($dsn);
+					$connect->dsn($dsn);
 				}
+
+				return new DB($connect);
 			}
 		}
 	}
