@@ -44,23 +44,23 @@ final class Model
 
 			App::$dotenv->required('DB_DSN')->notEmpty();
 
-			$dsn = @$_ENV['DB_DSN'];
-			$user = @$_ENV['DB_USER'];
-			$pass = @$_ENV['DB_PASS'];
+			$db_dsn  = @$_ENV['DB_DSN'];
+			$db_user = @$_ENV['DB_USER'];
+			$db_pass = @$_ENV['DB_PASS'];
 
-			if (Validate::check(@$dsn)) {
+			if (Validate::check(@$db_dsn)) {
 
 				$connect = new Connect();
 				$connect->driver('basicdb-mysql');
 
-				if (@strstr($dsn, 'mysql:')) {
+				if (@strstr($db_dsn, 'mysql:')) {
 
 					App::$dotenv->required(['DB_USER', 'DB_PASS']);
 					App::$dotenv->required('DB_USER')->notEmpty();
 
-					$connect->dsn($dsn, $user, $pass);			
-				} elseif (@strstr($dsn, 'sqlite:')) {
-					$connect->dsn($dsn);
+					$connect->dsn($db_dsn, $db_user, $db_pass);			
+				} elseif (@strstr($db_dsn, 'sqlite:')) {
+					$connect->dsn($db_dsn);
 				}
 
 				return new DB($connect);
