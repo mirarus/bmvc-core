@@ -37,6 +37,7 @@ final class App
 	 */
 	public static $namespaces = [
 		'controller' => null,
+		'middleware' => null,
 		'model'      => null,
 		'view'       => null
 	];
@@ -79,6 +80,9 @@ final class App
 
 		if (@self::$namespaces['controller']) {
 			Controller::namespace(@self::$namespaces['controller']);
+		}
+		if (@self::$namespaces['middleware']) {
+			Middleware::namespace(@self::$namespaces['middleware']);
 		}
 		if (@self::$namespaces['model']) {
 			Model::namespace(@self::$namespaces['model']);
@@ -326,6 +330,14 @@ final class App
 		Route::Run($route);
 
 		if (@$route) {
+
+			var_dump($route);
+
+			if (array_key_exists('middlewares', $route)) {
+				foreach ($route['middlewares'] as $key => $val) {
+					Middleware::call(@$val['callback']);
+				}
+			}
 
 			if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
 				foreach ($route['namespaces'] as $key => $val) {
