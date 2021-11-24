@@ -61,23 +61,19 @@ function app_url(string $url=null, bool $parse=false)
 }
 
 /**
- * @param string|null  $url
- * @param bool|boolean $return
+ * @param  string|null  $url
+ * @param  bool|boolean $return
+ * @param  bool|boolean $cache
+ * @return string
  */
-function url(string $url=null, bool $return=false)
+function url(string $url = null, bool $return = false, bool $cache = false)
 {
-	if ($url) {
-		if ($return == false) {
-			return base_url() . $url;
-		} else {
-			echo base_url() . $url;
-		}
+	$_url = (($url ? (base_url() . $url) : base_url()) . ($cache ? ('?ct=' . time()) : null));
+
+	if ($return == false) {
+		return $_url;
 	} else {
-		if ($return == false) {
-			return base_url();
-		} else {
-			echo base_url();
-		}
+		echo $_url;
 	}
 }
 
@@ -159,7 +155,7 @@ function dump($data, bool $stop=false)
 	}
 }
 
-	/** *//* */
+/** *//* */
 
 /**
  * @param  string $file
