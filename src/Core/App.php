@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.3
+ * @version 8.4
  */
 
 namespace BMVC\Core;
@@ -330,8 +330,6 @@ final class App
 		Route::Run($route);
 
 		if (@$route) {
-
-			var_dump($route);
 
 			if (array_key_exists('middlewares', $route)) {
 				foreach ($route['middlewares'] as $key => $val) {
