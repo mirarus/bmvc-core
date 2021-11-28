@@ -66,14 +66,14 @@ function app_url(string $url=null, bool $parse=false)
  * @param  bool|boolean $cache
  * @return string
  */
-function url(string $url = null, bool $return = true, bool $cache = false)
+function url(string $url = null, bool $print = false, bool $cache = false)
 {
 	$_url = (($url ? (base_url() . $url) : base_url()) . ($cache ? ('?ct=' . time()) : null));
 
-	if ($return == true) {
-		return $_url;
-	} else {
+	if ($print == true) {
 		echo $_url;
+	} else {
+		return $_url;
 	}
 }
 
