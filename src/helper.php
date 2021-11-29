@@ -136,9 +136,7 @@ function pr($data, bool $stop=false)
 	echo "<pre>";
 	print_r($data);
 	echo "</pre>";
-	if ($stop === true) {
-		die();
-	}
+	if ($stop === true) die();
 }
 
 /**
@@ -150,12 +148,8 @@ function dump($data, bool $stop=false)
 	echo "<pre>";
 	var_dump($data);
 	echo "</pre>";
-	if ($stop === true) {
-		die();
-	}
+	if ($stop === true) die();
 }
-
-/** *//* */
 
 /**
  * @param  string $file
@@ -221,9 +215,7 @@ function redirect(string $par, int $time=0, bool $stop=true)
 	} else {
 		header("Refresh: " . $time . "; url=" . $par);
 	}
-	if ($stop === true) {
-		die();
-	}
+	if ($stop === true) die();
 }
 
 /**
@@ -238,34 +230,7 @@ function refresh(string $par, int $time=0, bool $stop=true)
 	} else {
 		echo "<meta http-equiv='refresh' content='" . $time . ";URL=" . $par . "'>";
 	}
-	if ($stop === true) {
-		die();
-	}
-}
-
-/**
- * @param  string|null $url
- * @return bool
- */
-function PageCheck(string $url=null): bool
-{
-	if (@$_GET['url'] == @$url) {
-		return true;
-	}
-	return false;
-}
-
-/**
- * @param string       $url
- * @param bool|boolean $return
- */
-function ct(string $url, bool $return=false)
-{
-	if ($return == false) {
-		return $url . '?ct=' . time();
-	} else {
-		echo $url . '?ct=' . time();
-	}
+	if ($stop === true) die();
 }
 
 /**
