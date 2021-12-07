@@ -8,15 +8,13 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.7
+ * @version 5.8
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\classCall;
-use BMVC\Libs\Validate;
-use Mirarus\DB\DB;
-use Mirarus\DB\Connect;
+use BMVC\Libs\{classCall, Validate};
+use Mirarus\DB\{DB, Connect};
 
 final class Model 
 {
@@ -76,6 +74,6 @@ final class Model
 	{
 		self::get('model', $class, $get);
 
-		return $return = @$get['_cl'];
+		return $return = @$get['cls'];
 	}
 }
