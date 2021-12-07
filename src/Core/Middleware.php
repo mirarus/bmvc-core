@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.0
+ * @version 0.1
  */
 
 namespace BMVC\Core;
@@ -28,6 +28,6 @@ final class Middleware
 	{
 		self::get('middleware', $class, $get);
 
-		return $return = @$get['_cl'];
+		return $return = @$get['cls'];
 	}
 }
