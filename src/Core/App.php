@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.4
+ * @version 8.5
  */
 
 namespace BMVC\Core;
@@ -179,11 +179,11 @@ final class App
 	private static function initDefine(): void
 	{
 		# URL
-		self::$url = base_url();
+		self::$url = Util::base_url();
 		@define('URL', self::$url);
 
 		# PAGE
-		self::$page = page_url();
+		self::$page = Util::page_url();
 		@define('PAGE', self::$page);
 
 		# TIMEZONE
@@ -269,7 +269,7 @@ final class App
 			@session_set_cookie_params([
 				'lifetime' => 3600 * 24,
 				'httponly' => true,
-				'path' => base_url(null, false, false, true)['path']
+				'path' => Util::base_url(null, false, false, true)['path']
 			]);
 			@session_name("BMVC");
 			@session_start();
