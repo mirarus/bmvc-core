@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.5
+ * @version 6.6
  */
 
 namespace BMVC\Core;
@@ -108,7 +108,7 @@ final class View
 		@extract($data);
 		@$_REQUEST['vd'] = $data;
 
-		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
+		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
 		$_ns  = FS::implode([FS::trim(self::$namespace), FS::trim(FS::implode([FS::trim($_ns), 'Layout', 'Main']))]);
 		$file = FS::app($_ns . '.' . self::$extension);
 
@@ -134,17 +134,17 @@ final class View
 				return new self;
 			}
 		} else {
-			throw new Exception('Layout [' . @str_replace([FS::app()], null, $file) . '] not found.');
+			throw new Exception('Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
 		}
 	}
 
 	/**
 	 * @param mixed        $action
-	 * @param array|null   $data
+	 * @param array   	   $data
 	 * @param bool|boolean $layout
 	 * @param bool|boolean $render
 	 */
-	public static function load($action, array $data=null, bool $layout=false, bool $render=true)
+	public static function load($action, array $data=[], bool $layout=false, bool $render=true)
 	{
 		$data = array_merge((array) $data, self::$data);
 		@extract($data);
@@ -206,7 +206,7 @@ final class View
 					return new self;
 				}
 			} else {
-				throw new Exception('View Error! | Layout [' . @str_replace([FS::app()], null, $file) . '] not found.');
+				throw new Exception('View Error! | Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
 			}
 		} else {
 
@@ -257,6 +257,7 @@ final class View
 			}
 		}
 
+		$view = null;
 		if (@is_array($action) && count($action) > 1) {
 			$view = @array_pop($action);
 		} elseif (@is_string($action)) {
@@ -280,7 +281,7 @@ final class View
 	 * @param string|null $view
 	 * @param string|null $namespace
 	 * @param array|null  $data
-	 * @param mixed       &$return
+	 * @param mixed      &$return
 	 */
 	private static function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{
@@ -310,7 +311,7 @@ final class View
 
 			return $return = $ob_content;
 		} else {
-			throw new Exception('View Error! | View [' . @str_replace([FS::app()], null, $file) . '] not found.');
+			throw new Exception('View Error! | View [' . @str_replace([FS::app()], "", $file) . '] not found.');
 		}
 	}
 
@@ -318,7 +319,7 @@ final class View
 	 * @param string|null $view
 	 * @param string|null $namespace
 	 * @param array|null  $data
-	 * @param mixed       &$return
+	 * @param mixed      &$return
 	 */
 	private static function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
 	{	
@@ -338,7 +339,7 @@ final class View
 	 * @param string|null $namespace
 	 * @param mixed       &$return
 	 */
-	private function _cache_dir(string $namespace=null, &$return=null)
+	private static function _cache_dir(string $namespace=null, &$return=null): string
 	{
 		$_ns = (($namespace != null) ? FS::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
 		$dir = FS::app($_ns);

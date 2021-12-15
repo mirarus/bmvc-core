@@ -4,7 +4,7 @@ use BMVC\Libs\{FS, Util};
 
 FS::setPath(__DIR__);
 
-function url()
+function url(): string
 {
 	return Util::url(...func_get_args());
 }

@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.6
+ * @version 8.7
  */
 
 namespace BMVC\Core;
@@ -24,7 +24,7 @@ final class App
 	 */
 	private static $active = false;
 	
-	public static $dotenv;
+	public static $dotenv = null;
 	public static $_microtime;
 	public static $microtime;
 	public static $memory;
@@ -46,15 +46,7 @@ final class App
 	/**
 	 * @param array $data
 	 */
-	public function __construct(array $data=[])
-	{
-		# self::Run($data);
-	}
-
-	/**
-	 * @param array $data
-	 */
-	public static function init(array $data=[]): void
+	public static function init(array $data = []): void
 	{
 		self::Run($data);
 	}
@@ -62,7 +54,7 @@ final class App
 	/**
 	 * @param array $data
 	 */
-	public static function Run(array $data=[]): void
+	public static function Run(array $data = []): void
 	{
 		if (self::$active == true) return;
 
@@ -172,7 +164,7 @@ final class App
 	/**
 	 * @param array $data
 	 */
-	private static function initData(array $data=[])
+	private static function initData(array $data=[]): void
 	{
 		if ($data != null) {
 			# File Import
@@ -219,12 +211,12 @@ final class App
 			case 'staging':
 			case 'development':
 			@error_reporting(-1);
-			@ini_set('display_errors', 1);
+			@ini_set('display_errors', '1');
 			@error_reporting(E_ALL ^ E_WARNING ^ E_USER_WARNING ^ E_NOTICE ^ E_DEPRECATED);
 			break;
 			case 'testing':
 			case 'production':
-			@ini_set('display_errors', 0);
+			@ini_set('display_errors', '0');
 			if (version_compare(PHP_VERSION, '5.3', '>=')) {
 				@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
 			} else {
@@ -251,8 +243,8 @@ final class App
 
 	private static function initSession(): void
 	{
-		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
-			@ini_set('session.use_only_cookies', 1);
+		if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
+			@ini_set('session.use_only_cookies', '1');
 			@session_set_cookie_params([
 				'lifetime' => 3600 * 24,
 				'httponly' => true,

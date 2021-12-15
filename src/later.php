@@ -1,114 +1,6 @@
 <?php
 
 /**
- * @return string
- */
-function xbase_urlx(): string
-{
-	$host = ((((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST']);
-	$host = isset($host) ? $host : $_SERVER['SERVER_NAME'] . $_SERVER['SERVER_PORT'];
-
-	$url = $host . dirname($_SERVER['PHP_SELF']);
-	$url = @str_replace(['Public', 'public'], null, $url);
-	return $url;
-}
-
-/**
- * @param  string|null  $url
- * @param  bool|boolean $atRoot
- * @param  bool|boolean $atCore
- * @param  bool|boolean $parse
- * @return mixed
- */
-function base_url(string $url=null, bool $atRoot=false, bool $atCore=false, bool $parse=false)
-{
-	if (isset($_SERVER['HTTP_HOST'])) {
-		$http = (((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)) ? 'https' : 'http');
-		$hostname = $_SERVER['HTTP_HOST'];
-		$dir  = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
-		$core = preg_split('@/@', str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath(dirname(__FILE__))), NULL, PREG_SPLIT_NO_EMPTY);
-		$core = $core[0];
-		$tmplt = $atRoot ? ($atCore ? "%s://%s/%s/" : "%s://%s/") : ($atCore ? "%s://%s/%s/" : "%s://%s%s");
-		$end = $atRoot ? ($atCore ? $core : $hostname) : ($atCore ? $core : $dir);
-		$base_url = sprintf($tmplt, $http, $hostname, $end);
-	} else {
-		$base_url = 'http://localhost/';
-	}
-
-	$base_url = rtrim($base_url, '/');
-	if (!empty($url)) $base_url .= $url;
-
-	$base_url = @str_replace(trim(@$_ENV['PUBLIC_DIR'], '/'), null, rtrim($base_url, '/'));
-	$base_url = trim($base_url, '/') . '/';
-
-	if ($parse) {
-		$base_url = parse_url($base_url);
-		if (trim(base_url(), "/") == $base_url) $base_url['path'] = "/";
-	}
-	return $base_url;
-}
-
-/**
- * @return string|null
- */
-function page_url()
-{
-	if (isset($_ENV['DIR'])) {
-		return trim(str_replace($_ENV['DIR'], null, trim($_SERVER['REQUEST_URI'])), '/');
-	} elseif (isset($_GET['url'])) {
-		return trim($_GET['url'], '/');
-	} elseif (isset($_SERVER['PATH_INFO'])) {
-		return trim($_SERVER['PATH_INFO'], '/');
-	} else {
-		return null;
-	}
-}
-
-/**
- * @param  string|null  $url
- * @param  bool|boolean $parse
- * @return mixed
- */
-function app_url(string $url=null, bool $parse=false)
-{
-	return base_url($url, false, false, $parse);
-}
-
-/**
- * @param  array        $parsed_url
- * @param  bool|boolean $domain
- * @return string
- */
-function unparse_url(array $parsed_url=[], bool $domain=false): string
-{
-	$scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
-	$host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
-	$port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
-	$user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
-	$pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
-	$pass     = ($user || $pass) ? "$pass@" : '';
-	$path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
-	$query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-	$fragment = isset($parsed_url['fragment']) ? '#' . $parsed_url['fragment'] : '';
-
-	if ($domain == true) {
-		return "$scheme$user$pass$host$port";
-	} else {
-		return "$scheme$user$pass$host$port$path$query$fragment";
-	}
-}
-
-/**
- * @param  string $addr
- * @return string
- */
-function get_host(string $addr): string
-{
-	$parseUrl = parse_url(trim($addr));
-	return trim($parseUrl['host'] ? $parseUrl['host'] : array_shift(explode('/', $parseUrl['path'], 2)));
-}
-
-/**
  * @param  string $file
  * @return mixed
  */
@@ -175,6 +67,10 @@ function html_decode(string $par): string
  */
 function datetotime(string $date, string $format='YYYY-MM-DD')
 {
+	$year = 0;
+	$month = 0;
+	$day = 0;
+
 	if ($format == 'YYYY-MM-DD') list($year, $month, $day) = explode('-', $date);
 	if ($format == 'YYYY/MM/DD') list($year, $month, $day) = explode('/', $date);
 	if ($format == 'YYYY.MM.DD') list($year, $month, $day) = explode('.', $date);
