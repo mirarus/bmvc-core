@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.5
+ * @version 8.6
  */
 
 namespace BMVC\Core;
@@ -25,12 +25,13 @@ final class App
 	private static $active = false;
 	
 	public static $dotenv;
+	public static $_microtime;
+	public static $microtime;
+	public static $memory;
 	public static $url;
 	public static $page;
 	public static $timezone;
 	public static $environment;
-	public static $microtime;
-	public static $memory;
 
 	/**
 	 * @var array
@@ -65,15 +66,15 @@ final class App
 	{
 		if (self::$active == true) return;
 
-		$microtime = microtime(true);
+		self::$_microtime = microtime(true);
 
 		self::initDotenv();
+		self::initData($data);
 		self::initDefine();
-		self::initWhoops($data);
-		self::initMonolog();
 		self::initHeader();
 		self::initSession();
-		self::initData($data);
+		self::initWhoops($data);
+		self::initMonolog();
 		self::_routes();
 
 		if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -92,14 +93,6 @@ final class App
 		}
 
 		self::initRoute();
-
-		# MICROTIME
-		self::$microtime = number_format(microtime(true) - $microtime, 3);
-		@define('MICROTIME', self::$microtime);
-
-		# MEMORY
-		self::$memory = round(memory_get_usage() / 1024, 2);
-		@define('MEMORY', self::$memory);
 
 		self::$active = true;
 	}
@@ -176,6 +169,32 @@ final class App
 		self::$dotenv = $dotenv;
 	}
 
+	/**
+	 * @param array $data
+	 */
+	private static function initData(array $data=[])
+	{
+		if ($data != null) {
+			# File Import
+			if (isset($data['files'])) {
+				foreach ($data['files'] as $file) {
+					require_once $file;
+				}
+			}
+			# Class Load
+			if (isset($data['init'])) {
+				foreach ($data['init'] as $init) {
+					new $init;
+				}
+			}
+		}
+		#
+
+		if (function_exists('mb_internal_encoding')) @mb_internal_encoding('UTF-8');
+
+		if (Util::is_cli()) die('Cli Not Available, Browser Only.');
+	}
+
 	private static function initDefine(): void
 	{
 		# URL
@@ -219,6 +238,31 @@ final class App
 		}
 	}
 
+	private static function initHeader(): void
+	{
+		@header_remove();
+		@header('Date: ' . date('D, d M Y H:i:s') . ' GMT');
+		@header('Strict-Transport-Security: max-age=15552000; preload');
+		@header('X-Frame-Options: sameorigin');
+		@header('X-Powered-By: PHP/BMVC');
+		if (self::$page) @header('X-Url: ' . self::$page);
+		@header('X-XSS-Protection: 1; mode=block');
+	}
+
+	private static function initSession(): void
+	{
+		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
+			@ini_set('session.use_only_cookies', 1);
+			@session_set_cookie_params([
+				'lifetime' => 3600 * 24,
+				'httponly' => true,
+				'path' => Util::base_url()
+			]);
+			@session_name('BMVC');
+			@session_start();
+		}
+	}
+
 	/**
 	 * @param array $data
 	 */
@@ -242,41 +286,15 @@ final class App
 
 	private static function initMonolog(): void
 	{
-		Monolog::run();
+		//Monolog::init();
 
-		if (@$_ENV['LOG'] == true) {
+		if (@$_ENV['LOG'] == true && Monolog::$log) {
 			Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
 				Monolog::$log->error($exception);
 			});
 		}
 	}
 
-	private static function initHeader(): void
-	{
-		@header_remove();
-		@header("Date: " . date("D, d M Y H:i:s") . " GMT");
-		@header("Strict-Transport-Security: max-age=15552000; preload");
-		@header("X-Frame-Options: sameorigin");
-		@header("X-Powered-By: PHP/BMVC");
-		if (self::$page) @header("X-Url: " . self::$page);
-		@header("X-XSS-Protection: 1; mode=block");
-	}
-
-	private static function initSession(): void
-	{
-		if (session_status() !== PHP_SESSION_ACTIVE || session_id() === null) {
-			@ini_set('session.use_only_cookies', 1);
-			@session_set_cookie_params([
-				'lifetime' => 3600 * 24,
-				'httponly' => true,
-				'path' => Util::base_url(null, false, false, true)['path']
-			]);
-			@session_name("BMVC");
-			@session_start();
-		}
-	}
-
-	#
 	private static function _routes(): void
 	{		
 		Route::match(['GET', 'POST'], 'route/:all', function($url) {
@@ -293,41 +311,23 @@ final class App
 		});
 	}
 
-	/**
-	 * @param array $data
-	 */
-	private static function initData(array $data=[])
-	{
-		if ($data != null) {
-			# File Import
-			if (isset($data['files'])) {
-				foreach ($data['files'] as $file) {
-					require_once $file;
-				}
-			}
-			# Class Load
-			if (isset($data['init'])) {
-				foreach ($data['init'] as $init) {
-					new $init;
-				}
-			}
-		}
-		#
-
-		if (function_exists('mb_internal_encoding')) @mb_internal_encoding("UTF-8");
-
-		if (Util::is_cli()) die("Cli Not Available, Browser Only.");
-	}
-
 	private static function initRoute()
 	{
 		if (@$_ENV['PUBLIC_DIR'] && strpos(Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
-			redirect(str_replace(@$_ENV['PUBLIC_DIR'], '/', Request::server('REQUEST_URI')));
+			redirect(strstr(Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
 		}
 
 		if (strstr(@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) Route::get_404();
 
-		Route::Run($route);
+		$route = Route::Run();
+
+		# MICROTIME
+		self::$microtime = number_format(microtime(true) - self::$microtime, 3);
+		@define('MICROTIME', self::$microtime);
+
+		# MEMORY
+		self::$memory = round(memory_get_usage() / 1024, 4);
+		@define('MEMORY', self::$memory);
 
 		if (@$route) {
 
