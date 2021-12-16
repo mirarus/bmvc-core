@@ -135,7 +135,7 @@ final class App
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null, bool $new=false)
+	public static function SGnamespace($par, string $value = null, bool $get = false, string $sub = null, bool $new = false)
 	{
 		$sub = ($sub != null) ? (CL::trim($sub) . '\\') : null;
 
@@ -179,7 +179,7 @@ final class App
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	public static function namespace(array $namespaces=[], string $sub=null, bool $new=false)
+	public static function namespace(array $namespaces = [], string $sub = null, bool $new = false)
 	{
 		self::SGnamespace($namespaces, null, false, $sub);
 		if ($new == true) return new self;
@@ -209,7 +209,7 @@ final class App
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	private static function initData(array $data=[]): void
+	private static function initData(array $data = []): void
 	{
 		if ($data != null) {
 			# File Import
