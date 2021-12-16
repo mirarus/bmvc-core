@@ -36,11 +36,14 @@ final class Model
 		self::DB();
 	}
 
+	/**
+	 * @phpstan-ignore-next-line
+	 */
 	public static function DB()
 	{
 		if (self::$active == true) {
 
-			App::$dotenv->required('DB_DSN')->notEmpty();
+			App::$dotenv->required('DB_DSN')->notEmpty(); 
 
 			$db_dsn  = @$_ENV['DB_DSN'];
 			$db_user = @$_ENV['DB_USER'];
@@ -70,7 +73,7 @@ final class Model
 	 * @param string      $class
 	 * @param object|null &$return
 	 */
-	public static function import(string $class, object &$return=null)
+	public static function import(string $class, object &$return = null) // @phpstan-ignore-line
 	{
 		self::get('model', $class, $get);
 

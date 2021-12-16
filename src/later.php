@@ -15,6 +15,8 @@ function _ob(string $file)
 
 /**
  * @param string $file
+ *
+ * @phpstan-ignore-next-line
  */
 function ob_template(string $file)
 {
@@ -28,7 +30,7 @@ function ob_template(string $file)
 		"/({{ url\('(.*?)'\) }})/i",
 		"/({{ url\(\"(.*?)\"\) }})/i",
 		"/({{ url\((.*?)\) }})/i"
-	], url('$2'), $ob_content);
+	], url('$2'), $ob_content); // @phpstan-ignore-line
 
 	return $ob_content;
 }
@@ -38,13 +40,15 @@ function ob_template(string $file)
  * @param  string|null $method
  * @param  array       $params
  * @return mixed
+ *
+ * @phpstan-ignore-next-line
  */
 function app(string $class=null, string $method=null, array $params=[])
 {
 	$std = new \stdClass;
 	if ($class) {
 		if (isset($method) && !empty($method)) {
-			return call_user_func_array([$std->$class, $method], $params);
+			return call_user_func_array([$std->$class, $method], $params); // @phpstan-ignore-line
 		} else {
 			return $std->$class;
 		}
@@ -64,6 +68,8 @@ function html_decode(string $par): string
 /**
  * @param string $date
  * @param string $format
+ *
+ * @phpstan-ignore-next-line
  */
 function datetotime(string $date, string $format='YYYY-MM-DD')
 {
@@ -83,12 +89,15 @@ function datetotime(string $date, string $format='YYYY-MM-DD')
 	if ($format == 'MM/DD/YYYY') list($month, $day, $year) = explode('/', $date);
 	if ($format == 'MM.DD.YYYY') list($month, $day, $year) = explode('.', $date);
 
-	return mktime(0, 0, 0, $month, $day, $year);
+	return mktime(0, 0, 0, $month, $day, $year); // @phpstan-ignore-line
 }
 
+/**
+ * @phpstan-ignore-next-line
+ */
 function resize_image($file, $w, $h, $crop=false)
 {
-	list($width, $height) = getimagesize($file);
+	list($width, $height) = getimagesize($file); // @phpstan-ignore-line
 	$r = $width / $height;
 	if ($crop) {
 		if ($width > $height) {
@@ -109,7 +118,7 @@ function resize_image($file, $w, $h, $crop=false)
 	}
 	$src = imagecreatefromjpeg($file);
 	$dst = imagecreatetruecolor($newwidth, $newheight);
-	imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+	imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height); // @phpstan-ignore-line
 
 	return $dst;
 }

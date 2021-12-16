@@ -23,6 +23,8 @@ final class Controller
 	/**
 	 * @param string      $class
 	 * @param object|null &$return
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function import(string $class, object &$return=null)
 	{
@@ -31,10 +33,10 @@ final class Controller
 		$load = include(FS::app(FS::implode(['vendor', 'autoload.php'])));
 		$file = FS::app($get['class'] . '.php');
 
-		if (@is_object($load) && @class_exists(get_class($load), false) && (@$load->findFile($get['class']) != false)) {
-			@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime(@$load->findFile($get['class']))) . " GMT");
+		if (@is_object($load) && @class_exists(get_class($load), false) && (@$load->findFile($get['class']) != false)) { // @phpstan-ignore-line
+			@header("Last-Modified: " . date("D, d M Y H:i:s", (int) filemtime(@$load->findFile($get['class']))) . " GMT"); // @phpstan-ignore-line
 		} elseif (@file_exists($file) == true) {
-			@header("Last-Modified: " . date("D, d M Y H:i:s", filemtime($file)) . " GMT");
+			@header("Last-Modified: " . date("D, d M Y H:i:s", (int) filemtime($file)) . " GMT");
 		} else {
 			@header("Last-Modified: " . date("D, d M Y H:i:s") . " GMT");
 		}

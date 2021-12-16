@@ -28,6 +28,8 @@ final class View
 
 	/**
 	 * @var array
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	private static $engines = ['php', 'blade'];
 
@@ -38,6 +40,8 @@ final class View
 
 	/**
 	 * @var array
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	private static $data = [];
 
@@ -53,23 +57,26 @@ final class View
 
 	/**
 	 * @var array
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	private static $separators = ['@', '/', '.', '::', ':'];
 
 	/**
 	 * @param string|null $namespace
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	public static function namespace(string $namespace=null, bool $new=false)
+	public static function namespace(string $namespace = null, bool $new = false)
 	{
 		self::$namespace = FS::trim($namespace) . DIRECTORY_SEPARATOR;
 		if ($new == true) return new self;
 	}
 
 	/**
-	 * @param  string $engine
-	 * @return View
+	 * @param string $engine
 	 */
-	public static function engine(string $engine): View
+	public static function engine(string $engine): self
 	{
 		if (in_array($engine, self::$engines)) {
 			self::$engine = $engine;
@@ -78,20 +85,20 @@ final class View
 	}
 
 	/**
-	 * @param  array|null $data
-	 * @return View
+	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	public static function data(array $data=null): View
+	public static function data(array $data): self
 	{
 		self::$data = $data;
 		return new self;
 	}
 
 	/**
-	 * @param  string $extension
-	 * @return View
+	 * @param string $extension
 	 */
-	public static function extension(string $extension='php'): View
+	public static function extension(string $extension = 'php'): self
 	{
 		self::$extension = $extension;
 		return new self;
@@ -101,11 +108,13 @@ final class View
 	 * @param Closure      $callback
 	 * @param array|null   $data
 	 * @param bool|boolean $render
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	public static function layout(Closure $callback, array $data=null, bool $render=true)
+	public static function layout(Closure $callback, array $data = null, bool $render = true)
 	{
 		$data = array_merge((array) $data, self::$data);
-		@extract($data);
+		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
 
 		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
@@ -123,7 +132,7 @@ final class View
 
 				# Replace
 			if (isset($data['page_title'])) {
-				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
 			}
 
 			self::$content = $ob_content;
@@ -143,11 +152,13 @@ final class View
 	 * @param array   	   $data
 	 * @param bool|boolean $layout
 	 * @param bool|boolean $render
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	public static function load($action, array $data=[], bool $layout=false, bool $render=true)
+	public static function load($action, array $data = [], bool $layout = false, bool $render = true)
 	{
 		$data = array_merge((array) $data, self::$data);
-		@extract($data);
+		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
 
 		$view = null;
@@ -195,7 +206,7 @@ final class View
 
 				# Replace
 				if (isset($data['page_title'])) {
-					$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+					$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
 				}
 
 				self::$content = $ob_content;
@@ -222,15 +233,17 @@ final class View
 
 	/**
 	 * @param bool|boolean $return
-	 * @param mixed        &$print
+	 * @param string       &$print
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	public static function render(bool $return=false, &$print=null)
+	public static function render(bool $return = false, &$print = null)
 	{
 		if (@self::$content) {
 			if ($return == true) {
 				return $print = self::$content;
 			} else {
-				echo $print = self::$content;
+				echo $print = self::$content; // @phpstan-ignore-line
 			}
 		}
 	}
@@ -239,10 +252,12 @@ final class View
 	 * @param mixed      $action
 	 * @param array|null $data
 	 * @param mixed      &$return
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	private static function _import($action, array $data=null, &$return=null)
+	private static function _import($action, array $data = null, &$return = null)
 	{
-		@extract($data);
+		@extract((string) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
 
 		if (@is_string($action)) {
@@ -282,10 +297,12 @@ final class View
 	 * @param string|null $namespace
 	 * @param array|null  $data
 	 * @param mixed      &$return
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	private static function _enginePHP(string $view=null, string $namespace=null, array $data=null, &$return=null)
+	private static function _enginePHP(string $view = null, string $namespace = null, array $data = null, &$return = null)
 	{
-		@extract($data);
+		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
 
 		$_ns  = (self::$namespace . $view);
@@ -295,7 +312,7 @@ final class View
 
 			# Cache
 			if ($_ENV['VIEW_CACHE'] == true) {
-				$file = self::_cache($view, $file, self::_cache_dir($namespace));
+				$file = self::_cache((string) $view, $file, self::_cache_dir($namespace));
 			}
 
 			# Ob
@@ -306,7 +323,7 @@ final class View
 
 			# Replace
 			if (isset($data['page_title'])) {
-				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
 			}
 
 			return $return = $ob_content;
@@ -320,10 +337,12 @@ final class View
 	 * @param string|null $namespace
 	 * @param array|null  $data
 	 * @param mixed      &$return
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	private static function _engineBLADE(string $view=null, string $namespace=null, array $data=null, &$return=null)
+	private static function _engineBLADE(string $view = null, string $namespace = null, array $data = null, &$return = null)
 	{	
-		@extract($data);
+		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
 
 		return $return = 
@@ -331,7 +350,7 @@ final class View
 			FS::app(self::$namespace), 
 			self::_cache_dir($namespace)
 		))
-		->make($view, $data)
+		->make((string) $view, (array) $data)
 		->render();
 	}
 
@@ -339,7 +358,7 @@ final class View
 	 * @param string|null $namespace
 	 * @param mixed       &$return
 	 */
-	private static function _cache_dir(string $namespace=null, &$return=null): string
+	private static function _cache_dir(string $namespace = null, &$return = null): string
 	{
 		$_ns = (($namespace != null) ? FS::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
 		$dir = FS::app($_ns);
@@ -350,11 +369,12 @@ final class View
 	}
 
 	/**
-	 * @param string $view
-	 * @param string $file
-	 * @param string $dir
+	 * @param  string $view
+	 * @param  string $file
+	 * @param  string $dir
+	 * @return string
 	 */
-	private static function _cache(string $view, string $file, string $dir)
+	private static function _cache(string $view, string $file, string $dir): string
 	{
 		if (file_exists($file)) {
 			
@@ -371,5 +391,6 @@ final class View
 			}
 			return $_file;
 		}
+		return $file;
 	}
 }

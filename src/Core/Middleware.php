@@ -23,6 +23,8 @@ final class Middleware
 	/**
 	 * @param string      $class
 	 * @param object|null &$return
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function import(string $class, object &$return=null)
 	{

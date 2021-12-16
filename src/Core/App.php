@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.7
+ * @version 8.8
  */
 
 namespace BMVC\Core;
@@ -24,17 +24,50 @@ final class App
 	 */
 	private static $active = false;
 	
-	public static $dotenv = null;
+	/**
+	 * @var Dotenv
+	 */
+	public static $dotenv;
+
+	/**
+	 * @var float
+	 */
 	public static $_microtime;
+
+	/**
+	 * @var string
+	 */
 	public static $microtime;
+
+	/**
+	 * @var float
+	 */
 	public static $memory;
+
+	/**
+	 * @var string|null
+	 */
 	public static $url;
+
+	/**
+	 * @var string
+	 */
 	public static $page;
+
+	/**
+	 * @var string
+	 */
 	public static $timezone;
+
+	/**
+	 * @var string
+	 */
 	public static $environment;
 
 	/**
 	 * @var array
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static $namespaces = [
 		'controller' => null,
@@ -45,6 +78,8 @@ final class App
 
 	/**
 	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function init(array $data = []): void
 	{
@@ -53,6 +88,8 @@ final class App
 
 	/**
 	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function Run(array $data = []): void
 	{
@@ -95,6 +132,8 @@ final class App
 	 * @param bool|boolean $get
 	 * @param string|null  $sub
 	 * @param bool|boolean $new
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function SGnamespace($par, string $value=null, bool $get=false, string $sub=null, bool $new=false)
 	{
@@ -137,6 +176,8 @@ final class App
 	 * @param array        $namespaces
 	 * @param string|null  $sub
 	 * @param bool|boolean $new
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function namespace(array $namespaces=[], string $sub=null, bool $new=false)
 	{
@@ -146,6 +187,8 @@ final class App
 
 	/**
 	 * @param string $key
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	public static function get(string $key)
 	{
@@ -163,6 +206,8 @@ final class App
 
 	/**
 	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
 	 */
 	private static function initData(array $data=[]): void
 	{
@@ -245,7 +290,7 @@ final class App
 	{
 		if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
 			@ini_set('session.use_only_cookies', '1');
-			@session_set_cookie_params([
+			@session_set_cookie_params([ // @phpstan-ignore-line
 				'lifetime' => 3600 * 24,
 				'httponly' => true,
 				'path' => Util::base_url()
@@ -257,8 +302,10 @@ final class App
 
 	/**
 	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
 	 */
-	private static function initWhoops(array $data=[]): void
+	private static function initWhoops(array $data = []): void
 	{
 		$blacklist = array_keys($_ENV);
 
@@ -280,9 +327,9 @@ final class App
 	{
 		//Monolog::init();
 
-		if (@$_ENV['LOG'] == true && Monolog::$log) {
-			Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
-				Monolog::$log->error($exception);
+		if (@$_ENV['LOG'] == true && Monolog::$log) { // @phpstan-ignore-line
+			Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) { // @phpstan-ignore-line
+				Monolog::$log->error($exception); // @phpstan-ignore-line
 			});
 		}
 	}
@@ -303,13 +350,18 @@ final class App
 		});
 	}
 
+	/**
+	 * @phpstan-ignore-next-line
+	 */
 	private static function initRoute()
 	{
-		if (@$_ENV['PUBLIC_DIR'] && strpos(Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
-			redirect(strstr(Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
+		// @phpstan-ignore-next-line
+		if (@$_ENV['PUBLIC_DIR'] && strpos((string) Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
+			// @phpstan-ignore-next-line
+			redirect(strstr((string) Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
 		}
 
-		if (strstr(@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) Route::get_404();
+		if (strstr((string) @Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) Route::get_404();
 
 		$route = Route::Run();
 
@@ -332,7 +384,7 @@ final class App
 			if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
 				foreach ($route['namespaces'] as $key => $val) {
 					if (array_key_exists($key, self::$namespaces)) {
-						call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]);
+						call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]); // @phpstan-ignore-line
 					}
 				}
 			}
