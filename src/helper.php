@@ -4,7 +4,10 @@ use BMVC\Libs\{FS, Util};
 
 FS::setPath(__DIR__);
 
-function url(): string
+/**
+ * @phpstan-ignore-next-line
+ */
+function url()
 {
 	return Util::url(...func_get_args());
 }

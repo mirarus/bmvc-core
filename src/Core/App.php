@@ -98,12 +98,13 @@ final class App
 		self::$_microtime = microtime(true);
 
 		self::initDotenv();
-		self::initData($data);
 		self::initDefine();
 		self::initHeader();
 		self::initSession();
 		self::initWhoops($data);
+		self::initData($data);
 		self::initMonolog();
+
 		self::_routes();
 
 		if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -204,34 +205,6 @@ final class App
 		self::$dotenv = $dotenv;
 	}
 
-	/**
-	 * @param array $data
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static function initData(array $data = []): void
-	{
-		if ($data != null) {
-			# File Import
-			if (isset($data['files'])) {
-				foreach ($data['files'] as $file) {
-					require_once $file;
-				}
-			}
-			# Class Load
-			if (isset($data['init'])) {
-				foreach ($data['init'] as $init) {
-					new $init;
-				}
-			}
-		}
-		#
-
-		if (function_exists('mb_internal_encoding')) @mb_internal_encoding('UTF-8');
-
-		if (Util::is_cli()) die('Cli Not Available, Browser Only.');
-	}
-
 	private static function initDefine(): void
 	{
 		# URL
@@ -323,6 +296,34 @@ final class App
 		Whoops::init();
 	}
 
+	/**
+	 * @param array $data
+	 *
+	 * @phpstan-ignore-next-line
+	 */
+	private static function initData(array $data = []): void
+	{
+		if ($data != null) {
+			# File Import
+			if (isset($data['files'])) {
+				foreach ($data['files'] as $file) {
+					require_once $file;
+				}
+			}
+			# Class Load
+			if (isset($data['init'])) {
+				foreach ($data['init'] as $init) {
+					new $init;
+				}
+			}
+		}
+		#
+
+		if (function_exists('mb_internal_encoding')) @mb_internal_encoding('UTF-8');
+
+		if (Util::is_cli()) die('Cli Not Available, Browser Only.');
+	}
+	
 	private static function initMonolog(): void
 	{
 		//Monolog::init();
