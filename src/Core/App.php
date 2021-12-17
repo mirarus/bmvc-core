@@ -45,7 +45,7 @@ final class App
 	public static $memory;
 
 	/**
-	 * @var string|null
+	 * @var string|null|mixed
 	 */
 	public static $url;
 
@@ -133,7 +133,7 @@ final class App
 	 * @param bool|boolean $get
 	 * @param string|null  $sub
 	 * @param bool|boolean $new
-	 *
+	 * 
 	 * @phpstan-ignore-next-line
 	 */
 	public static function SGnamespace($par, string $value = null, bool $get = false, string $sub = null, bool $new = false)
@@ -351,10 +351,7 @@ final class App
 		});
 	}
 
-	/**
-	 * @phpstan-ignore-next-line
-	 */
-	private static function initRoute()
+	private static function initRoute(): void
 	{
 		// @phpstan-ignore-next-line
 		if (@$_ENV['PUBLIC_DIR'] && strpos((string) Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
@@ -377,8 +374,8 @@ final class App
 		if (@$route) {
 
 			if (array_key_exists('middlewares', $route)) {
-				foreach ($route['middlewares'] as $key => $val) {
-					Middleware::call(@$val['callback']);
+				foreach ($route['middlewares'] as $key => $val) { // @phpstan-ignore-line
+					Middleware::call(@$val['callback']); // @phpstan-ignore-line
 				}
 			}
 
@@ -391,7 +388,7 @@ final class App
 			}
 
 			Controller::call(@$route['action'], @$route['params']);
-
+			 // @phpstan-ignore-next-line
 			if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
 
 		} elseif (@Route::$notFound) {

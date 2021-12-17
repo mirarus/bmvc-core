@@ -63,14 +63,14 @@ final class View
 	private static $separators = ['@', '/', '.', '::', ':'];
 
 	/**
-	 * @param string|null $namespace
-	 *
-	 * @phpstan-ignore-next-line
+	 * @param  string|null $namespace
+	 * @return null|self
 	 */
 	public static function namespace(string $namespace = null, bool $new = false)
 	{
 		self::$namespace = FS::trim($namespace) . DIRECTORY_SEPARATOR;
-		if ($new == true) return new self;
+		if ($new == true) return new self; // @phpstan-ignore-line
+
 	}
 
 	/**
@@ -299,6 +299,8 @@ final class View
 	 * @param mixed      &$return
 	 *
 	 * @phpstan-ignore-next-line
+	 *
+	 * @return false|null|string
 	 */
 	private static function _enginePHP(string $view = null, string $namespace = null, array $data = null, &$return = null)
 	{
@@ -340,7 +342,7 @@ final class View
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	private static function _engineBLADE(string $view = null, string $namespace = null, array $data = null, &$return = null)
+	private static function _engineBLADE(string $view = null, string $namespace = null, array $data = null, &$return = null): string
 	{	
 		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;

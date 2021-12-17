@@ -15,10 +15,9 @@ function _ob(string $file)
 
 /**
  * @param string $file
- *
- * @phpstan-ignore-next-line
+ * @return null|string
  */
-function ob_template(string $file)
+function ob_template(string $file): ?string
 {
 	ob_start();
 	require_once $file;
@@ -66,10 +65,9 @@ function html_decode(string $par): string
 }
 
 /**
- * @param string $date
- * @param string $format
- *
- * @phpstan-ignore-next-line
+ * @param  string $date
+ * @param  string $format
+ * @return false|int
  */
 function datetotime(string $date, string $format='YYYY-MM-DD')
 {
@@ -94,6 +92,8 @@ function datetotime(string $date, string $format='YYYY-MM-DD')
 
 /**
  * @phpstan-ignore-next-line
+ *
+ * @return false|resource
  */
 function resize_image($file, $w, $h, $crop=false)
 {

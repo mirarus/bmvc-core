@@ -5,9 +5,9 @@ use BMVC\Libs\{FS, Util};
 FS::setPath(__DIR__);
 
 /**
- * @phpstan-ignore-next-line
+ * @return null|string
  */
-function url()
+function url(): ?string
 {
 	return Util::url(...func_get_args());
 }

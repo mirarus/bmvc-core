@@ -37,11 +37,11 @@ final class Model
 	}
 
 	/**
-	 * @phpstan-ignore-next-line
+	 * @return DB|never
 	 */
 	public static function DB()
 	{
-		if (self::$active == true) {
+		if (self::$active == true) { // @phpstan-ignore-line
 
 			App::$dotenv->required('DB_DSN')->notEmpty(); 
 
