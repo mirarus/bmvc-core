@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.6
+ * @version 6.7
  */
 
 namespace BMVC\Core;
@@ -106,12 +106,12 @@ final class View
 
 	/**
 	 * @param Closure      $callback
-	 * @param array|null   $data
+	 * @param mixed        $data
 	 * @param bool|boolean $render
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	public static function layout(Closure $callback, array $data = null, bool $render = true)
+	public static function layout(Closure $callback, $data = null, bool $render = true)
 	{
 		$data = array_merge((array) $data, self::$data);
 		@extract((array) $data); // @phpstan-ignore-line
@@ -249,13 +249,13 @@ final class View
 	}
 
 	/**
-	 * @param mixed      $action
-	 * @param array|null $data
-	 * @param mixed      &$return
+	 * @param mixed  $action
+	 * @param mixed  $data
+	 * @param mixed &$return
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	private static function _import($action, array $data = null, &$return = null)
+	private static function _import($action, $data = null, &$return = null)
 	{
 		@extract((string) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
@@ -295,14 +295,14 @@ final class View
 	/**
 	 * @param string|null $view
 	 * @param string|null $namespace
-	 * @param array|null  $data
+	 * @param mixed       $data
 	 * @param mixed      &$return
 	 *
 	 * @phpstan-ignore-next-line
 	 *
 	 * @return false|null|string
 	 */
-	private static function _enginePHP(string $view = null, string $namespace = null, array $data = null, &$return = null)
+	private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
 	{
 		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
@@ -337,12 +337,12 @@ final class View
 	/**
 	 * @param string|null $view
 	 * @param string|null $namespace
-	 * @param array|null  $data
+	 * @param mixed       $data
 	 * @param mixed      &$return
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	private static function _engineBLADE(string $view = null, string $namespace = null, array $data = null, &$return = null): string
+	private static function _engineBLADE(string $view = null, string $namespace = null, $data = null, &$return = null): string
 	{	
 		@extract((array) $data); // @phpstan-ignore-line
 		@$_REQUEST['vd'] = $data;
