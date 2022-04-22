@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.8
+ * @version 8.9
  */
 
 namespace BMVC\Core;
@@ -254,7 +254,9 @@ final class App
     @header('Date: ' . date('D, d M Y H:i:s') . ' GMT');
     @header('Strict-Transport-Security: max-age=15552000; preload');
     @header('X-Frame-Options: sameorigin');
-    @header('X-Powered-By: PHP/BMVC');
+    if (self::$environment == 'development') {
+      @header('X-Powered-By: PHP/BMVC');
+    }
     if (self::$page) @header('X-Url: ' . self::$page);
     @header('X-XSS-Protection: 1; mode=block');
   }
@@ -268,7 +270,9 @@ final class App
         'httponly' => true,
         'path' => Util::base_url()
       ]);
-      @session_name('BMVC');
+      if (self::$environment == 'development') {
+        @session_name('BMVC');
+      }
       @session_start();
     }
   }
