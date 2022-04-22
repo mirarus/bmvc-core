@@ -155,7 +155,7 @@ final class View
 	 *
 	 * @phpstan-ignore-next-line
 	 */
-	public static function load($action, array $data = [], bool $layout = false, bool $render = true)
+	public static function load($action, $data = [], bool $layout = false, bool $render = true)
 	{
 		$data = array_merge((array) $data, self::$data);
 		@extract((array) $data); // @phpstan-ignore-line
