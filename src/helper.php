@@ -13,6 +13,14 @@ function url(): ?string
 }
 
 /**
+ * @return null|string
+ */
+function page(): ?string
+{
+	return Util::page_url();
+}
+
+/**
  * @phpstan-ignore-next-line
  */
 function pr()
