@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.4
+ * @version 6.5
  */
 
 namespace BMVC\Core;
@@ -28,7 +28,7 @@ final class Controller
    */
   public static function import(string $class, object &$return = null)
   {
-    self::get('controller', $class, $get);
+    self::get($class, $get);
 
     $load = include(FS::app(FS::implode(['vendor', 'autoload.php'])));
     $file = FS::app($get['class'] . '.php');

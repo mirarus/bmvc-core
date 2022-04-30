@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 5.9
+ * @version 6.0
  */
 
 namespace BMVC\Core;
@@ -75,7 +75,7 @@ final class Model
    */
   public static function import(string $class, object &$return = null)
   {
-    self::get('model', $class, $get);
+    self::get($class, $get);
 
     return $return = @$get['cls'];
   }

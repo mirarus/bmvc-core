@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.0
+ * @version 9.1
  */
 
 namespace BMVC\Core;
@@ -107,7 +107,6 @@ final class App
     self::initWhoops($data);
     self::initData($data);
     self::initMonolog();
-
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -129,7 +128,7 @@ final class App
 
     self::$active = true;
   }
-  
+
   /**
    * @param $par
    * @param string|null $value
@@ -277,7 +276,7 @@ final class App
   {
     if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
       @ini_set('session.use_only_cookies', '1');
-      @session_set_cookie_params([ 
+      @session_set_cookie_params([
         'lifetime' => 3600 * 24,
         'httponly' => true,
         'path' => Util::base_url()
@@ -346,8 +345,8 @@ final class App
     //Monolog::init();
 
     if (@$_ENV['LOG'] && Monolog::$log) {
-      Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) { 
-        Monolog::$log->error($exception); 
+      Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
+        Monolog::$log->error($exception);
       });
     }
   }
@@ -366,7 +365,7 @@ final class App
           url($_url, true);
         }
       } else {
-        Route::get_404();
+        Route::getErrors(404);
       }
     });
   }
@@ -380,7 +379,7 @@ final class App
       redirect(strstr((string)Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
     }
 
-    if (strstr((string)@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) Route::get_404();
+    if (strstr((string)@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) Route::getErrors(404);
 
     $route = Route::Run();
 
@@ -397,24 +396,22 @@ final class App
       if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
         foreach ($route['namespaces'] as $key => $val) {
           if (array_key_exists($key, self::$namespaces)) {
-            call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]); 
+            call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]);
           }
         }
       }
 
       if (array_key_exists('middlewares', $route)) {
-        foreach ($route['middlewares'] as $key => $val) { 
+        foreach ($route['middlewares'] as $key => $val) {
           Middleware::call(@$val['callback']);
         }
       }
 
       Controller::call(@$route['action'], @$route['params']);
 
-      
+
       if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
 
-    } elseif (@Route::$error_page) {
-      Controller::call(Route::$error_page);
-    }
+    } elseif (@Route::getErrors(404)) {}
   }
 }
