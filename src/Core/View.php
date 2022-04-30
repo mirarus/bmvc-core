@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.7
+ * @version 6.8
  */
 
 namespace BMVC\Core;
@@ -21,378 +21,366 @@ use Jenssegers\Blade\Blade;
 final class View
 {
 
-	/**
-	 * @var string
-	 */
-	private static $namespace = null;
+  /**
+   * @var null
+   */
+  private static $namespace = null;
 
-	/**
-	 * @var array
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static $engines = ['php', 'blade'];
+  /**
+   * @var string[]
+   */
+  private static $engines = ['php', 'blade'];
 
-	/**
-	 * @var string
-	 */
-	private static $engine = 'php';
+  /**
+   * @var string
+   */
+  private static $engine = 'php';
 
-	/**
-	 * @var array
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static $data = [];
+  /**
+   * @var array
+   */
+  private static $data = [];
 
-	/**
-	 * @var string
-	 */
-	private static $extension = 'php';
+  /**
+   * @var string
+   */
+  private static $extension = 'php';
 
-	/**
-	 * @var mixed
-	 */
-	private static $content;
+  /**
+   * @var
+   */
+  private static $content;
 
-	/**
-	 * @var array
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static $separators = ['@', '/', '.', '::', ':'];
+  /**
+   * @var string[]
+   */
+  private static $separators = ['@', '/', '.', '::', ':'];
 
-	/**
-	 * @param  string|null $namespace
-	 * @return null|self
-	 */
-	public static function namespace(string $namespace = null, bool $new = false)
-	{
-		self::$namespace = FS::trim($namespace) . DIRECTORY_SEPARATOR;
-		if ($new == true) return new self; // @phpstan-ignore-line
 
-	}
+  /**
+   * @param string|null $namespace
+   * @param bool $new
+   * @return View|void
+   */
+  public static function namespace(string $namespace = null, bool $new = false)
+  {
+    self::$namespace = FS::trim($namespace) . DIRECTORY_SEPARATOR;
+    if ($new) return new self;
 
-	/**
-	 * @param string $engine
-	 */
-	public static function engine(string $engine): self
-	{
-		if (in_array($engine, self::$engines)) {
-			self::$engine = $engine;
-		}
-		return new self;
-	}
+  }
 
-	/**
-	 * @param array $data
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	public static function data(array $data): self
-	{
-		self::$data = $data;
-		return new self;
-	}
+  /**
+   * @param string $engine
+   * @return static
+   */
+  public static function engine(string $engine): self
+  {
+    if (in_array($engine, self::$engines)) {
+      self::$engine = $engine;
+    }
+    return new self;
+  }
 
-	/**
-	 * @param string $extension
-	 */
-	public static function extension(string $extension = 'php'): self
-	{
-		self::$extension = $extension;
-		return new self;
-	}
+  /**
+   * @param array $data
+   * @return static
+   */
+  public static function data(array $data): self
+  {
+    self::$data = $data;
+    return new self;
+  }
 
-	/**
-	 * @param Closure      $callback
-	 * @param mixed        $data
-	 * @param bool|boolean $render
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	public static function layout(Closure $callback, $data = null, bool $render = true)
-	{
-		$data = array_merge((array) $data, self::$data);
-		@extract((array) $data); // @phpstan-ignore-line
-		@$_REQUEST['vd'] = $data;
+  /**
+   * @param string $extension
+   * @return static
+   */
+  public static function extension(string $extension = 'php'): self
+  {
+    self::$extension = $extension;
+    return new self;
+  }
 
-		$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
-		$_ns  = FS::implode([FS::trim(self::$namespace), FS::trim(FS::implode([FS::trim($_ns), 'Layout', 'Main']))]);
-		$file = FS::app($_ns . '.' . self::$extension);
+  /**
+   * @param Closure $callback
+   * @param $data
+   * @param bool $render
+   * @return View|void
+   * @throws Exception
+   */
+  public static function layout(Closure $callback, $data = null, bool $render = true)
+  {
+    $data = array_merge((array)$data, self::$data);
+    @extract((array)$data);
+    @$_REQUEST['vd'] = $data;
 
-		if (file_exists($file)) {
+    $_ns = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
+    $_ns = FS::implode([FS::trim(self::$namespace), FS::trim(FS::implode([FS::trim($_ns), 'Layout', 'Main']))]);
+    $file = FS::app($_ns . '.' . self::$extension);
 
-			$content = call_user_func($callback);
+    if (file_exists($file)) {
 
-			ob_start();
-			require_once $file;
-			$ob_content = ob_get_contents();
-			ob_end_clean();
+      $content = call_user_func($callback);
 
-				# Replace
-			if (isset($data['page_title'])) {
-				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
-			}
+      ob_start();
+      require_once $file;
+      $ob_content = ob_get_contents();
+      ob_end_clean();
 
-			self::$content = $ob_content;
+      # Replace
+      if (isset($data['page_title'])) {
+        $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+      }
 
-			if ($render == true) {
-				echo self::$content;
-			} else {
-				return new self;
-			}
-		} else {
-			throw new Exception('Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
-		}
-	}
+      self::$content = $ob_content;
 
-	/**
-	 * @param mixed        $action
-	 * @param array   	   $data
-	 * @param bool|boolean $layout
-	 * @param bool|boolean $render
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	public static function load($action, $data = [], bool $layout = false, bool $render = true)
-	{
-		$data = array_merge((array) $data, self::$data);
-		@extract((array) $data); // @phpstan-ignore-line
-		@$_REQUEST['vd'] = $data;
+      if ($render) {
+        echo self::$content;
+      } else {
+        return new self;
+      }
+    } else {
+      throw new Exception('Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
+    }
+  }
 
-		$view = null;
+  /**
+   * @param $action
+   * @param $data
+   * @param bool $layout
+   * @param bool $render
+   * @return View|void
+   * @throws Exception
+   */
+  public static function load($action, $data = [], bool $layout = false, bool $render = true)
+  {
+    $data = array_merge((array)$data, self::$data);
+    @extract((array)$data);
+    @$_REQUEST['vd'] = $data;
 
-		if (@is_string($action)) {
-			if (self::$separators != null) {
-				foreach (self::$separators as $separator) {
-					if (@is_string($action)) {
-						if (@strstr($action, $separator)) {
-							$action = @explode($separator, $action);
-						}
-					}
-				}
-			}
-		}
+    $view = null;
 
-		if (@is_array($action) && count($action) > 1) {
-			$view = @array_pop($action);
-		} elseif (@is_string($action)) {
-			$view = $action;
-		}
-		#
-		$namespace = (($action != null && @is_array($action)) ? FS::implode($action) : null);
-		$namespace = FS::replace($namespace);
-		$view			 = ($namespace != null) ? FS::implode([$namespace, $view]) : $view;
-		$view			 = FS::replace($view);
-		#
-		if ($layout == true) {
+    if (@is_string($action)) {
+      if (self::$separators != null) {
+        foreach (self::$separators as $separator) {
+          if (@is_string($action)) {
+            if (@strstr($action, $separator)) {
+              $action = @explode($separator, $action);
+            }
+          }
+        }
+      }
+    }
 
-			$_ns  = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
-			$_ns  = FS::trim($_ns);
-			$_ns  = ($_ns != null) ? FS::implode([$_ns, 'Layout', 'Main']) : FS::implode(['Layout', 'Main']);
-			$_ns  = FS::trim($_ns);
-			$_ns  = (FS::trim(self::$namespace) != null) ? FS::implode([FS::trim(self::$namespace), $_ns]) : $_ns;
-			$file = FS::app($_ns . '.' . self::$extension);
+    if (@is_array($action) && count($action) > 1) {
+      $view = @array_pop($action);
+    } elseif (@is_string($action)) {
+      $view = $action;
+    }
+    #
+    $namespace = (($action != null && @is_array($action)) ? FS::implode($action) : null);
+    $namespace = FS::replace($namespace);
+    $view = ($namespace != null) ? FS::implode([$namespace, $view]) : $view;
+    $view = FS::replace($view);
+    #
+    if ($layout) {
 
-			if (file_exists($file)) {
+      $_ns = @array_key_exists('namespace', $data) ? $data['namespace'] : $namespace;
+      $_ns = FS::trim($_ns);
+      $_ns = ($_ns != null) ? FS::implode([$_ns, 'Layout', 'Main']) : FS::implode(['Layout', 'Main']);
+      $_ns = FS::trim($_ns);
+      $_ns = (FS::trim(self::$namespace) != null) ? FS::implode([FS::trim(self::$namespace), $_ns]) : $_ns;
+      $file = FS::app($_ns . '.' . self::$extension);
 
-				$content = ($view != null ? self::_import([$namespace, $view], $data, $return) : null);
+      if (file_exists($file)) {
 
-				ob_start();
-				require_once $file;
-				$ob_content = ob_get_contents();
-				ob_end_clean();
+        $content = ($view != null ? self::_import([$namespace, $view], $data, $return) : null);
 
-				# Replace
-				if (isset($data['page_title'])) {
-					$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
-				}
+        ob_start();
+        require_once $file;
+        $ob_content = ob_get_contents();
+        ob_end_clean();
 
-				self::$content = $ob_content;
+        # Replace
+        if (isset($data['page_title'])) {
+          $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+        }
 
-				if ($render == true) {
-					echo self::$content;
-				} else {
-					return new self;
-				}
-			} else {
-				throw new Exception('View Error! | Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
-			}
-		} else {
+        self::$content = $ob_content;
 
-			self::$content = self::_import([$namespace, $view], $data, $return);
+        if ($render) {
+          echo self::$content;
+        } else {
+          return new self;
+        }
+      } else {
+        throw new Exception('View Error! | Layout [' . @str_replace([FS::app()], "", $file) . '] not found.');
+      }
+    } else {
 
-			if ($render == true) {
-				echo self::$content;
-			} else {
-				return new self;
-			}
-		}
-	}
+      self::$content = self::_import([$namespace, $view], $data, $return);
 
-	/**
-	 * @param bool|boolean $return
-	 * @param string       &$print
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	public static function render(bool $return = false, &$print = null)
-	{
-		if (@self::$content) {
-			if ($return == true) {
-				return $print = self::$content;
-			} else {
-				echo $print = self::$content; // @phpstan-ignore-line
-			}
-		}
-	}
+      if ($render) {
+        echo self::$content;
+      } else {
+        return new self;
+      }
+    }
+  }
 
-	/**
-	 * @param mixed  $action
-	 * @param mixed  $data
-	 * @param mixed &$return
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static function _import($action, $data = null, &$return = null)
-	{
-		@extract((string) $data); // @phpstan-ignore-line
-		@$_REQUEST['vd'] = $data;
+  /**
+   * @param bool $return
+   * @param $print
+   * @return mixed|void
+   */
+  public static function render(bool $return = false, &$print = null)
+  {
+    if (@self::$content) {
+      if ($return) {
+        return $print = self::$content;
+      } else {
+        echo $print = self::$content;
+      }
+    }
+  }
 
-		if (@is_string($action)) {
-			if (self::$separators != null) {
-				foreach (self::$separators as $separator) {
-					if (@is_string($action)) {
-						if (@strstr($action, $separator)) {
-							$action = @explode($separator, $action);
-						}
-					}
-				}
-			}
-		}
+  /**
+   * @param $action
+   * @param $data
+   * @param $return
+   * @return false|string|void|null
+   * @throws Exception
+   */
+  private static function _import($action, $data = null, &$return = null)
+  {
+    @extract((string)$data);
+    @$_REQUEST['vd'] = $data;
 
-		$view = null;
-		if (@is_array($action) && count($action) > 1) {
-			$view = @array_pop($action);
-		} elseif (@is_string($action)) {
-			$view = $action;
-		}
-		#
-		$namespace = (($action != null && @is_array($action)) ? FS::implode($action) : null);
-		$namespace = FS::replace($namespace);
+    if (@is_string($action)) {
+      if (self::$separators != null) {
+        foreach (self::$separators as $separator) {
+          if (@is_string($action)) {
+            if (@strstr($action, $separator)) {
+              $action = @explode($separator, $action);
+            }
+          }
+        }
+      }
+    }
 
-		if ($view != null) {
+    $view = null;
+    if (@is_array($action) && count($action) > 1) {
+      $view = @array_pop($action);
+    } elseif (@is_string($action)) {
+      $view = $action;
+    }
+    #
+    $namespace = (($action != null && @is_array($action)) ? FS::implode($action) : null);
+    $namespace = FS::replace($namespace);
 
-			if (self::$engine == 'php') {
-				return $return = self::_enginePHP($view, $namespace, $data);
-			} elseif (self::$engine == 'blade') {
-				return $return = self::_engineBLADE($view, $namespace, $data);
-			}
-		}
-	}
+    if ($view != null) {
 
-	/**
-	 * @param string|null $view
-	 * @param string|null $namespace
-	 * @param mixed       $data
-	 * @param mixed      &$return
-	 *
-	 * @phpstan-ignore-next-line
-	 *
-	 * @return false|null|string
-	 */
-	private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
-	{
-		@extract((array) $data); // @phpstan-ignore-line
-		@$_REQUEST['vd'] = $data;
+      if (self::$engine == 'php') {
+        return $return = self::_enginePHP($view, $namespace, $data);
+      } elseif (self::$engine == 'blade') {
+        return $return = self::_engineBLADE($view, $namespace, $data);
+      }
+    }
+  }
 
-		$_ns  = (self::$namespace . $view);
-		$file = FS::app($_ns . '.' . self::$extension);
+  /**
+   * @param string|null $view
+   * @param string|null $namespace
+   * @param $data
+   * @param $return
+   * @return array|false|string|string[]|null
+   * @throws Exception
+   */
+  private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
+  {
+    @extract((array)$data);
+    @$_REQUEST['vd'] = $data;
 
-		if (file_exists($file)) {
+    $_ns = (self::$namespace . $view);
+    $file = FS::app($_ns . '.' . self::$extension);
 
-			# Cache
-			if ($_ENV['VIEW_CACHE'] == true) {
-				$file = self::_cache((string) $view, $file, self::_cache_dir($namespace));
-			}
+    if (file_exists($file)) {
 
-			# Ob
-			ob_start();
-			require_once $file;
-			$ob_content = ob_get_contents();
-			ob_end_clean();
+      # Cache
+      if ($_ENV['VIEW_CACHE']) {
+        $file = self::_cache((string)$view, $file, self::_cache_dir($namespace));
+      }
 
-			# Replace
-			if (isset($data['page_title'])) {
-				$ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content); // @phpstan-ignore-line
-			}
+      # Ob
+      ob_start();
+      require_once $file;
+      $ob_content = ob_get_contents();
+      ob_end_clean();
 
-			return $return = $ob_content;
-		} else {
-			throw new Exception('View Error! | View [' . @str_replace([FS::app()], "", $file) . '] not found.');
-		}
-	}
+      # Replace
+      if (isset($data['page_title'])) {
+        $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
+      }
 
-	/**
-	 * @param string|null $view
-	 * @param string|null $namespace
-	 * @param mixed       $data
-	 * @param mixed      &$return
-	 *
-	 * @phpstan-ignore-next-line
-	 */
-	private static function _engineBLADE(string $view = null, string $namespace = null, $data = null, &$return = null): string
-	{	
-		@extract((array) $data); // @phpstan-ignore-line
-		@$_REQUEST['vd'] = $data;
+      return $return = $ob_content;
+    } else {
+      throw new Exception('View Error! | View [' . @str_replace([FS::app()], "", $file) . '] not found.');
+    }
+  }
 
-		return $return = 
-		(new Blade(
-			FS::app(self::$namespace), 
-			self::_cache_dir($namespace)
-		))
-		->make((string) $view, (array) $data)
-		->render();
-	}
+  /**
+   * @param string|null $view
+   * @param string|null $namespace
+   * @param $data
+   * @param $return
+   * @return string
+   */
+  private static function _engineBLADE(string $view = null, string $namespace = null, $data = null, &$return = null): string
+  {
+    @extract((array)$data);
+    @$_REQUEST['vd'] = $data;
 
-	/**
-	 * @param string|null $namespace
-	 * @param mixed       &$return
-	 */
-	private static function _cache_dir(string $namespace = null, &$return = null): string
-	{
-		$_ns = (($namespace != null) ? FS::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
-		$dir = FS::app($_ns);
+    return $return = (new Blade(FS::app(self::$namespace), self::_cache_dir($namespace)))->make((string)$view, (array)$data)->render();
+  }
 
-		FS::mk_dir($dir);
+  /**
+   * @param string|null $namespace
+   * @param $return
+   * @return string
+   */
+  private static function _cache_dir(string $namespace = null, &$return = null): string
+  {
+    $_ns = (($namespace != null) ? FS::implode([self::$namespace . $namespace, 'Cache']) : (self::$namespace . 'Cache'));
+    $dir = FS::app($_ns);
 
-		return $return = $dir;
-	}
+    FS::mk_dir($dir);
 
-	/**
-	 * @param  string $view
-	 * @param  string $file
-	 * @param  string $dir
-	 * @return string
-	 */
-	private static function _cache(string $view, string $file, string $dir): string
-	{
-		if (file_exists($file)) {
-			
-			$_view = FS::explode($view);
-			$_view = @array_pop($_view);
-			$_file = FS::implode([$dir, (md5($_view) . '.' . self::$extension)]);
-			$expir = 120;
-			
-			if (!file_exists($_file) || (filemtime($_file) < (time() - $expir))) {
+    return $return = $dir;
+  }
 
-				$signature = "<?php\n/**\n * @file " . $file . "\n * @date " . date(DATE_RFC822) ."\n * @expire " . date(DATE_RFC822, time() + $expir) . "\n */\n?>\n";
-				$content = $signature . file_get_contents($file);
-				file_put_contents($_file, $content, LOCK_EX);
-			}
-			return $_file;
-		}
-		return $file;
-	}
+  /**
+   * @param string $view
+   * @param string $file
+   * @param string $dir
+   * @return string
+   */
+  private static function _cache(string $view, string $file, string $dir): string
+  {
+    if (file_exists($file)) {
+
+      $_view = FS::explode($view);
+      $_view = @array_pop($_view);
+      $_file = FS::implode([$dir, (md5($_view) . '.' . self::$extension)]);
+      $expir = 120;
+
+      if (!file_exists($_file) || (filemtime($_file) < (time() - $expir))) {
+
+        $signature = "<?php\n/**\n * @file " . $file . "\n * @date " . date(DATE_RFC822) . "\n * @expire " . date(DATE_RFC822, time() + $expir) . "\n */\n?>\n";
+        $content = $signature . file_get_contents($file);
+        file_put_contents($_file, $content, LOCK_EX);
+      }
+      return $_file;
+    }
+    return $file;
+  }
 }

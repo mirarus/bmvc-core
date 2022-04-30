@@ -8,66 +8,71 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 8.9
+ * @version 9.0
  */
 
 namespace BMVC\Core;
 
-use BMVC\Libs\{FS, CL, Whoops, Monolog, Request, Header, Route, Util};
 use Dotenv\Dotenv;
+use BMVC\Libs\FS;
+use BMVC\Libs\CL;
+use BMVC\Libs\Whoops;
+use BMVC\Libs\Monolog;
+use BMVC\Libs\Request;
+use BMVC\Libs\Header;
+use BMVC\Libs\Route;
+use BMVC\Libs\Util;
 
 final class App
 {
 
   /**
-   * @var boolean
+   * @var bool
    */
   private static $active = false;
 
   /**
-   * @var Dotenv
+   * @var
    */
   public static $dotenv;
 
   /**
-   * @var float
+   * @var
    */
   public static $_microtime;
 
   /**
-   * @var string
+   * @var
    */
   public static $microtime;
 
   /**
-   * @var float
+   * @var
    */
   public static $memory;
 
   /**
-   * @var string|null|mixed
+   * @var
    */
   public static $url;
 
   /**
-   * @var string
+   * @var
    */
   public static $page;
 
   /**
-   * @var string
+   * @var
    */
   public static $timezone;
 
   /**
-   * @var string
+   * @var
    */
   public static $environment;
 
   /**
-   * @var array
-   *
-   * @phpstan-ignore-next-line
+   * @var null[]
    */
   public static $namespaces = [
     'controller' => null,
@@ -78,8 +83,7 @@ final class App
 
   /**
    * @param array $data
-   *
-   * @phpstan-ignore-next-line
+   * @return void
    */
   public static function init(array $data = []): void
   {
@@ -88,12 +92,11 @@ final class App
 
   /**
    * @param array $data
-   *
-   * @phpstan-ignore-next-line
+   * @return void
    */
   public static function Run(array $data = []): void
   {
-    if (self::$active == true) return;
+    if (self::$active) return;
 
     self::$_microtime = microtime(true);
 
@@ -126,15 +129,14 @@ final class App
 
     self::$active = true;
   }
-
+  
   /**
-   * @param mixed $par
+   * @param $par
    * @param string|null $value
-   * @param bool|boolean $get
+   * @param bool $get
    * @param string|null $sub
-   * @param bool|boolean $new
-   *
-   * @phpstan-ignore-next-line
+   * @param bool $new
+   * @return array|App|null[]|string|void
    */
   public static function SGnamespace($par, string $value = null, bool $get = false, string $sub = null, bool $new = false)
   {
@@ -170,26 +172,24 @@ final class App
         return self::$namespaces;
       }
     }
-    if ($new == true) return new self;
+    if ($new) return new self;
   }
 
   /**
    * @param array $namespaces
    * @param string|null $sub
-   * @param bool|boolean $new
-   *
-   * @phpstan-ignore-next-line
+   * @param bool $new
+   * @return App|void
    */
   public static function namespace(array $namespaces = [], string $sub = null, bool $new = false)
   {
     self::SGnamespace($namespaces, null, false, $sub);
-    if ($new == true) return new self;
+    if ($new) return new self;
   }
 
   /**
    * @param string $key
-   *
-   * @phpstan-ignore-next-line
+   * @return void
    */
   public static function get(string $key)
   {
@@ -198,6 +198,9 @@ final class App
     }
   }
 
+  /**
+   * @return void
+   */
   private static function initDotenv(): void
   {
     $dotenv = Dotenv::createImmutable(FS::app());
@@ -205,6 +208,9 @@ final class App
     self::$dotenv = $dotenv;
   }
 
+  /**
+   * @return void
+   */
   private static function initDefine(): void
   {
     # URL
@@ -248,6 +254,9 @@ final class App
     }
   }
 
+  /**
+   * @return void
+   */
   private static function initHeader(): void
   {
     @header_remove();
@@ -261,11 +270,14 @@ final class App
     @header('X-XSS-Protection: 1; mode=block');
   }
 
+  /**
+   * @return void
+   */
   private static function initSession(): void
   {
     if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
       @ini_set('session.use_only_cookies', '1');
-      @session_set_cookie_params([ // @phpstan-ignore-line
+      @session_set_cookie_params([ 
         'lifetime' => 3600 * 24,
         'httponly' => true,
         'path' => Util::base_url()
@@ -279,8 +291,7 @@ final class App
 
   /**
    * @param array $data
-   *
-   * @phpstan-ignore-next-line
+   * @return void
    */
   private static function initWhoops(array $data = []): void
   {
@@ -302,8 +313,7 @@ final class App
 
   /**
    * @param array $data
-   *
-   * @phpstan-ignore-next-line
+   * @return void
    */
   private static function initData(array $data = []): void
   {
@@ -328,23 +338,29 @@ final class App
     if (Util::is_cli()) die('Cli Not Available, Browser Only.');
   }
 
+  /**
+   * @return void
+   */
   private static function initMonolog(): void
   {
     //Monolog::init();
 
-    if (@$_ENV['LOG'] == true && Monolog::$log) { // @phpstan-ignore-line
-      Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) { // @phpstan-ignore-line
-        Monolog::$log->error($exception); // @phpstan-ignore-line
+    if (@$_ENV['LOG'] && Monolog::$log) {
+      Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) { 
+        Monolog::$log->error($exception); 
       });
     }
   }
 
+  /**
+   * @return void
+   */
   private static function _routes(): void
   {
     Route::match(['GET', 'POST'], 'route/:all', function ($url) {
       $_url = Route::url($url);
       if ($_url) {
-        if (Request::get('return') == true) {
+        if (Request::get('return')) {
           url($_url);
         } else {
           url($_url, true);
@@ -355,11 +371,12 @@ final class App
     });
   }
 
+  /**
+   * @return void
+   */
   private static function initRoute(): void
   {
-    // @phpstan-ignore-next-line
     if (@$_ENV['PUBLIC_DIR'] && strpos((string)Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
-      // @phpstan-ignore-next-line
       redirect(strstr((string)Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
     }
 
@@ -380,24 +397,24 @@ final class App
       if (@$route['namespaces'] != null && is_array($route['namespaces'])) {
         foreach ($route['namespaces'] as $key => $val) {
           if (array_key_exists($key, self::$namespaces)) {
-            call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]); // @phpstan-ignore-line
+            call_user_func_array([CL::implode([__NAMESPACE__, ucfirst($key)]), 'namespace'], [$val]); 
           }
         }
       }
 
       if (array_key_exists('middlewares', $route)) {
-        foreach ($route['middlewares'] as $key => $val) { // @phpstan-ignore-line
+        foreach ($route['middlewares'] as $key => $val) { 
           Middleware::call(@$val['callback']);
         }
       }
 
       Controller::call(@$route['action'], @$route['params']);
 
-      // @phpstan-ignore-next-line
+      
       if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
 
-    } elseif (@Route::$notFound) {
-      Controller::call(Route::$notFound);
+    } elseif (@Route::$error_page) {
+      Controller::call(Route::$error_page);
     }
   }
 }

@@ -21,7 +21,7 @@ function page(): ?string
 }
 
 /**
- * @phpstan-ignore-next-line
+ * @return void
  */
 function pr()
 {
@@ -29,7 +29,7 @@ function pr()
 }
 
 /**
- * @phpstan-ignore-next-line
+ * @return void
  */
 function dump()
 {
@@ -37,7 +37,7 @@ function dump()
 }
 
 /**
- * @phpstan-ignore-next-line
+ * @return void
  */
 function redirect()
 {
@@ -45,7 +45,7 @@ function redirect()
 }
 
 /**
- * @phpstan-ignore-next-line
+ * @return void
  */
 function refresh()
 {
