@@ -410,7 +410,7 @@ final class App
       Controller::call(@$route['action'], @$route['params']);
 
 
-      if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
+      if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::getErrors(404);
 
     } elseif (@Route::getErrors(404)) {}
   }
