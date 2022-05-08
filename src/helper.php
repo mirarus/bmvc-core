@@ -1,6 +1,6 @@
 <?php
 
-use BMVC\Libs\{FS, Util};
+use BMVC\Libs\{FS, Route, Util};
 
 FS::setPath(__DIR__);
 
@@ -50,4 +50,13 @@ function redirect()
 function refresh()
 {
 	return Util::refresh(...func_get_args());
+}
+
+
+/**
+ * @return void
+ */
+function getErrors()
+{
+  return Route::getErrors(...func_get_args());
 }
