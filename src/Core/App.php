@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.1
+ * @version 9.3
  */
 
 namespace BMVC\Core;
@@ -409,9 +409,9 @@ final class App
 
       Controller::call(@$route['action'], @$route['params']);
 
-
-      if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::get_404();
-
-    } elseif (@Route::getErrors(404)) {}
+      if (@$route['_return'] && !Header::check_type(@$route['_return'])) Route::getErrors(404);
+    } else {
+      Route::getErrors(404);
+    }
   }
 }
