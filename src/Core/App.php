@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.4
+ * @version 9.5
  */
 
 namespace BMVC\Core;
@@ -279,7 +279,7 @@ final class App
       @session_set_cookie_params([
         'lifetime' => 3600 * 24,
         'httponly' => true,
-        'path' => Util::url()
+        // 'path' => self::$url
       ]);
       if (self::$environment == 'development') {
         @session_name('BMVC');
