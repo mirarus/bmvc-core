@@ -13,13 +13,15 @@
 
 namespace BMVC\Core;
 
+use Mirarus\DB\DB;
+
 class ModelTree
 {
 
   /**
-   * @var
+   * @var string
    */
-  protected $tableName;
+  protected $tableName = "";
 
   /**
    * @param string|null $tableName
@@ -165,5 +167,21 @@ class ModelTree
         if ($key && $value) $sql->where($key, $value);
       }, array_keys($where), array_values($where));
     }
+  }
+
+  /**
+   * @return string
+   */
+  public function getTableName(): string
+  {
+    return $this->tableName;
+  }
+
+  /**
+   * @param string $tableName
+   */
+  public function setTableName(string $tableName): void
+  {
+    $this->tableName = $tableName;
   }
 }
