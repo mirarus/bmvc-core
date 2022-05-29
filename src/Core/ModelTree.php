@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.0
+ * @version 0.2
  */
 
 namespace BMVC\Core;
@@ -160,7 +160,7 @@ class ModelTree
    * @param array|null $where
    * @return void
    */
-  private function _where(&$sql, array $where = null)
+  public function _where(&$sql, array $where = null)
   {
     if ($sql && $where) {
       array_map(function ($key, $value) use ($sql) {
