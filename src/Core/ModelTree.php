@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.2
+ * @version 0.3
  */
 
 namespace BMVC\Core;
@@ -65,7 +65,7 @@ class ModelTree
    */
   public function wget($where, bool $all = false): array
   {
-    $sql = Model::DB()->from($this->tableName);
+    $sql = $this->DB()->from($this->tableName);
 
     $this->_where($sql, $where);
 
@@ -78,7 +78,7 @@ class ModelTree
    */
   public function add(array $data): bool
   {
-    return Model::DB()
+    return $this->DB()
       ->insert($this->tableName)
       ->set(array_merge($data, [
         'time' => time()
@@ -103,7 +103,7 @@ class ModelTree
    */
   public function wedit($where, array $data): bool
   {
-    $sql = Model::DB()->update($this->tableName);
+    $sql = $this->DB()->update($this->tableName);
     $this->_where($sql, $where);
 
     return $sql->set(array_merge($data, [
@@ -127,7 +127,7 @@ class ModelTree
    */
   public function wdelete($where): bool
   {
-    $sql = Model::DB()->delete($this->tableName);
+    $sql = $this->DB()->delete($this->tableName);
     $this->_where($sql, $where);
 
     return $sql->done();
@@ -149,7 +149,7 @@ class ModelTree
    */
   public function wcount($where): int
   {
-    $sql = Model::DB()->from($this->tableName);
+    $sql = $this->DB()->from($this->tableName);
     $this->_where($sql, $where);
 
     return $sql->rowCount();
@@ -183,5 +183,17 @@ class ModelTree
   public function setTableName(string $tableName): void
   {
     $this->tableName = $tableName;
+  }
+
+  /**
+   * @param string $method
+   * @param array $parameters
+   * @return mixed
+   */
+  public static function __callStatic(string $method, array $parameters)
+  {
+    $class = get_called_class();
+    $method = array_pop(explode('_', $method));
+    return (new $class)->$method(...$parameters);
   }
 }
