@@ -8,14 +8,14 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.3
+ * @version 0.4
  */
 
 namespace BMVC\Core;
 
 use Mirarus\DB\DB;
 
-class ModelTree
+abstract class ModelTree
 {
 
   /**
@@ -61,9 +61,9 @@ class ModelTree
   /**
    * @param $where
    * @param bool $all
-   * @return array
+   * @return mixed
    */
-  public function wget($where, bool $all = false): array
+  public function wget($where, bool $all = false)
   {
     $sql = $this->DB()->from($this->tableName);
 
@@ -136,23 +136,23 @@ class ModelTree
   /**
    * @param string|null $key
    * @param $val
-   * @return int
+   * @return mixed
    */
-  public function count(string $key = null, $val = null): int
+  public function count(string $key = null, $val = null)
   {
     return $this->wcount(($val ? [($key ? $key : 'id') => $val] : null));
   }
 
   /**
    * @param $where
-   * @return int
+   * @return mixed
    */
-  public function wcount($where): int
+  public function wcount($where)
   {
     $sql = $this->DB()->from($this->tableName);
     $this->_where($sql, $where);
 
-    return $sql->rowCount();
+    return $sql->rowCount() ?: false;
   }
 
   /**
@@ -193,7 +193,8 @@ class ModelTree
   public static function __callStatic(string $method, array $parameters)
   {
     $class = get_called_class();
-    $method = array_pop(explode('_', $method));
+    $array = explode('_', $method);
+    $method = array_pop($array);
     return (new $class)->$method(...$parameters);
   }
 }
