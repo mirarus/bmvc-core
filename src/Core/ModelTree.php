@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.5
+ * @version 0.6
  */
 
 namespace BMVC\Core;
@@ -74,9 +74,9 @@ abstract class ModelTree
 
   /**
    * @param array $data
-   * @return bool
+   * @return int
    */
-  public function add(array $data): bool
+  public function add(array $data): int
   {
     return $this->DB()
       ->insert($this->tableName)
@@ -136,23 +136,23 @@ abstract class ModelTree
   /**
    * @param string|null $key
    * @param $val
-   * @return mixed
+   * @return int
    */
-  public function count(string $key = null, $val = null)
+  public function count(string $key = null, $val = null): int
   {
     return $this->wcount(($val ? [($key ? $key : 'id') => $val] : null));
   }
 
   /**
    * @param $where
-   * @return mixed
+   * @return int
    */
-  public function wcount($where)
+  public function wcount($where): int
   {
     $sql = $this->DB()->from($this->tableName);
     $this->_where($sql, $where);
 
-    return $sql->rowCount() ?: false;
+    return $sql->rowCount();
   }
 
   /**
