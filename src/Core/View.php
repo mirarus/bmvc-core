@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.8
+ * @version 6.9
  */
 
 namespace BMVC\Core;
@@ -112,6 +112,7 @@ final class View
   {
     $data = array_merge((array)$data, self::$data);
     @extract((array)$data);
+    @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
     $_ns = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
@@ -156,6 +157,7 @@ final class View
   {
     $data = array_merge((array)$data, self::$data);
     @extract((array)$data);
+    @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
     $view = null;
@@ -254,6 +256,7 @@ final class View
   private static function _import($action, $data = null, &$return = null)
   {
     @extract((string)$data);
+    @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
     if (@is_string($action)) {
@@ -299,6 +302,7 @@ final class View
   private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
   {
     @extract((array)$data);
+    @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
     $_ns = (self::$namespace . $view);
@@ -338,6 +342,7 @@ final class View
   private static function _engineBLADE(string $view = null, string $namespace = null, $data = null, &$return = null): string
   {
     @extract((array)$data);
+    @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
     return $return = (new Blade(FS::app(self::$namespace), self::_cache_dir($namespace)))->make((string)$view, (array)$data)->render();
