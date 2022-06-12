@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.9
+ * @version 7.0
  */
 
 namespace BMVC\Core;
@@ -16,7 +16,6 @@ namespace BMVC\Core;
 use Exception;
 use Closure;
 use BMVC\Libs\FS;
-use Jenssegers\Blade\Blade;
 
 final class View
 {
@@ -82,26 +81,6 @@ final class View
   }
 
   /**
-   * @param array $data
-   * @return static
-   */
-  public static function data(array $data): self
-  {
-    self::$data = $data;
-    return new self;
-  }
-
-  /**
-   * @param string $extension
-   * @return static
-   */
-  public static function extension(string $extension = 'php'): self
-  {
-    self::$extension = $extension;
-    return new self;
-  }
-
-  /**
    * @param Closure $callback
    * @param $data
    * @param bool $render
@@ -153,7 +132,7 @@ final class View
    * @return View|void
    * @throws Exception
    */
-  public static function load($action, $data = [], bool $layout = false, bool $render = true)
+  public static function load($action, $data = null, bool $layout = false, bool $render = true)
   {
     $data = array_merge((array)$data, self::$data);
     @extract((array)$data);
@@ -255,7 +234,9 @@ final class View
    */
   private static function _import($action, $data = null, &$return = null)
   {
-    @extract((string)$data);
+    $data = array_merge((array)$data, self::$data);
+
+    @extract($data);
     @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
 
@@ -301,10 +282,6 @@ final class View
    */
   private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
   {
-    @extract((array)$data);
-    @$GLOBALS['view'] = $data;
-    @$_REQUEST['vd'] = $data;
-
     $_ns = (self::$namespace . $view);
     $file = FS::app($_ns . '.' . self::$extension);
 
@@ -341,11 +318,7 @@ final class View
    */
   private static function _engineBLADE(string $view = null, string $namespace = null, $data = null, &$return = null): string
   {
-    @extract((array)$data);
-    @$GLOBALS['view'] = $data;
-    @$_REQUEST['vd'] = $data;
-
-    return $return = (new Blade(FS::app(self::$namespace), self::_cache_dir($namespace)))->make((string)$view, (array)$data)->render();
+    return $return = (new \Jenssegers\Blade\Blade(FS::app(self::$namespace), self::_cache_dir($namespace)))->make((string)$view, (array)$data)->render();
   }
 
   /**
@@ -387,5 +360,38 @@ final class View
       return $_file;
     }
     return $file;
+  }
+
+  /**
+   * @param $index
+   * @return mixed
+   */
+  public static function getData($index = null)
+  {
+    return $index ? self::$data[$index] : self::$data;
+  }
+
+  /**
+   * @param array $data
+   */
+  public static function setData(array $data): void
+  {
+    self::$data = $data;
+  }
+
+  /**
+   * @return string
+   */
+  public static function getExtension(): string
+  {
+    return self::$extension;
+  }
+
+  /**
+   * @param string $extension
+   */
+  public static function setExtension(string $extension): void
+  {
+    self::$extension = $extension;
   }
 }

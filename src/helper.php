@@ -52,7 +52,6 @@ function refresh()
   return Util::refresh(...func_get_args());
 }
 
-
 /**
  * @return void
  */
@@ -61,7 +60,15 @@ function getErrors()
   return Route::getErrors(...func_get_args());
 }
 
-if (function_exists('_')) {
+/**
+ * @return void
+ */
+function getViewData()
+{
+  return \BMVC\Core\View::getData(...func_get_args());
+}
+
+if (!function_exists('_')) {
   function _()
   {
     return func_get_arg(0);
