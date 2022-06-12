@@ -15,6 +15,7 @@
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"ext-intl" : "*",
+		"ext-gettext": "*",
 		"mirarus/db": "0.*",
 		"mirarus/bmvc-libs": "0.*",
 		"mirarus/bmvc-exception": "0.*",
