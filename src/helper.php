@@ -52,9 +52,6 @@ function refresh()
   return Util::refresh(...func_get_args());
 }
 
-/**
- * @return void
- */
 function getErrors()
 {
   return Route::getErrors(...func_get_args());
