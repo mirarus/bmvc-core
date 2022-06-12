@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.5
+ * @version 9.6
  */
 
 namespace BMVC\Core;
@@ -69,6 +69,11 @@ final class App
   /**
    * @var
    */
+  public static $locale;
+
+  /**
+   * @var
+   */
   public static $environment;
 
   /**
@@ -100,13 +105,14 @@ final class App
 
     self::$_microtime = microtime(true);
 
-    self::initDotenv();
-    self::initDefine();
-    self::initHeader();
-    self::initSession();
-    self::initWhoops($data);
-    self::initData($data);
-    self::initMonolog();
+    self::init_Dotenv();
+    self::init_Define();
+    self::init_Header();
+    self::init_Session();
+    self::init_Whoops($data);
+    self::init_Data($data);
+    self::init_Monolog();
+    self::init_i18n();
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -124,7 +130,7 @@ final class App
       View::namespace((@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']));
     }
 
-    self::initRoute();
+    self::init_Route();
 
     self::$active = true;
   }
@@ -200,7 +206,7 @@ final class App
   /**
    * @return void
    */
-  private static function initDotenv(): void
+  private static function init_Dotenv(): void
   {
     $dotenv = Dotenv::createImmutable(FS::app());
     $dotenv->safeLoad();
@@ -210,7 +216,7 @@ final class App
   /**
    * @return void
    */
-  private static function initDefine(): void
+  private static function init_Define(): void
   {
     # URL
     self::$url = Util::base_url();
@@ -223,7 +229,6 @@ final class App
     # TIMEZONE
     self::$timezone = ((isset($_ENV['TIMEZONE']) && $_ENV['TIMEZONE'] != null) ? $_ENV['TIMEZONE'] : 'Europe/Istanbul');
     @define('TIMEZONE', self::$timezone);
-
     @date_default_timezone_set(self::$timezone);
 
     # ENVIRONMENT
@@ -256,7 +261,7 @@ final class App
   /**
    * @return void
    */
-  private static function initHeader(): void
+  private static function init_Header(): void
   {
     @header_remove();
     @header('Date: ' . date('D, d M Y H:i:s') . ' GMT');
@@ -272,7 +277,7 @@ final class App
   /**
    * @return void
    */
-  private static function initSession(): void
+  private static function init_Session(): void
   {
     if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
       @ini_set('session.use_only_cookies', '1');
@@ -292,7 +297,7 @@ final class App
    * @param array $data
    * @return void
    */
-  private static function initWhoops(array $data = []): void
+  private static function init_Whoops(array $data = []): void
   {
     $blacklist = array_keys($_ENV);
 
@@ -314,7 +319,7 @@ final class App
    * @param array $data
    * @return void
    */
-  private static function initData(array $data = []): void
+  private static function init_Data(array $data = []): void
   {
     if ($data != null) {
       # File Import
@@ -340,7 +345,7 @@ final class App
   /**
    * @return void
    */
-  private static function initMonolog(): void
+  private static function init_Monolog(): void
   {
     //Monolog::init();
 
@@ -354,26 +359,34 @@ final class App
   /**
    * @return void
    */
-  private static function _routes(): void
+  private static function init_i18n(): void
   {
-    Route::match(['GET', 'POST'], 'route/:all', function ($url) {
-      $_url = Route::url($url);
-      if ($_url) {
-        if (Request::get('return')) {
-          url($_url);
-        } else {
-          url($_url, true);
-        }
-      } else {
-        Route::getErrors(404);
-      }
-    });
+    if (isset($_GET['locale'])) {
+      $locale = $_GET['locale'];
+      setcookie('locale', $locale);
+    } elseif (isset($_COOKIE['locale'])) {
+      $locale = $_COOKIE['locale'];
+    } elseif (isset($_ENV['LOCALE'])) {
+      $locale = $_ENV['LOCALE'];
+    } else {
+      $locale = 'en_US';
+    }
+
+    self::$locale = $locale;
+
+    putenv("LC_ALL=$locale");
+    putenv("LANGUAGE=$locale");
+    putenv("LANG=$locale");
+    setlocale(LC_ALL, (($locale == 'tr_TR') ? 'tr_tr' : $locale) . '.UTF-8');
+    textdomain($locale);
+    bindtextdomain($locale, FS::app('Locales'));
+    bind_textdomain_codeset($locale, 'UTF-8');
   }
 
   /**
    * @return void
    */
-  private static function initRoute(): void
+  private static function init_Route(): void
   {
     if (@$_ENV['PUBLIC_DIR'] && strpos((string)Request::server('REQUEST_URI'), @$_ENV['PUBLIC_DIR'])) {
       redirect(strstr((string)Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
@@ -413,5 +426,20 @@ final class App
     } else {
       Route::getErrors(404);
     }
+  }
+
+  /**
+   * @return void
+   */
+  private static function _routes(): void
+  {
+    Route::match(['GET', 'POST'], 'route/:all', function ($url) {
+      $_url = Route::url($url);
+      if ($_url) {
+        url($_url, (bool)!Request::get('return'));
+      } else {
+        Route::getErrors(404);
+      }
+    });
   }
 }
