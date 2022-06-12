@@ -60,9 +60,6 @@ function getErrors()
   return Route::getErrors(...func_get_args());
 }
 
-/**
- * @return void
- */
 function getViewData()
 {
   return \BMVC\Core\View::getData(...func_get_args());
