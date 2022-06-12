@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.7
+ * @version 9.8
  */
 
 namespace BMVC\Core;
@@ -361,10 +361,10 @@ final class App
    */
   private static function init_i18n(): void
   {
-    if (isset($_GET['locale'])) {
+    if (isset($_GET['locale']) && in_array($_GET['locale'], self::locales()['locales'])) {
       $locale = $_GET['locale'];
       setcookie('locale', $locale);
-    } elseif (isset($_COOKIE['locale'])) {
+    } elseif (isset($_COOKIE['locale']) && in_array($_COOKIE['locale'], self::locales()['locales'])) {
       $locale = $_COOKIE['locale'];
     } elseif (isset($_ENV['LOCALE'])) {
       $locale = $_ENV['LOCALE'];
@@ -385,6 +385,21 @@ final class App
 
     bindtextdomain('system', FS::base('Locales'));
     bind_textdomain_codeset('system', 'UTF-8');
+  }
+
+  /**
+   * @return mixed
+   */
+  public static function locales($index = null)
+  {
+    $arr = [];
+    if (FS::directories(FS::app('Locales'))) {
+      $arr = [
+        'locale' => self::$locale,
+        'locales' => FS::directories(FS::app('Locales'))
+      ];
+    }
+    return $index ? $arr[$index] : $arr;
   }
 
   /**
