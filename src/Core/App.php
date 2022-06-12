@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.6
+ * @version 9.7
  */
 
 namespace BMVC\Core;
@@ -377,10 +377,14 @@ final class App
     putenv("LC_ALL=$locale");
     putenv("LANGUAGE=$locale");
     putenv("LANG=$locale");
-    setlocale(LC_ALL, (($locale == 'tr_TR') ? 'tr_tr' : $locale) . '.UTF-8');
-    textdomain($locale);
+    setlocale(LC_MESSAGES, $locale . '.UTF-8');
+    setlocale(LC_TIME, (($locale == 'tr_TR') ? 'tr_tr' : $locale) . '.UTF-8');
     bindtextdomain($locale, FS::app('Locales'));
     bind_textdomain_codeset($locale, 'UTF-8');
+    textdomain($locale);
+
+    bindtextdomain('system', FS::base('Locales'));
+    bind_textdomain_codeset('system', 'UTF-8');
   }
 
   /**

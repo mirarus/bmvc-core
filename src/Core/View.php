@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.0
+ * @version 7.1
  */
 
 namespace BMVC\Core;
@@ -89,7 +89,7 @@ final class View
    */
   public static function layout(Closure $callback, $data = null, bool $render = true)
   {
-    $data = array_merge((array)$data, self::$data);
+    $data = self::$data = array_merge((array)$data, self::$data);
     @extract((array)$data);
     @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
@@ -134,7 +134,7 @@ final class View
    */
   public static function load($action, $data = null, bool $layout = false, bool $render = true)
   {
-    $data = array_merge((array)$data, self::$data);
+    $data = self::$data = array_merge((array)$data, self::$data);
     @extract((array)$data);
     @$GLOBALS['view'] = $data;
     @$_REQUEST['vd'] = $data;
