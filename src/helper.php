@@ -9,7 +9,7 @@ FS::setPath(__DIR__);
  */
 function url(): ?string
 {
-	return Util::url(...func_get_args());
+  return Util::url(...func_get_args());
 }
 
 /**
@@ -17,7 +17,7 @@ function url(): ?string
  */
 function page(): ?string
 {
-	return Util::page_url();
+  return Util::page_url();
 }
 
 /**
@@ -25,7 +25,7 @@ function page(): ?string
  */
 function pr()
 {
-	return Util::pr(...func_get_args());
+  return Util::pr(...func_get_args());
 }
 
 /**
@@ -33,7 +33,7 @@ function pr()
  */
 function dump()
 {
-	return Util::dump(...func_get_args());
+  return Util::dump(...func_get_args());
 }
 
 /**
@@ -41,7 +41,7 @@ function dump()
  */
 function redirect()
 {
-	return Util::redirect(...func_get_args());
+  return Util::redirect(...func_get_args());
 }
 
 /**
@@ -49,7 +49,7 @@ function redirect()
  */
 function refresh()
 {
-	return Util::refresh(...func_get_args());
+  return Util::refresh(...func_get_args());
 }
 
 
@@ -59,4 +59,11 @@ function refresh()
 function getErrors()
 {
   return Route::getErrors(...func_get_args());
+}
+
+if (function_exists('_')) {
+  function _()
+  {
+    return func_get_arg(0);
+  }
 }
