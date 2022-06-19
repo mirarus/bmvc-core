@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 7.2
+ * @version 7.3
  */
 
 namespace BMVC\Core;
@@ -51,6 +51,11 @@ final class View
   private static $content;
 
   /**
+   * @var
+   */
+  private static $page_content;
+
+  /**
    * @var string[]
    */
   private static $separators = ['@', '/', '.', '::', ':'];
@@ -83,16 +88,12 @@ final class View
   /**
    * @param Closure $callback
    * @param $data
-   * @param bool $render
-   * @return View|void
+   * @return void
    * @throws Exception
    */
-  public static function layout(Closure $callback, $data = null, bool $render = true)
+  public static function layout(Closure $callback, $data = null)
   {
-    $data = self::$data = array_merge((array)$data, self::$data);
-    @extract((array)$data);
-    @$GLOBALS['view'] = $data;
-    @$_REQUEST['vd'] = $data;
+    self::_data($data);
 
     $_ns = @array_key_exists('namespace', $data) ? $data['namespace'] : null;
     $_ns = FS::implode([FS::trim(self::$namespace), FS::trim(FS::implode([FS::trim($_ns), 'Layout', 'Main']))]);
@@ -100,25 +101,15 @@ final class View
 
     if (file_exists($file)) {
 
-      $content = call_user_func($callback);
+      self::$page_content = $content = call_user_func($callback);
 
       ob_start();
       require_once $file;
       $ob_content = ob_get_contents();
       ob_end_clean();
 
-      # Replace
-      if (isset($data['page_title'])) {
-        $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-      }
-
-      self::$content = $ob_content;
-
-      if ($render) {
-        echo self::$content;
-      } else {
-        return new self;
-      }
+      self::_replace($data, $ob_content);
+      echo self::$content = $ob_content;
     } else {
       throw new Exception('Layout [' . @str_replace([FS::app()], "", $file) . '] Not Found');
     }
@@ -128,16 +119,12 @@ final class View
    * @param $action
    * @param $data
    * @param bool $layout
-   * @param bool $render
-   * @return View|void
+   * @return void
    * @throws Exception
    */
-  public static function load($action, $data = null, bool $layout = false, bool $render = true)
+  public static function load($action, $data = null, bool $layout = false)
   {
-    $data = self::$data = array_merge((array)$data, self::$data);
-    @extract((array)$data);
-    @$GLOBALS['view'] = $data;
-    @$_REQUEST['vd'] = $data;
+    self::_data($data);
 
     $view = null;
 
@@ -175,53 +162,20 @@ final class View
 
       if (file_exists($file)) {
 
-        $content = ($view != null ? self::_import([$namespace, $view], $data, $return) : null);
+        self::$page_content = $content = ($view != null ? self::_import([$namespace, $view], $data, $return) : null);
 
         ob_start();
         require_once $file;
         $ob_content = ob_get_contents();
         ob_end_clean();
 
-        # Replace
-        if (isset($data['page_title'])) {
-          $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-        }
-
-        self::$content = $ob_content;
-
-        if ($render) {
-          echo self::$content;
-        } else {
-          return new self;
-        }
+        self::_replace($data, $ob_content);
+        echo self::$content = $ob_content;
       } else {
         throw new Exception('View Error! | [' . @str_replace([FS::app()], "", $file) . '] Not Found');
       }
     } else {
-
-      self::$content = self::_import([$namespace, $view], $data, $return);
-
-      if ($render) {
-        echo self::$content;
-      } else {
-        return new self;
-      }
-    }
-  }
-
-  /**
-   * @param bool $return
-   * @param $print
-   * @return mixed|void
-   */
-  public static function render(bool $return = false, &$print = null)
-  {
-    if (@self::$content) {
-      if ($return) {
-        return $print = self::$content;
-      } else {
-        echo $print = self::$content;
-      }
+      echo self::$content = self::_import([$namespace, $view], $data, $return);
     }
   }
 
@@ -234,11 +188,7 @@ final class View
    */
   private static function _import($action, $data = null, &$return = null)
   {
-    $data = array_merge((array)$data, self::$data);
-
-    @extract($data);
-    @$GLOBALS['view'] = $data;
-    @$_REQUEST['vd'] = $data;
+    self::_data($data);
 
     if (@is_string($action)) {
       if (self::$separators != null) {
@@ -277,7 +227,7 @@ final class View
    * @param string|null $namespace
    * @param $data
    * @param $return
-   * @return array|false|string|string[]|null
+   * @return false|string
    * @throws Exception
    */
   private static function _enginePHP(string $view = null, string $namespace = null, $data = null, &$return = null)
@@ -298,11 +248,7 @@ final class View
       $ob_content = ob_get_contents();
       ob_end_clean();
 
-      # Replace
-      if (isset($data['page_title'])) {
-        $ob_content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $ob_content);
-      }
-
+      self::_replace($data, $ob_content);
       return $return = $ob_content;
     } else {
       throw new Exception('View Error! | [' . @str_replace([FS::app()], "", $file) . '] Not Found');
@@ -363,6 +309,56 @@ final class View
   }
 
   /**
+   * @param $action
+   */
+  private static function _separator($action)
+  {
+    $view = null;
+
+    if (@is_string($action)) {
+      if (self::$separators != null) {
+        foreach (self::$separators as $separator) {
+          if (@is_string($action)) {
+            if (@strstr($action, $separator)) {
+              $action = @explode($separator, $action);
+            }
+          }
+        }
+      }
+    }
+
+    if (@is_array($action) && count($action) > 1) {
+      $view = @array_pop($action);
+    } elseif (@is_string($action)) {
+      $view = $action;
+    }
+
+    return $view;
+  }
+
+  /**
+   * @param $data
+   * @param $content
+   */
+  private static function _replace($data, &$content): void
+  {
+    if (isset($data['page_title'])) {
+      $content = preg_replace('/(<title>)(.*?)(<\/title>)/i', '$1' . (empty($data['page_title']) ? '$2' : $data['page_title'] . ' | $2') . '$3', $content);
+    }
+  }
+
+  /**
+   * @param array $data
+   */
+  private static function _data(array &$data)
+  {
+    self::$data = $data = (array)array_merge($data, self::$data);
+    @extract($data);
+    @$GLOBALS['view'] = $data;
+    @$_REQUEST['view'] = $data;
+  }
+
+  /**
    * @param $index
    * @return mixed
    */
@@ -393,5 +389,21 @@ final class View
   public static function setExtension(string $extension): void
   {
     self::$extension = $extension;
+  }
+
+  /**
+   * @return string
+   */
+  public static function getPageContent(): string
+  {
+    return self::$page_content;
+  }
+
+  /**
+   * @return string
+   */
+  public function __toString(): string
+  {
+    return self::getPageContent();
   }
 }
