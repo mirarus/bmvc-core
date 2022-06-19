@@ -62,6 +62,11 @@ function getViewData()
   return \BMVC\Core\View::getData(...func_get_args());
 }
 
+function getViewContent()
+{
+  return \BMVC\Core\View::getContent();
+}
+
 function locales()
 {
   return \BMVC\Core\App::locales(...func_get_args());
