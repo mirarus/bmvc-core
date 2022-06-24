@@ -18,9 +18,7 @@
 		"ext-gettext": "*",
 		"mirarus/db": "0.*",
 		"mirarus/bmvc-libs": "0.*",
-		"mirarus/bmvc-exception": "0.*",
-		"vlucas/phpdotenv": "^5.3",
-		"jenssegers/blade": "^1.4"
+		"vlucas/phpdotenv": "^5.3"
 	},
 	"autoload": {
 		"psr-4": {
