@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.9
+ * @version 9.10
  */
 
 namespace BMVC\Core;
@@ -82,8 +82,7 @@ final class App
   public static $namespaces = [
     'controller' => null,
     'middleware' => null,
-    'model' => null,
-    'view' => null
+    'model' => null
   ];
 
   /**
@@ -125,9 +124,6 @@ final class App
     }
     if (@self::$namespaces['model']) {
       Model::namespace(@self::$namespaces['model']);
-    }
-    if (@self::$namespaces['view'] || @$_ENV['VIEW_DIR']) {
-      View::namespace((@self::$namespaces['view'] ? self::$namespaces['view'] : @$_ENV['VIEW_DIR']));
     }
 
     self::init_Route();
