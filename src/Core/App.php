@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.10
+ * @version 9.11
  */
 
 namespace BMVC\Core;
@@ -70,6 +70,11 @@ final class App
    * @var
    */
   public static $locale;
+
+  /**
+   * @var
+   */
+  public static $activeLocale;
 
   /**
    * @var
@@ -364,11 +369,13 @@ final class App
       $locale = $_COOKIE['locale'];
     } elseif (isset($_ENV['LOCALE'])) {
       $locale = $_ENV['LOCALE'];
+    } elseif (isset(self::$locale)) {
+      $locale = self::$locale;
     } else {
       $locale = 'en_US';
     }
 
-    self::$locale = $locale;
+    self::$activeLocale = $locale;
 
     putenv("LC_ALL=$locale");
     putenv("LANGUAGE=$locale");
@@ -390,7 +397,7 @@ final class App
     $arr = [];
     if (FS::directories(FS::app('Locales'))) {
       $arr = [
-        'locale' => self::$locale,
+        'locale' => self::$activeLocale,
         'locales' => FS::directories(FS::app('Locales'))
       ];
     }
