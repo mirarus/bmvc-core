@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.12
+ * @version 9.13
  */
 
 namespace BMVC\Core;
@@ -95,15 +95,6 @@ final class App
    * @return void
    */
   public static function init(array $data = []): void
-  {
-    self::Run($data);
-  }
-
-  /**
-   * @param array $data
-   * @return void
-   */
-  public static function Run(array $data = []): void
   {
     if (self::$active) return;
 
