@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.6
+ * @version 0.7
  */
 
 namespace BMVC\Core;
@@ -70,6 +70,14 @@ abstract class ModelTree
     $this->_where($sql, $where);
 
     return $all ? $sql->all() : $sql->first();
+  }
+
+  /**
+   * @return mixed
+   */
+  public function all()
+  {
+    return $this->wget([], true);
   }
 
   /**
