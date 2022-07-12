@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.7
+ * @version 0.8
  */
 
 namespace BMVC\Core;
@@ -101,7 +101,10 @@ abstract class ModelTree
    */
   public function edit(string $key, $val, array $data): bool
   {
-    return $this->wedit([$key => $val], $data);
+    if ($this->wget([$key => $val])) {
+      return $this->wedit([$key => $val], $data);
+    }
+    return false;
   }
 
   /**
@@ -126,7 +129,10 @@ abstract class ModelTree
    */
   public function delete(string $key, $val): bool
   {
-    return $this->wdelete([$key => $val]);
+    if ($this->wget([$key => $val])) {
+      return $this->wdelete([$key => $val]);
+    }
+    return false;
   }
 
   /**
