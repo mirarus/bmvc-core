@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.17
+ * @version 9.18
  */
 
 namespace BMVC\Core;
@@ -362,6 +362,8 @@ final class App
       $locale = $_ENV['LOCALE'];
     } elseif (isset(self::$locale) && in_array(self::$locale, self::locales('locales'))) {
       $locale = self::$locale;
+    } elseif (class_exists('Locale') && \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']) && in_array(\Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']), self::locales('locales'))) {
+      $locale = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
     } else {
       $locale = 'en_US';
     }
