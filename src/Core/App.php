@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.13
+ * @version 9.14
  */
 
 namespace BMVC\Core;
@@ -385,13 +385,17 @@ final class App
    */
   public static function locales($index = null)
   {
-    $arr = [];
-    if (FS::directories(FS::app('Locales'))) {
-      $arr = [
-        'locale' => self::$activeLocale,
-        'locales' => FS::directories(FS::app('Locales'))
-      ];
-    }
+    $httpLocales = array_reduce(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']), function ($res, $el) {
+      $res[] = str_replace('-', '_', array_merge(explode(';q=', $el), [1])[0]);
+      return $res;
+    }, []);
+    $locales = array_intersect(FS::directories(FS::app('Locales')), $httpLocales);
+
+    $arr = ($locales ? [
+      'locale' => self::$activeLocale,
+      'locales' => $locales
+    ] : []);
+
     return $index ? $arr[$index] : $arr;
   }
 
