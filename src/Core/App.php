@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.16
+ * @version 9.17
  */
 
 namespace BMVC\Core;
@@ -393,8 +393,9 @@ final class App
   {
     $dirLocales = FS::directories(FS::app('Locales'));
 
-    $unixLocales = array_reduce(explode('.utf8' . "\n", trim(shell_exec("locale -a|grep .utf8"))), function ($res, $el) {
-      $res[] = str_replace('.utf8', null, $el);
+    $shell = trim(shell_exec("locale -a|grep .utf8"));
+    $unixLocales = array_reduce(($shell ? explode('.utf8' . "\n", $shell) : []), function ($res, $el) {
+      $res[] = trim(str_replace('.utf8', null, $el));
       return $res;
     }, []);
 
