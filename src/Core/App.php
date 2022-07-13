@@ -342,7 +342,7 @@ final class App
     if (@$_ENV['LOG']) Monolog::init();
 
     if (@$_ENV['LOG'] && Monolog::$log) {
-      Whoops::$whoops->pushHandler(function ($exception, $inspector, $run) {
+      Whoops::$whoops->pushHandler(function ($exception) {
         Monolog::$log->error($exception);
       });
     }
@@ -403,7 +403,7 @@ final class App
     $arr = ($locales ? [
       'locale' => self::$activeLocale,
       'locales' => $locales,
-      'dir_locales' => $dirLocales,
+      'dir_locales' => $dirLocales
     ] : []);
 
     return $index ? $arr[$index] : $arr;
