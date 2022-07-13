@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.15
+ * @version 9.16
  */
 
 namespace BMVC\Core;
@@ -358,9 +358,9 @@ final class App
       setcookie('locale', $locale, 0, '/');
     } elseif (isset($_COOKIE['locale']) && in_array($_COOKIE['locale'], self::locales('locales'))) {
       $locale = $_COOKIE['locale'];
-    } elseif (isset($_ENV['LOCALE'])) {
+    } elseif (isset($_ENV['LOCALE']) && in_array($_ENV['LOCALE'], self::locales('locales'))) {
       $locale = $_ENV['LOCALE'];
-    } elseif (isset(self::$locale)) {
+    } elseif (isset(self::$locale) && in_array(self::$locale, self::locales('locales'))) {
       $locale = self::$locale;
     } else {
       $locale = 'en_US';
@@ -381,7 +381,6 @@ final class App
     bindtextdomain($locale, FS::app('Locales'));
     bind_textdomain_codeset($locale, 'UTF-8');
     textdomain($locale);
-    date_default_timezone_set("Europe/Istanbul");
 
     bindtextdomain('system', FS::base('Locales'));
     bind_textdomain_codeset('system', 'UTF-8');
@@ -392,17 +391,19 @@ final class App
    */
   public static function locales($index = null)
   {
-    $httpLocales = array_reduce(explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']), function ($res, $el) {
-      $res[] = str_replace('-', '_', array_merge(explode(';q=', $el), [1])[0]);
+    $dirLocales = FS::directories(FS::app('Locales'));
+
+    $unixLocales = array_reduce(explode('.utf8' . "\n", trim(shell_exec("locale -a|grep .utf8"))), function ($res, $el) {
+      $res[] = str_replace('.utf8', null, $el);
       return $res;
     }, []);
-    $unixLocales = (array) trim(explode('.utf8' . "\n", trim(shell_exec("locale -a|grep .utf8"))));
-    $locales = ($unixLocales ? array_intersect($httpLocales, $unixLocales) : $httpLocales);
-    $locales = array_intersect(FS::directories(FS::app('Locales')), $locales);
+
+    $locales = ($unixLocales ? array_intersect($dirLocales, $unixLocales) : $dirLocales);
 
     $arr = ($locales ? [
       'locale' => self::$activeLocale,
-      'locales' => $locales
+      'locales' => $locales,
+      'dir_locales' => $dirLocales,
     ] : []);
 
     return $index ? $arr[$index] : $arr;
