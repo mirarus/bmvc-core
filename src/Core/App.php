@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.14
+ * @version 9.15
  */
 
 namespace BMVC\Core;
@@ -371,10 +371,17 @@ final class App
     putenv("LC_ALL=$locale");
     putenv("LANGUAGE=$locale");
     putenv("LANG=$locale");
-    setlocale(LC_ALL, (($locale == 'tr_TR') ? 'tr_tr' : $locale) . '.UTF-8');
+
+    if ($locale == 'tr_TR') {
+      setlocale(LC_ALL, 'tr_TR.UTF-8', 'tr_TR', 'tr', 'turkish');
+    } else {
+      setlocale(LC_ALL, $locale . '.UTF-8');
+    }
+
     bindtextdomain($locale, FS::app('Locales'));
     bind_textdomain_codeset($locale, 'UTF-8');
     textdomain($locale);
+    date_default_timezone_set("Europe/Istanbul");
 
     bindtextdomain('system', FS::base('Locales'));
     bind_textdomain_codeset('system', 'UTF-8');
@@ -389,7 +396,9 @@ final class App
       $res[] = str_replace('-', '_', array_merge(explode(';q=', $el), [1])[0]);
       return $res;
     }, []);
-    $locales = array_intersect(FS::directories(FS::app('Locales')), $httpLocales);
+    $unixLocales = (array) trim(explode('.utf8' . "\n", trim(shell_exec("locale -a|grep .utf8"))));
+    $locales = ($unixLocales ? array_intersect($httpLocales, $unixLocales) : $httpLocales);
+    $locales = array_intersect(FS::directories(FS::app('Locales')), $locales);
 
     $arr = ($locales ? [
       'locale' => self::$activeLocale,
