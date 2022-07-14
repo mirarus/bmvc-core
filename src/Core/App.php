@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.20
+ * @version 9.21
  */
 
 namespace BMVC\Core;
@@ -356,6 +356,7 @@ final class App
     if (isset($_GET['locale']) && in_array($_GET['locale'], self::locales('locales'))) {
       $locale = $_GET['locale'];
       setcookie('locale', $locale, 0, '/');
+      redirect(url(self::$page));
     } elseif (isset($_COOKIE['locale']) && in_array($_COOKIE['locale'], self::locales('locales'))) {
       $locale = $_COOKIE['locale'];
     } elseif (isset(self::$locale) && in_array(self::$locale, self::locales('locales'))) {
