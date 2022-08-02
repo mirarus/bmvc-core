@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.21
+ * @version 9.22
  */
 
 namespace BMVC\Core;
@@ -369,24 +369,25 @@ final class App
       $locale = 'en_US';
     }
 
+    $codeset = "UTF8";
     self::$activeLocale = $locale;
 
-    putenv("LC_ALL=$locale");
-    putenv("LANGUAGE=$locale");
-    putenv("LANG=$locale");
+    putenv("LC_ALL=" . $locale . '.' . $codeset);
+    putenv("LANGUAGE=" . $locale . '.' . $codeset);
+    putenv("LANG=" . $locale . '.' . $codeset);
 
     if ($locale == 'tr_TR') {
-      setlocale(LC_ALL, 'tr_TR.UTF-8', 'tr_TR', 'tr', 'turkish');
+      $sl = setlocale(LC_ALL, 'tr_TR.' . $codeset, 'tr_TR', 'tr', 'turkish');
     } else {
-      setlocale(LC_ALL, $locale . '.UTF-8');
+      $sl = setlocale(LC_ALL, $locale . '.' . $codeset);
     }
 
     bindtextdomain($locale, FS::app('Locales'));
-    bind_textdomain_codeset($locale, 'UTF-8');
+    bind_textdomain_codeset($locale, $codeset);
     textdomain($locale);
 
     bindtextdomain('system', FS::base('Locales'));
-    bind_textdomain_codeset('system', 'UTF-8');
+    bind_textdomain_codeset('system', $codeset);
   }
 
   /**
