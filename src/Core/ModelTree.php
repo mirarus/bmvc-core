@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.8
+ * @version 0.9
  */
 
 namespace BMVC\Core;
@@ -43,17 +43,16 @@ abstract class ModelTree
    * @param string|null $key
    * @param $val
    * @param bool $all
-   * @param bool $status
    * @param string|null $sKey
    * @param int $sVal
    * @return mixed
    */
-  public function get(string $key = null, $val = null, bool $all = false, bool $status = false, string $sKey = null, int $sVal = 1)
+  public function get(string $key = null, $val = null, bool $all = false, string $sKey = null, int $sVal = 1)
   {
     $arr = [];
 
     if ($val) $arr = [($key ? $key : 'id') => $val];
-    if ($status) $arr = array_merge($arr, [($sKey ? $sKey : 'status') => $sVal]);
+    if ($sKey) $arr = array_merge($arr, [($sKey ? $sKey : 'status') => $sVal]);
 
     return $this->wget($arr, $all);
   }
@@ -63,11 +62,12 @@ abstract class ModelTree
    * @param bool $all
    * @return mixed
    */
-  public function wget($where, bool $all = false)
+  public function wget($where, bool $all = false, string $sortColumn = null, string $sortType = "ASC")
   {
     $sql = $this->DB()->from($this->tableName);
 
     $this->_where($sql, $where);
+    if ($sortColumn) $this->DB()->orderBy($sortColumn, $sortType);
 
     return $all ? $sql->all() : $sql->first();
   }
@@ -75,9 +75,9 @@ abstract class ModelTree
   /**
    * @return mixed
    */
-  public function all()
+  public function all(string $sortColumn = null, string $sortType = "ASC")
   {
-    return $this->wget([], true);
+    return $this->wget([], true, $sortColumn, $sortType);
   }
 
   /**
