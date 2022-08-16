@@ -60,6 +60,8 @@ abstract class ModelTree
   /**
    * @param $where
    * @param bool $all
+   * @param string|null $sortColumn
+   * @param string $sortType
    * @return mixed
    */
   public function wget($where, bool $all = false, string $sortColumn = null, string $sortType = "ASC")
@@ -73,6 +75,8 @@ abstract class ModelTree
   }
 
   /**
+   * @param string|null $sortColumn
+   * @param string $sortType
    * @return mixed
    */
   public function all(string $sortColumn = null, string $sortType = "ASC")
