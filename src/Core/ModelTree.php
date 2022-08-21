@@ -106,8 +106,7 @@ abstract class ModelTree
    */
   public function edit(string $key, $val, array $data): bool
   {
-    }
-    return false;
+    return $this->wedit([$key => $val], $data);
   }
 
   /**
