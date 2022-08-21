@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.22
+ * @version 9.23
  */
 
 namespace BMVC\Core;
@@ -323,7 +323,11 @@ final class App
       # Class Load
       if (isset($data['init'])) {
         foreach ($data['init'] as $init) {
-          new $init;
+          if (is_callable($init)) {
+            $init();
+          } else {
+            new $init;
+          }
         }
       }
     }

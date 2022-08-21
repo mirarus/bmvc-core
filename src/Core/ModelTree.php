@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.9
+ * @version 0.10
  */
 
 namespace BMVC\Core;
@@ -22,6 +22,11 @@ abstract class ModelTree
    * @var string
    */
   protected $tableName = "";
+
+  /**
+   * @var string
+   */
+  protected $whereMark = "=";
 
   /**
    * @param string|null $tableName
@@ -60,8 +65,6 @@ abstract class ModelTree
   /**
    * @param $where
    * @param bool $all
-   * @param string|null $sortColumn
-   * @param string $sortType
    * @return mixed
    */
   public function wget($where, bool $all = false, string $sortColumn = null, string $sortType = "ASC")
@@ -75,8 +78,6 @@ abstract class ModelTree
   }
 
   /**
-   * @param string|null $sortColumn
-   * @param string $sortType
    * @return mixed
    */
   public function all(string $sortColumn = null, string $sortType = "ASC")
@@ -105,8 +106,6 @@ abstract class ModelTree
    */
   public function edit(string $key, $val, array $data): bool
   {
-    if ($this->wget([$key => $val])) {
-      return $this->wedit([$key => $val], $data);
     }
     return false;
   }
@@ -118,12 +117,16 @@ abstract class ModelTree
    */
   public function wedit($where, array $data): bool
   {
-    $sql = $this->DB()->update($this->tableName);
-    $this->_where($sql, $where);
+    if ($this->wget($where)) {
 
-    return $sql->set(array_merge($data, [
-      'edit_time' => time()
-    ]));
+      $sql = $this->DB()->update($this->tableName);
+      $this->_where($sql, $where);
+
+      return $sql->set(array_merge($data, [
+        'edit_time' => time()
+      ]));
+    }
+    return false;
   }
 
   /**
@@ -133,10 +136,7 @@ abstract class ModelTree
    */
   public function delete(string $key, $val): bool
   {
-    if ($this->wget([$key => $val])) {
-      return $this->wdelete([$key => $val]);
-    }
-    return false;
+    return $this->wdelete([$key => $val]);
   }
 
   /**
@@ -145,10 +145,14 @@ abstract class ModelTree
    */
   public function wdelete($where): bool
   {
-    $sql = $this->DB()->delete($this->tableName);
-    $this->_where($sql, $where);
+    if ($this->wget($where)) {
 
-    return $sql->done();
+      $sql = $this->DB()->delete($this->tableName);
+      $this->_where($sql, $where);
+
+      return $sql->done();
+    }
+    return false;
   }
 
   /**
@@ -167,10 +171,14 @@ abstract class ModelTree
    */
   public function wcount($where): int
   {
-    $sql = $this->DB()->from($this->tableName);
-    $this->_where($sql, $where);
+    if ($this->wget($where)) {
 
-    return $sql->rowCount();
+      $sql = $this->DB()->from($this->tableName);
+      $this->_where($sql, $where);
+
+      return $sql->rowCount();
+    }
+    return false;
   }
 
   /**
@@ -182,7 +190,7 @@ abstract class ModelTree
   {
     if ($sql && $where) {
       array_map(function ($key, $value) use ($sql) {
-        if ($key && $value) $sql->where($key, $value);
+        if ($key && $value) $sql->where($key, $value, $this->whereMark);
       }, array_keys($where), array_values($where));
     }
   }
@@ -201,6 +209,22 @@ abstract class ModelTree
   public function setTableName(string $tableName): void
   {
     $this->tableName = $tableName;
+  }
+
+  /**
+   * @return string
+   */
+  public function getWhereMark(): string
+  {
+    return $this->whereMark;
+  }
+
+  /**
+   * @param string $whereMark
+   */
+  public function setWhereMark(string $whereMark = "="): void
+  {
+    $this->whereMark = $whereMark;
   }
 
   /**
