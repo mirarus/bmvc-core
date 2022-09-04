@@ -106,8 +106,8 @@ final class App
     self::init_Session();
     self::init_Whoops($data);
     self::init_Data($data);
-    self::init_Monolog();
-    self::init_i18n();
+    if (@$_ENV['LOG']) self::init_Monolog();
+    if (@$_ENV['I18N']) self::init_i18n();
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -343,14 +343,12 @@ final class App
    */
   private static function init_Monolog(): void
   {
-    if (@$_ENV['LOG']) {
-      Monolog::init();
+    Monolog::init();
 
-      if (Monolog::$log) {
-        Whoops::$whoops->pushHandler(function ($exception) {
-          Monolog::$log->error($exception);
-        });
-      }
+    if (Monolog::$log) {
+      Whoops::$whoops->pushHandler(function ($exception) {
+        Monolog::$log->error($exception);
+      });
     }
   }
 
