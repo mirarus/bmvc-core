@@ -106,8 +106,8 @@ final class App
     self::init_Session();
     self::init_Whoops($data);
     self::init_Data($data);
-    if (@$_ENV['LOG']) self::init_Monolog();
-    if (@$_ENV['I18N']) self::init_i18n();
+    if (isset($_ENV['LOG']) && $_ENV['LOG'] == "true") self::init_Monolog();
+    if (isset($_ENV['I18N']) && $_ENV['I18N'] == "true") self::init_i18n();
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
