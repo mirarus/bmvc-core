@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.23
+ * @version 9.24
  */
 
 namespace BMVC\Core;
@@ -343,12 +343,14 @@ final class App
    */
   private static function init_Monolog(): void
   {
-    if (@$_ENV['LOG']) Monolog::init();
+    if (@$_ENV['LOG']) {
+      Monolog::init();
 
-    if (@$_ENV['LOG'] && Monolog::$log) {
-      Whoops::$whoops->pushHandler(function ($exception) {
-        Monolog::$log->error($exception);
-      });
+      if (Monolog::$log) {
+        Whoops::$whoops->pushHandler(function ($exception) {
+          Monolog::$log->error($exception);
+        });
+      }
     }
   }
 
