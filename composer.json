@@ -9,7 +9,6 @@
 			"email": "aliguclutr@gmail.com"
 		}
 	],
-	"bin": ["bin/bmvc"],
 	"require": {
 		"php": "^7.3 || ^8.0",
 		"ext-json": "*",
