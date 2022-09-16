@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.24
+ * @version 9.25
  */
 
 namespace BMVC\Core;
@@ -357,6 +357,15 @@ final class App
    */
   private static function init_i18n(): void
   {
+    if (class_exists('\Locale') && \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+      $_locale = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+      if ($_locale == 'tr') {
+        $_locale = 'tr_TR';
+      } elseif ($_locale == 'en') {
+        $_locale = 'en_US';
+      }
+    }
+
     if (isset($_GET['locale']) && in_array($_GET['locale'], self::locales('locales'))) {
       $locale = $_GET['locale'];
       setcookie('locale', $locale, 0, '/');
@@ -365,13 +374,15 @@ final class App
       $locale = $_COOKIE['locale'];
     } elseif (isset(self::$locale) && in_array(self::$locale, self::locales('locales'))) {
       $locale = self::$locale;
-    } elseif (class_exists('Locale') && \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']) && in_array(\Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']), self::locales('locales'))) {
-      $locale = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+    } elseif (isset($_locale) && in_array($_locale, self::locales('locales'))) {
+      $locale = $_locale;
     } elseif (isset($_ENV['LOCALE']) && in_array($_ENV['LOCALE'], self::locales('locales'))) {
       $locale = $_ENV['LOCALE'];
     } else {
       $locale = 'en_US';
     }
+    var_dump($locale);
+    var_dump($_locale);
 
     $codeset = "UTF8";
     self::$activeLocale = $locale;
