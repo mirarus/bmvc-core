@@ -381,8 +381,6 @@ final class App
     } else {
       $locale = 'en_US';
     }
-    var_dump($locale);
-    var_dump($_locale);
 
     $codeset = "UTF8";
     self::$activeLocale = $locale;
