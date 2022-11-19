@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.25
+ * @version 9.26
  */
 
 namespace BMVC\Core;
@@ -100,6 +100,10 @@ final class App
 
     self::$_microtime = microtime(true);
 
+    Route::args([
+      'namespace' => @self::$namespaces['controller']
+    ]);
+    
     self::init_Dotenv();
     self::init_Define();
     self::init_Header();
@@ -121,7 +125,7 @@ final class App
     if (@self::$namespaces['model']) {
       Model::namespace(@self::$namespaces['model']);
     }
-
+    
     self::init_Route();
 
     self::$active = true;

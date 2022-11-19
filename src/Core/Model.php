@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 6.0
+ * @version 6.1
  */
 
 namespace BMVC\Core;
@@ -66,17 +66,5 @@ final class Model
         return new DB($connect);
       }
     }
-  }
-
-  /**
-   * @param string $class
-   * @param object|null $return
-   * @return mixed
-   */
-  public static function import(string $class, object &$return = null)
-  {
-    self::get($class, $get);
-
-    return $return = @$get['cls'];
   }
 }

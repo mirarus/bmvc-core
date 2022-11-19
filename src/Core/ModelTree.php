@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 0.10
+ * @version 0.11
  */
 
 namespace BMVC\Core;
@@ -87,43 +87,46 @@ abstract class ModelTree
 
   /**
    * @param array $data
+   * @param bool $time
    * @return int
    */
-  public function add(array $data): int
+  public function add(array $data, bool $time = true): int
   {
     return $this->DB()
       ->insert($this->tableName)
-      ->set(array_merge($data, [
+      ->set(array_merge($data, $time ? [
         'time' => time()
-      ]));
+      ] : []));
   }
 
   /**
    * @param string $key
    * @param $val
    * @param array $data
+   * @param bool $time
    * @return bool
    */
-  public function edit(string $key, $val, array $data): bool
+  public function edit(string $key, $val, array $data, bool $time = true): bool
   {
-    return $this->wedit([$key => $val], $data);
+    return $this->wedit([$key => $val], $data, $time);
   }
 
   /**
    * @param $where
    * @param array $data
+   * @param bool $time
    * @return bool
    */
-  public function wedit($where, array $data): bool
+  public function wedit($where, array $data, bool $time = true): bool
   {
     if ($this->wget($where)) {
 
       $sql = $this->DB()->update($this->tableName);
       $this->_where($sql, $where);
 
-      return $sql->set(array_merge($data, [
+      return $sql->set(array_merge($data, $time ? [
         'edit_time' => time()
-      ]));
+      ] : []));
     }
     return false;
   }
