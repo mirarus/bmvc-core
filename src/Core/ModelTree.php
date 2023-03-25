@@ -76,7 +76,6 @@ abstract class ModelTree
 		$this->_where($sql, $where);
 
 		if ($sort != null && $sort[0] != null && $sort[1] != null) $this->DB()->orderBy($sort[0], $sort[1]);
-
 		if ($query) $sql = $sql->sql(' ' . $query);
 
 		return $all ? $sql->all() : $sql->first();
