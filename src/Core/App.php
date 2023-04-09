@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.27
+ * @version 9.28
  */
 
 namespace BMVC\Core;
@@ -22,6 +22,7 @@ use BMVC\Libs\Request;
 use BMVC\Libs\Header;
 use BMVC\Libs\Route;
 use BMVC\Libs\Util;
+use BMVC\Libs\Locale;
 
 final class App
 {
@@ -69,16 +70,6 @@ final class App
   /**
    * @var
    */
-  public static $locale;
-
-  /**
-   * @var
-   */
-  public static $activeLocale;
-
-  /**
-   * @var
-   */
   public static $environment;
 
   /**
@@ -107,7 +98,7 @@ final class App
     self::init_Whoops($data);
     self::init_Data($data);
     if (isset($_ENV['LOG']) && $_ENV['LOG'] == "true") self::init_Monolog();
-    if (isset($_ENV['I18N']) && $_ENV['I18N'] == "true") self::init_i18n();
+    if (isset($_ENV['I18N']) && $_ENV['I18N'] == "true") Locale::init();
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
@@ -125,74 +116,6 @@ final class App
     self::init_Route();
 
     self::$active = true;
-  }
-
-  /**
-   * @param $par
-   * @param string|null $value
-   * @param bool $get
-   * @param string|null $sub
-   * @param bool $new
-   * @return array|App|null[]|string|void
-   */
-  public static function SGnamespace($par, string $value = null, bool $get = false, string $sub = null, bool $new = false)
-  {
-    $sub = ($sub != null) ? (CL::trim($sub) . '\\') : null;
-
-    if (is_string($par)) {
-      if (array_key_exists($par, self::$namespaces)) {
-        self::$namespaces[$par] = (CL::trim(($sub . $value)) . '\\');
-        if ($get === true) {
-          return self::$namespaces[$par];
-        }
-      }
-    } elseif (is_array($par)) {
-      foreach (@$par as $key) {
-        if (array_key_exists($key, self::$namespaces)) {
-          self::$namespaces[$key] = (CL::trim(($sub . $value)) . '\\');
-          if ($get === true) {
-            return self::$namespaces[$key];
-          }
-        }
-      }
-
-      foreach (@$par as $key => $val) {
-        if (array_key_exists($key, self::$namespaces)) {
-          self::$namespaces[$key] = (CL::trim(($sub . $val)) . '\\');
-          if ($get === true) {
-            return self::$namespaces[$key];
-          }
-        }
-      }
-    } else {
-      if ($get === true) {
-        return self::$namespaces;
-      }
-    }
-    if ($new) return new self;
-  }
-
-  /**
-   * @param array $namespaces
-   * @param string|null $sub
-   * @param bool $new
-   * @return App|void
-   */
-  public static function namespace(array $namespaces = [], string $sub = null, bool $new = false)
-  {
-    self::SGnamespace($namespaces, null, false, $sub);
-    if ($new) return new self;
-  }
-
-  /**
-   * @param string $key
-   * @return void
-   */
-  public static function get(string $key)
-  {
-    if (in_array($key, get_class_vars(__CLASS__))) {
-      return self::${$key};
-    }
   }
 
   /**
@@ -350,81 +273,6 @@ final class App
         Monolog::$log->error($exception);
       });
     }
-  }
-
-  /**
-   * @return void
-   */
-  private static function init_i18n(): void
-  {
-    if (class_exists('\Locale') && \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-      $_locale = \Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-      if ($_locale == 'tr') {
-        $_locale = 'tr_TR';
-      } elseif ($_locale == 'en') {
-        $_locale = 'en_US';
-      }
-    }
-
-    if (isset($_GET['locale']) && in_array($_GET['locale'], self::locales('locales'))) {
-      $locale = $_GET['locale'];
-      setcookie('locale', $locale, 0, '/');
-      redirect(url(self::$page));
-    } elseif (isset($_COOKIE['locale']) && in_array($_COOKIE['locale'], self::locales('locales'))) {
-      $locale = $_COOKIE['locale'];
-    } elseif (isset(self::$locale) && in_array(self::$locale, self::locales('locales'))) {
-      $locale = self::$locale;
-    } elseif (isset($_locale) && in_array($_locale, self::locales('locales'))) {
-      $locale = $_locale;
-    } elseif (isset($_ENV['LOCALE']) && in_array($_ENV['LOCALE'], self::locales('locales'))) {
-      $locale = $_ENV['LOCALE'];
-    } else {
-      $locale = 'en_US';
-    }
-
-    $codeset = "UTF8";
-    self::$activeLocale = $locale;
-
-    putenv("LC_ALL=" . $locale . '.' . $codeset);
-    putenv("LANGUAGE=" . $locale . '.' . $codeset);
-    putenv("LANG=" . $locale . '.' . $codeset);
-
-    if ($locale == 'tr_TR') {
-      $sl = setlocale(LC_ALL, 'tr_TR.' . $codeset, 'tr_TR', 'tr', 'turkish');
-    } else {
-      $sl = setlocale(LC_ALL, $locale . '.' . $codeset);
-    }
-
-    bindtextdomain($locale, FS::app('Locales'));
-    bind_textdomain_codeset($locale, $codeset);
-    textdomain($locale);
-
-    bindtextdomain('system', FS::base('Locales'));
-    bind_textdomain_codeset('system', $codeset);
-  }
-
-  /**
-   * @return mixed
-   */
-  public static function locales($index = null)
-  {
-    $dirLocales = FS::directories(FS::app('Locales'));
-
-    $shell = trim(shell_exec("locale -a|grep .utf8"));
-    $unixLocales = array_reduce(($shell ? explode('.utf8' . "\n", $shell) : []), function ($res, $el) {
-      $res[] = trim(str_replace('.utf8', null, $el));
-      return $res;
-    }, []);
-
-    $locales = ($unixLocales ? array_intersect($dirLocales, $unixLocales) : $dirLocales);
-
-    $arr = ($locales ? [
-      'locale' => self::$activeLocale,
-      'locales' => $locales,
-      'dir_locales' => $dirLocales
-    ] : []);
-
-    return $index ? $arr[$index] : $arr;
   }
 
   /**
