@@ -8,15 +8,16 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.28
+ * @version 9.29
  */
 
 namespace BMVC\Core;
 
-use Dotenv\Dotenv;
+use BMVC\Libs\Model;
 use BMVC\Libs\FS;
 use BMVC\Libs\CL;
 use BMVC\Libs\Whoops;
+use BMVC\Libs\Env;
 use BMVC\Libs\Monolog;
 use BMVC\Libs\Request;
 use BMVC\Libs\Header;
@@ -90,8 +91,8 @@ final class App
     if (self::$active) return;
 
     self::$_microtime = microtime(true);
-    
-    self::init_Dotenv();
+
+	  self::$dotenv = Env::init();
     self::init_Define();
     self::init_Header();
     self::init_Session();
@@ -184,16 +185,6 @@ final class App
     if (in_array($key, get_class_vars(__CLASS__))) {
       return self::${$key};
     }
-  }
-
-  /**
-   * @return void
-   */
-  private static function init_Dotenv(): void
-  {
-    $dotenv = Dotenv::createImmutable(FS::app());
-    $dotenv->safeLoad();
-    self::$dotenv = $dotenv;
   }
 
   /**
