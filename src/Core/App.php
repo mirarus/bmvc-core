@@ -119,6 +119,74 @@ final class App
   }
 
   /**
+   * @param $par
+   * @param string|null $value
+   * @param bool $get
+   * @param string|null $sub
+   * @param bool $new
+   * @return array|App|null[]|string|void
+   */
+  public static function SGnamespace($par, string $value = null, bool $get = false, string $sub = null, bool $new = false)
+  {
+    $sub = ($sub != null) ? (CL::trim($sub) . '\\') : null;
+
+    if (is_string($par)) {
+      if (array_key_exists($par, self::$namespaces)) {
+        self::$namespaces[$par] = (CL::trim(($sub . $value)) . '\\');
+        if ($get === true) {
+          return self::$namespaces[$par];
+        }
+      }
+    } elseif (is_array($par)) {
+      foreach (@$par as $key) {
+        if (array_key_exists($key, self::$namespaces)) {
+          self::$namespaces[$key] = (CL::trim(($sub . $value)) . '\\');
+          if ($get === true) {
+            return self::$namespaces[$key];
+          }
+        }
+      }
+
+      foreach (@$par as $key => $val) {
+        if (array_key_exists($key, self::$namespaces)) {
+          self::$namespaces[$key] = (CL::trim(($sub . $val)) . '\\');
+          if ($get === true) {
+            return self::$namespaces[$key];
+          }
+        }
+      }
+    } else {
+      if ($get === true) {
+        return self::$namespaces;
+      }
+    }
+    if ($new) return new self;
+  }
+
+  /**
+   * @param array $namespaces
+   * @param string|null $sub
+   * @param bool $new
+   * @return App|void
+   */
+  public static function namespace(array $namespaces = [], string $sub = null, bool $new = false)
+  {
+    self::SGnamespace($namespaces, null, false, $sub);
+    if ($new) return new self;
+  }
+
+  /**
+   * @param string $key
+   * @return void
+   */
+  public static function get(string $key)
+  {
+    if (in_array($key, get_class_vars(__CLASS__))) {
+      return self::${$key};
+    }
+  }
+
+  /**
    * @return void
    */
   private static function init_Dotenv(): void
