@@ -15,9 +15,7 @@
 		"ext-mbstring": "*",
 		"ext-intl" : "*",
 		"ext-gettext": "*",
-		"mirarus/db": "0.*",
-		"mirarus/bmvc-libs": "0.*",
-		"vlucas/phpdotenv": "^5.3"
+		"mirarus/bmvc-libs": "0.*"
 	},
 	"autoload": {
 		"psr-4": {
@@ -31,14 +29,5 @@
 		"preferred-install": "dist",
 		"sort-packages": true,
 		"optimize-autoloader": true
-	},
-	"scripts": {
-		"post-install-cmd": "BMVC\\Libs\\Composer::folderDelete",
-		"post-update-cmd": "BMVC\\Libs\\Composer::folderDelete",
-		"post-autoload-dump": "BMVC\\Libs\\Composer::folderDelete",
-		"post-root-package-install": "BMVC\\Libs\\Composer::folderDelete",
-		"post-create-project-cmd": "BMVC\\Libs\\Composer::folderDelete",
-		"post-package-install": "BMVC\\Libs\\Composer::folderDelete",
-		"post-package-update": "BMVC\\Libs\\Composer::folderDelete"
 	}
 }
