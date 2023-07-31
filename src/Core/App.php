@@ -95,7 +95,7 @@ final class App
 	  self::$dotenv = Env::init();
     self::init_Define();
     self::init_Header();
-    self::init_Session();
+    //self::init_Session();
     self::init_Whoops($data);
     self::init_Data($data);
     if (isset($_ENV['LOG']) && $_ENV['LOG'] == "true") self::init_Monolog();
@@ -251,7 +251,7 @@ final class App
   /**
    * @return void
    */
-  private static function init_Session(): void
+  public static function init_Session(): void
   {
     if (session_status() != PHP_SESSION_ACTIVE || session_id() == null) {
       @ini_set('session.use_only_cookies', '1');
