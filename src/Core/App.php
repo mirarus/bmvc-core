@@ -99,7 +99,7 @@ final class App
     self::init_Whoops($data);
     self::init_Data($data);
     if (isset($_ENV['LOG']) && $_ENV['LOG'] == "true") self::init_Monolog();
-    if (isset($_ENV['I18N']) && $_ENV['I18N'] == "true") Locale::init();
+    if (isset($_ENV['I18N']) && $_ENV['I18N'] == "true") (new Locale());
     self::_routes();
 
     if (@$data['namespaces'] != null) self::$namespaces = $data['namespaces'];
