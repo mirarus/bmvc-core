@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.30
+ * @version 9.31
  */
 
 namespace BMVC\Core;
@@ -218,26 +218,18 @@ final class App
 		self::$environment = ((isset($_ENV['ENVIRONMENT']) && $_ENV['ENVIRONMENT'] != null) ? $_ENV['ENVIRONMENT'] : 'development');
 		@define('ENVIRONMENT', self::$environment);
 
-		switch (self::$environment) {
-			case 'staging':
-			case 'development':
-				@error_reporting(-1);
-				@ini_set('display_errors', '1');
-				@error_reporting(E_ALL ^ E_WARNING ^ E_USER_WARNING ^ E_NOTICE ^ E_DEPRECATED);
-				break;
-			case 'testing':
-			case 'production':
-				@ini_set('display_errors', '0');
-				if (version_compare(PHP_VERSION, '5.3', '>=')) {
-					@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-				} else {
-					@error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
-				}
-				break;
-			default:
-				@header('HTTP/1.1 503 Service Unavailable.', true, 503);
-				echo 'The application environment is not set correctly.';
-				exit(1);
+		if ((self::$environment == 'staging') || (self::$environment == 'development')) {
+			@error_reporting(-1);
+			@ini_set('display_errors', '1');
+			@error_reporting(E_ALL ^ E_WARNING ^ E_USER_WARNING ^ E_NOTICE ^ E_DEPRECATED);
+		} else if ((self::$environment == 'testing') || (self::$environment == 'production')) {
+			@ini_set('display_errors', '0');
+			@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
+			echo json_encode(['status' => false, 'code' => 500, 'message' => "ınternal server error"]);
+		} else {
+			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
+			echo 'The application environment is not set correctly.';
+			exit(1);
 		}
 	}
 
@@ -253,8 +245,9 @@ final class App
 		if (self::$environment == 'development') {
 			@header('X-Powered-By: PHP/BMVC');
 		}
-		if (self::$page)
+		if (self::$page) {
 			@header('X-Url: ' . self::$page);
+		}
 		@header('X-XSS-Protection: 1; mode=block');
 	}
 
@@ -329,11 +322,12 @@ final class App
 		}
 		#
 
-		if (function_exists('mb_internal_encoding'))
+		if (function_exists('mb_internal_encoding')) {
 			@mb_internal_encoding('UTF-8');
-
-		if (Util::is_cli())
+		}
+		if (Util::is_cli()) {
 			die('Cli Not Available, Browser Only.');
+		}
 	}
 
 	/**
@@ -359,8 +353,9 @@ final class App
 			redirect(strstr((string)Request::server('REQUEST_URI'), [@$_ENV['PUBLIC_DIR'] => '/']));
 		}
 
-		if (strstr((string)@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/')))
+		if (strstr((string)@Request::_server('REQUEST_URI'), ('/' . trim(@$_ENV['PUBLIC_DIR'], '/') . '/'))) {
 			Route::getErrors(404);
+		}
 
 		$route = Route::Run();
 
@@ -390,8 +385,9 @@ final class App
 
 			Controller::call(@$route['action'], @$route['params']);
 
-			if (@$route['_return'] && !Header::check_type(@$route['_return']))
+			if (@$route['_return'] && !Header::check_type(@$route['_return'])) {
 				Route::getErrors(404);
+			}
 		} else {
 			Route::getErrors(404);
 		}
