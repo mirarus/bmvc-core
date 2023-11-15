@@ -17,5 +17,5 @@ use BMVC\Libs\classCall;
 
 final class Middleware
 {
-	use classCall;
+    use classCall;
 }
