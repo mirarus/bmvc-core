@@ -8,7 +8,7 @@
  * @author  Ali Güçlü (Mirarus) <aliguclutr@gmail.com>
  * @link https://github.com/mirarus/bmvc-core
  * @license http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version 9.31
+ * @version 9.32
  */
 
 namespace BMVC\Core;
@@ -225,7 +225,7 @@ final class App
 		} else if ((self::$environment == 'testing') || (self::$environment == 'production')) {
 			@ini_set('display_errors', '0');
 			@error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);
-			echo json_encode(['status' => false, 'code' => 500, 'message' => "ınternal server error"]);
+			//echo json_encode(['status' => false, 'code' => 500, 'message' => "ınternal server error"]);
 		} else {
 			@header('HTTP/1.1 503 Service Unavailable.', true, 503);
 			echo 'The application environment is not set correctly.';
